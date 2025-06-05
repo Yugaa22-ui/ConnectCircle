@@ -1,73 +1,58 @@
-<?php
-session_start();
-include '../includes/db.php';
-
-$error = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email    = trim($_POST['email']);
-    $password = $_POST['password'];
-
-    if (empty($email) || empty($password)) {
-        $error = "Email dan password wajib diisi!";
-    } else {
-        $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows === 1) {
-            $stmt->bind_result($user_id, $username, $hashed_password, $role);
-            $stmt->fetch();
-
-            if (password_verify($password, $hashed_password)) {
-                // Simpan data user ke session
-                $_SESSION['user_id'] = $user_id;
-                $_SESSION['username'] = $username;
-                $_SESSION['role'] = $role;
-
-                // Redirect sesuai role
-                if ($role === 'admin') {
-                    header("Location: ../admin/dashboard_admin.php");
-                } else {
-                    header("Location: ../user/dashboard.php");
-                }
-                exit;
-            } else {
-                $error = "Password salah!";
-            }
-        } else {
-            $error = "Email tidak ditemukan!";
-        }
-
-        $stmt->close();
-    }
-}
-?>
-
+<?php session_start(); ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Login - ConnectCircle</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Login Akun</h2>
+<body class="bg-light">
 
-    <?php if (!empty($error)): ?>
-        <script>alert("<?= $error ?>");</script>
-    <?php endif; ?>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Login ke ConnectCircle</h3>
+                </div>
+                <div class="card-body">
 
-    <form method="POST" action="">
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+                    <!-- Notifikasi -->
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
+                    <?php elseif (isset($_GET['success'])): ?>
+                        <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
+                    <?php endif; ?>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+                    <form method="POST" action="../backend/auth/login_process.php">
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" required autofocus>
+                        </div>
 
-        <button type="submit">Login</button>
-    </form>
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
 
-    <p>Belum punya akun? <a href="register.php">Daftar sekarang</a></p>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <a href="register.php" class="btn btn-outline-secondary">Belum punya akun? Daftar</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <p class="text-center text-muted mt-4">&copy; <?= date('Y') ?> ConnectCircle</p>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

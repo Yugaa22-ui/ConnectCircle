@@ -1,5 +1,5 @@
 <?php
-include '../auth/auth_check.php'; // memastikan user sudah login
+include '../backend/auth/auth_check.php';// memastikan user sudah login
 include '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];
@@ -22,7 +22,7 @@ $username = $_SESSION['username'];
         <li><a href="../circle/join_circle.php">Gabung Circle</a></li>
         <li><a href="../circle/view_circle.php">Lihat Circle Saya</a></li>
         <li><a href="../search/search.php">Cari Teman Berdasarkan Minat</a></li>
-        <li><a href="../auth/logout.php">Logout</a></li>
+        <li><a href="../backend/auth/logout.php">Logout</a></li>
     </ul>
 </body>
 </html>

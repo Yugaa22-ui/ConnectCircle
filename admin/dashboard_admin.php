@@ -1,9 +1,9 @@
 <?php
-include '../auth/auth_check.php';
+include '../backend/auth/auth_check.php';
 
-// Cek apakah user adalah admin
-if ($_SESSION['role'] !== 'admin') {
-    echo "<script>alert('Akses ditolak. Halaman ini hanya untuk admin.'); window.location='../user/dashboard.php';</script>";
+// Izinkan hanya admin dan moderator
+if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator') {
+    echo "<script>alert('Akses ditolak. Halaman ini hanya untuk admin atau moderator.'); window.location='../user/dashboard.php';</script>";
     exit;
 }
 
@@ -22,8 +22,9 @@ $username = $_SESSION['username'];
     <p>Silakan pilih menu administrasi:</p>
     <ul>
         <li><a href="manage_interests.php">Kelola Minat</a></li>
-        <li><a href="manage_users.php">Kelola Pengguna</a> (opsional)</li>
-        <li><a href="manage_roles.php">Kelola Role Pengguna</a> (opsional)</li>
+        <li><a href="manage_users.php">Kelola Pengguna</a></li>
+        <li><a href="manage_roles.php">Kelola Role Pengguna</a></li>
+        <li><a href="manage_badges.php">Kelola Badge</a></li>
         <li><a href="../auth/logout.php">Logout</a></li>
     </ul>
 </body>

@@ -1,99 +1,77 @@
-<?php
-include '../includes/db.php';
-
-$success = '';
-$error = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username   = trim($_POST['username']);
-    $email      = trim($_POST['email']);
-    $password   = $_POST['password'];
-    $confirm    = $_POST['confirm_password'];
-    $city       = trim($_POST['city']);
-    $profession = trim($_POST['profession']);
-
-    // Validasi form
-    if (empty($username) || empty($email) || empty($password) || empty($confirm)) {
-        $error = "Semua field wajib diisi!";
-    } elseif ($password !== $confirm) {
-        $error = "Konfirmasi password tidak cocok!";
-    } else {
-        // Cek apakah email sudah terdaftar
-        $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $check->bind_param("s", $email);
-        $check->execute();
-        $check->store_result();
-
-        if ($check->num_rows > 0) {
-            $error = "Email sudah terdaftar!";
-        } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare("INSERT INTO users (username, email, password, city, profession) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $username, $email, $hashedPassword, $city, $profession);
-
-            if ($stmt->execute()) {
-                echo "<script>alert('Registrasi berhasil! Silakan login.'); window.location='login.php';</script>";
-                exit;
-            } else {
-                $error = "Gagal menyimpan data.";
-            }
-
-            $stmt->close();
-        }
-
-        $check->close();
-    }
-}
-?>
-
+<?php session_start(); ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Register - ConnectCircle</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <script>
-        function validateForm() {
-            let pass = document.getElementById("password").value;
-            let confirm = document.getElementById("confirm_password").value;
+    <meta charset="UTF-8">
+    <title>Daftar - ConnectCircle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-            if (pass !== confirm) {
-                alert("Password dan konfirmasi tidak cocok!");
-                return false;
-            }
-            return true;
-        }
-    </script>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Registrasi Akun</h2>
+<body class="bg-light">
 
-    <?php if (!empty($error)): ?>
-        <script>alert("<?= $error ?>");</script>
-    <?php endif; ?>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Daftar Akun Baru</h3>
+                </div>
+                <div class="card-body">
 
-    <form method="POST" action="" onsubmit="return validateForm()">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
+                    <!-- Notifikasi -->
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
+                    <?php elseif (isset($_GET['success'])): ?>
+                        <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
+                    <?php endif; ?>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+                    <form method="POST" action="../backend/auth/register_process.php">
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" id="password" required><br><br>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
 
-        <label>Konfirmasi Password:</label><br>
-        <input type="password" name="confirm_password" id="confirm_password" required><br><br>
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
 
-        <label>Kota:</label><br>
-        <input type="text" name="city"><br><br>
+                        <div class="mb-3">
+                            <label class="form-label">Kota</label>
+                            <input type="text" name="city" class="form-control">
+                        </div>
 
-        <label>Profesi:</label><br>
-        <input type="text" name="profession"><br><br>
+                        <div class="mb-3">
+                            <label class="form-label">Profesi</label>
+                            <input type="text" name="profession" class="form-control">
+                        </div>
 
-        <button type="submit">Daftar</button>
-    </form>
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea name="bio" class="form-control" rows="3"></textarea>
+                        </div>
 
-    <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Daftar</button>
+                            <a href="login.php" class="btn btn-outline-secondary">Sudah punya akun? Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-center text-muted mt-4">&copy; <?= date('Y') ?> ConnectCircle</p>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle (Opsional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

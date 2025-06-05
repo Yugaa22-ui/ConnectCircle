@@ -1,10 +1,10 @@
 <?php
-include '../auth/auth_check.php';
+include '../backend/auth_check.php';
 include '../includes/db.php';
 
 // Cek jika bukan admin, redirect (opsional)
-if ($_SESSION['user_id'] != 1) { // misalnya ID 1 adalah admin utama
-    echo "<script>alert('Hanya admin yang dapat mengakses.'); window.location='../user/dashboard.php';</script>";
+if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator')  { 
+    echo "<script>alert('Hanya admin dan moderator yang dapat mengakses.'); window.location='../user/dashboard.php';</script>";
     exit;
 }
 

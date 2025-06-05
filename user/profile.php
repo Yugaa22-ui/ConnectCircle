@@ -1,6 +1,8 @@
 <?php
 include '../auth/auth_check.php';
 include '../includes/db.php';
+include '../badges/check_and_assign_badges.php';
+assign_badges($conn, $_SESSION['user_id']);
 
 $user_id = $_SESSION['user_id'];
 
@@ -43,6 +45,36 @@ $query->close();
             <td><?= nl2br(htmlspecialchars($bio)) ?></td>
         </tr>
     </table>
+    <h3>Badge yang Dimiliki</h3>
+
+    <?php
+    $stmt = $conn->prepare("
+        SELECT b.name, b.description, b.icon
+        FROM user_badges ub
+        JOIN badges b ON ub.badge_id = b.id
+        WHERE ub.user_id = ?
+    ");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0):
+    ?>
+        <ul>
+            <?php while ($badge = $result->fetch_assoc()): ?>
+                <li>
+                    <?= $badge['icon'] ? $badge['icon'] . ' ' : '' ?>
+                    <strong><?= htmlspecialchars($badge['name']) ?></strong><br>
+                    <small><?= htmlspecialchars($badge['description']) ?></small>
+                </li>
+            <?php endwhile; ?>
+        </ul>
+    <?php else: ?>
+        <p>Belum ada badge. Yuk mulai aktif di circle!</p>
+    <?php endif;
+
+    $stmt->close();
+    ?>
 
     <br>
     <a href="edit_profile.php">Edit Profil</a> | 
