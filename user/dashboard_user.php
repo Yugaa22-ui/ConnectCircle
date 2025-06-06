@@ -17,14 +17,14 @@
             </div>
             <div class="card-body">
                 <p class="mb-3">Pilih salah satu menu berikut:</p>
-                <ul class="list-group">
-                    <li class="list-group-item"><a href="profile.php">👤 Lihat Profil</a></li>
-                    <li class="list-group-item"><a href="../circle/create_circle.php">➕ Buat Circle</a></li>
-                    <li class="list-group-item"><a href="../circle/join_circle.php">🔍 Gabung Circle</a></li>
-                    <li class="list-group-item"><a href="../circle/view_circle.php">📂 Lihat Circle Saya</a></li>
-                    <li class="list-group-item"><a href="../search/search.php">🔎 Cari Teman Berdasarkan Minat</a></li>
-                    <li class="list-group-item"><a href="../backend/auth/logout.php" class="text-danger">🚪 Logout</a></li>
-                </ul>
+                <div class="list-group">
+                    <a href="profile.php" class="list-group-item list-group-item-action">👤 Lihat Profil</a>
+                    <a href="../circle/create_circle.php" class="list-group-item list-group-item-action">➕ Buat Circle</a>
+                    <a href="../circle/join_circle.php" class="list-group-item list-group-item-action">🔍 Gabung Circle</a>
+                    <a href="../circle/view_circle.php" class="list-group-item list-group-item-action">📂 Lihat Circle Saya</a>
+                    <a href="../search/search.php" class="list-group-item list-group-item-action">🔎 Cari Teman Berdasarkan Minat</a>
+                    <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#logoutModal">🚪 Logout</a>
+                </div>
             </div>
         </div>
 
@@ -35,5 +35,23 @@
 
     <!-- Bootstrap JS Bundle (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Konfirmasi Logout -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header bg-warning">
+            <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+            Apakah kamu yakin ingin keluar dari ConnectCircle?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+            <a href="../backend/auth/logout.php" class="btn btn-danger">Ya, Logout</a>
+        </div>
+        </div>
+    </div>
+    </div>
 </body>
 </html>

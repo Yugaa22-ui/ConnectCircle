@@ -18,14 +18,11 @@
         <div class="card-body">
             <div class="text-center mb-4">
                 <?php if ($profile_picture): ?>
-                    <img src="../uploads/<?= htmlspecialchars($profile_picture) ?>" class="rounded-circle" width="120" height="120" alt="Foto Profil">
-                <?php else: ?>
+                    <img src="../assets/uploads/img/<?= htmlspecialchars($profile_picture) ?>" class="rounded mb-2" width="100">
+                    <?php endif; ?>
+                <?php if (!$profile_picture): ?>
                     <img src="../assets/img/default-user.png" class="rounded-circle" width="120" height="120" alt="Foto Default">
                 <?php endif; ?>
-                <!-- <form method="POST" action="../backend/user/upload_photo.php" enctype="multipart/form-data" class="mt-3">
-                    <input type="file" name="profile_pic" accept="image/*" required>
-                    <button type="submit" class="btn btn-sm btn-outline-primary mt-2">Upload Foto</button>
-                </form> -->
             </div>
 
             <table class="table">

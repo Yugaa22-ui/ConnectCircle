@@ -1,92 +1,55 @@
-<?php
-include '../backend/auth/auth_check.php';
-include '../includes/db.php';
-
-// Cek jika bukan admin, redirect (opsional)
-if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator') { 
-    echo "<script>alert('Hanya admin dan moderator yang dapat mengakses.'); window.location='../admin/dashboard_admin.php';</script>";
-    exit;
-}
-
-$success = '';
-$error = '';
-
-// Tambah minat baru
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_interest'])) {
-    $new_interest = trim($_POST['new_interest']);
-
-    if (empty($new_interest)) {
-        $error = "Nama minat tidak boleh kosong.";
-    } else {
-        // Cek duplikat
-        $check = $conn->prepare("SELECT id FROM interests WHERE name = ?");
-        $check->bind_param("s", $new_interest);
-        $check->execute();
-        $check->store_result();
-
-        if ($check->num_rows > 0) {
-            $error = "Minat tersebut sudah ada.";
-        } else {
-            $insert = $conn->prepare("INSERT INTO interests (name) VALUES (?)");
-            $insert->bind_param("s", $new_interest);
-            if ($insert->execute()) {
-                $success = "Minat berhasil ditambahkan.";
-            } else {
-                $error = "Gagal menambahkan minat.";
-            }
-            $insert->close();
-        }
-
-        $check->close();
-    }
-}
-
-// Hapus minat (opsional)
-if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $del_id = intval($_GET['delete']);
-    $delete = $conn->prepare("DELETE FROM interests WHERE id = ?");
-    $delete->bind_param("i", $del_id);
-    $delete->execute();
-    $delete->close();
-    $success = "Minat berhasil dihapus.";
-}
-
-// Ambil semua data minat
-$all = $conn->query("SELECT * FROM interests ORDER BY name ASC");
-?>
-
+<?php include '../backend/admin/manage_interests_process.php'; ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Kelola Minat - ConnectCircle (Admin)</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta charset="UTF-8">
+    <title>Kelola Minat - Admin | ConnectCircle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <script>
         <?php if ($success): ?>alert("<?= $success ?>");<?php endif; ?>
         <?php if ($error): ?>alert("<?= $error ?>");<?php endif; ?>
     </script>
 </head>
-<body>
-    <h2>Kelola Minat - Admin</h2>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Kelola Minat Pengguna</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="mb-3">
+                <div class="mb-3">
+                    <label class="form-label">Tambah Minat Baru:</label>
+                    <input type="text" name="new_interest" class="form-control" placeholder="Contoh: Musik, Menulis, Desain" required>
+                </div>
+                <button type="submit" class="btn btn-success">Tambah</button>
+            </form>
 
-    <form method="POST" action="">
-        <label>Tambah Minat Baru:</label><br>
-        <input type="text" name="new_interest" placeholder="Contoh: Musik, Menulis, Desain" required>
-        <button type="submit">Tambah</button>
-    </form>
+            <hr>
 
-    <hr>
+            <h5>Daftar Minat Tersedia</h5>
+            <?php if ($all->num_rows > 0): ?>
+                <ul class="list-group">
+                    <?php while ($row = $all->fetch_assoc()): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <?= htmlspecialchars($row['name']) ?>
+                            <a href="?delete=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin menghapus minat ini?')" class="btn btn-sm btn-danger">Hapus</a>
+                        </li>
+                    <?php endwhile; ?>
+                </ul>
+            <?php else: ?>
+                <p class="text-muted">Belum ada data minat.</p>
+            <?php endif; ?>
+        </div>
+        <div class="card-footer text-end">
+            <a href="dashboard_admin.php" class="btn btn-secondary">Kembali ke Dashboard</a>
+        </div>
+    </div>
+</div>
 
-    <h3>Daftar Minat</h3>
-    <ul>
-        <?php while ($row = $all->fetch_assoc()): ?>
-            <li>
-                <?= htmlspecialchars($row['name']) ?>
-                <a href="?delete=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin hapus?')">[hapus]</a>
-            </li>
-        <?php endwhile; ?>
-    </ul>
-
-    <br>
-    <a href="../admin/dashboard_admin.php">Kembali ke Dashboard</a>
 </body>
 </html>

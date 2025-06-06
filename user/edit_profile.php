@@ -51,7 +51,7 @@ include '../backend/user/edit_profile_process.php';
                 <div class="mb-3">
                     <label class="form-label">Foto Profil (Opsional)</label><br>
                     <?php if ($profile_picture): ?>
-                        <img src="../uploads/<?= htmlspecialchars($profile_picture) ?>" class="rounded mb-2" width="100">
+                        <img src="../assets/uploads/img/<?= htmlspecialchars($profile_picture) ?>" class="rounded mb-2" width="100">
                     <?php endif; ?>
                     <input type="file" name="profile_picture" class="form-control">
                 </div>

@@ -1,91 +1,60 @@
-<?php
-include '../backend/auth/auth_check.php';
-include '../includes/db.php';
-
-$user_id = $_SESSION['user_id'];
-
-// Pastikan ada ID circle
-if (!isset($_GET['circle_id']) || !is_numeric($_GET['circle_id'])) {
-    header("Location: view_circle.php");
-    exit;
-}
-$circle_id = intval($_GET['circle_id']);
-
-// Cek apakah user tergabung dalam circle
-$check = $conn->prepare("SELECT id FROM circle_members WHERE user_id = ? AND circle_id = ?");
-$check->bind_param("ii", $user_id, $circle_id);
-$check->execute();
-$check->store_result();
-
-if ($check->num_rows === 0) {
-    echo "<script>alert('Kamu belum tergabung dalam circle ini.'); window.location='join_circle.php';</script>";
-    exit;
-}
-$check->close();
-
-// Ambil info circle
-$circle_info = $conn->prepare("SELECT name FROM circles WHERE id = ?");
-$circle_info->bind_param("i", $circle_id);
-$circle_info->execute();
-$circle_info->bind_result($circle_name);
-$circle_info->fetch();
-$circle_info->close();
-
-// Simpan pesan jika form dikirim
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $message = trim($_POST['message']);
-    if (!empty($message)) {
-        $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content) VALUES (?, ?, ?)");
-        $stmt->bind_param("iis", $circle_id, $user_id, $message);
-        $stmt->execute();
-        $stmt->close();
-    }
-}
-
-// Ambil semua pesan dari circle
-$posts = $conn->prepare("
-    SELECT u.username, p.content, p.created_at 
-    FROM posts p
-    JOIN users u ON p.user_id = u.id
-    WHERE p.circle_id = ?
-    ORDER BY p.created_at ASC
-");
-$posts->bind_param("i", $circle_id);
-$posts->execute();
-$results = $posts->get_result();
-?>
-
+<?php include '../backend/auth/auth_check.php'; ?>
+<?php include '../backend/circle/discussion_controller.php'; ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Diskusi Circle - <?= htmlspecialchars($circle_name) ?></title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta charset="UTF-8">
+    <title>Diskusi - <?= htmlspecialchars($circle_name) ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Diskusi: <?= htmlspecialchars($circle_name) ?></h2>
+<body class="bg-light">
 
-    <div style="border:1px solid #ccc; padding:10px; max-height:300px; overflow-y:auto; margin-bottom: 20px;">
-        <?php if ($results->num_rows > 0): ?>
-            <?php while ($row = $results->fetch_assoc()): ?>
-                <p><strong><?= htmlspecialchars($row['username']) ?></strong>: <?= nl2br(htmlspecialchars($row['content'])) ?><br>
-                <small><i><?= $row['created_at'] ?></i></small></p>
-                <hr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p>Belum ada pesan di circle ini. Jadilah yang pertama!</p>
-        <?php endif; ?>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Diskusi: <?= htmlspecialchars($circle_name) ?></h4>
+        <div>
+            <?php if ($is_creator): ?>
+                <a href="manage_members.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Anggota</a>
+            <?php endif; ?>
+            <a href="discussion_page.php?circle_id=<?= $circle_id ?>&leave=yes" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin ingin keluar dari circle ini?')">Keluar Circle</a>
+            <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
+        </div>
     </div>
 
-    <form method="POST" action="">
-        <textarea name="message" rows="3" cols="60" placeholder="Tulis pesan..." required></textarea><br><br>
-        <button type="submit">Kirim</button>
-    </form>
+    <div class="card mb-3">
+        <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+            <?php if ($results->num_rows > 0): ?>
+                <?php while ($row = $results->fetch_assoc()): ?>
+                    <div class="mb-3">
+                        <strong><?= htmlspecialchars($row['username']) ?></strong><br>
+                        <?= nl2br(htmlspecialchars($row['content'])) ?>
+                        <?php if (!empty($row['image_path'])): ?>
+                            <div class="mt-2">
+                                <img src="../assets/uploads/img/<?= htmlspecialchars($row['image_path']) ?>" width="150" class="img-thumbnail">
+                            </div>
+                        <?php endif; ?>
+                        <div><small class="text-muted"><?= $row['created_at'] ?></small></div>
+                    </div>
+                    <hr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p class="text-muted">Belum ada pesan. Jadilah yang pertama!</p>
+            <?php endif; ?>
+        </div>
+    </div>
 
-    <br>
-    <a href="view_circle.php">Kembali ke Daftar Circle</a>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <textarea name="message" class="form-control" rows="3" placeholder="Tulis pesan..."></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Gambar (opsional):</label>
+            <input type="file" name="image" class="form-control" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-success">Kirim</button>
+    </form>
+</div>
 </body>
 </html>
-
-<?php
-$posts->close();
-?>
