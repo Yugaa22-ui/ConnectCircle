@@ -1,79 +1,52 @@
 <?php
-include '../auth/auth_check.php';
-include '../includes/db.php';
-
-$user_id = $_SESSION['user_id'];
-$success = '';
-$error = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $old_password     = $_POST['old_password'];
-    $new_password     = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
-
-    if (empty($old_password) || empty($new_password) || empty($confirm_password)) {
-        $error = "Semua field wajib diisi.";
-    } elseif ($new_password !== $confirm_password) {
-        $error = "Konfirmasi password tidak cocok.";
-    } else {
-        // Ambil password lama dari DB
-        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $stmt->bind_result($hashed_password);
-        $stmt->fetch();
-        $stmt->close();
-
-        // Verifikasi password lama
-        if (password_verify($old_password, $hashed_password)) {
-            $new_hashed = password_hash($new_password, PASSWORD_DEFAULT);
-            $update = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-            $update->bind_param("si", $new_hashed, $user_id);
-
-            if ($update->execute()) {
-                $success = "Password berhasil diperbarui.";
-            } else {
-                $error = "Gagal memperbarui password.";
-            }
-
-            $update->close();
-        } else {
-            $error = "Password lama tidak sesuai.";
-        }
-    }
-}
+include '../backend/auth/auth_check.php';
+include '../backend/user/change_password_process.php';
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Ubah Password - ConnectCircle</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Ubah Password</h2>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4>Ubah Password</h4>
+        </div>
+        <div class="card-body">
+            <?php if ($success): ?>
+                <div class="alert alert-success"><?= $success ?></div>
+            <?php elseif ($error): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
+            <?php endif; ?>
 
-    <?php if ($success): ?>
-        <p style="color: green"><?= $success ?></p>
-    <?php elseif ($error): ?>
-        <p style="color: red"><?= $error ?></p>
-    <?php endif; ?>
+            <form method="POST" action="">
+                <div class="mb-3">
+                    <label class="form-label">Password Lama</label>
+                    <input type="password" name="old_password" class="form-control" required>
+                </div>
 
-    <form method="POST" action="">
-        <label>Password Lama:</label><br>
-        <input type="password" name="old_password" required><br><br>
+                <div class="mb-3">
+                    <label class="form-label">Password Baru</label>
+                    <input type="password" name="new_password" class="form-control" required>
+                </div>
 
-        <label>Password Baru:</label><br>
-        <input type="password" name="new_password" required><br><br>
+                <div class="mb-3">
+                    <label class="form-label">Konfirmasi Password Baru</label>
+                    <input type="password" name="confirm_password" class="form-control" required>
+                </div>
 
-        <label>Konfirmasi Password Baru:</label><br>
-        <input type="password" name="confirm_password" required><br><br>
-
-        <button type="submit">Simpan Password Baru</button>
-    </form>
-
-    <br>
-    <a href="profile.php">Kembali ke Profil</a> |
-    <a href="dashboard.php">Dashboard</a>
+                <button type="submit" class="btn btn-primary">Simpan Password Baru</button>
+                <a href="profile.php" class="btn btn-secondary">Kembali</a>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

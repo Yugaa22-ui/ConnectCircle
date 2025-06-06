@@ -1,5 +1,5 @@
 <?php
-include '../auth/auth_check.php';
+include '../backend/auth/auth_check.php';
 include '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];
@@ -41,7 +41,7 @@ $result = $stmt->get_result();
     <?php endif; ?>
 
     <br>
-    <a href="../user/dashboard.php">Kembali ke Dashboard</a>
+    <a href="../user/dashboard_user.php">Kembali ke Dashboard</a>
 </body>
 </html>
 

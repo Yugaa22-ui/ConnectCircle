@@ -1,5 +1,5 @@
 <?php
-include '../auth/auth_check.php';
+include '../backend/auth/auth_check.php';
 include '../includes/db.php';
 
 $search_term = '';
@@ -61,6 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['minat'])) {
     <?php endif; ?>
 
     <br>
-    <a href="../user/dashboard.php">Kembali ke Dashboard</a>
+    <a href="../user/dashboard_user.php">Kembali ke Dashboard</a>
 </body>
 </html>

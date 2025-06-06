@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($role === 'admin' || $role === 'moderator') {
                 header("Location: ../../admin/dashboard_admin.php");
             } else {
-                header("Location: ../../user/dashboard.php");
+                header("Location: ../../user/dashboard_user.php");
             }
             exit;
         } else {

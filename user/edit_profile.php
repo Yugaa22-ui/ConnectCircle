@@ -1,79 +1,66 @@
 <?php
-include '../auth/auth_check.php';
-include '../includes/db.php';
-
-$user_id = $_SESSION['user_id'];
-$success = '';
-$error = '';
-
-// Ambil data user sekarang
-$query = $conn->prepare("SELECT username, city, profession, bio FROM users WHERE id = ?");
-$query->bind_param("i", $user_id);
-$query->execute();
-$query->bind_result($username, $city, $profession, $bio);
-$query->fetch();
-$query->close();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $new_username   = trim($_POST['username']);
-    $new_city       = trim($_POST['city']);
-    $new_profession = trim($_POST['profession']);
-    $new_bio        = trim($_POST['bio']);
-
-    if (empty($new_username)) {
-        $error = "Username tidak boleh kosong.";
-    } else {
-        $stmt = $conn->prepare("UPDATE users SET username = ?, city = ?, profession = ?, bio = ? WHERE id = ?");
-        $stmt->bind_param("ssssi", $new_username, $new_city, $new_profession, $new_bio, $user_id);
-
-        if ($stmt->execute()) {
-            $success = "Profil berhasil diperbarui.";
-            $username = $new_username;
-            $city = $new_city;
-            $profession = $new_profession;
-            $bio = $new_bio;
-        } else {
-            $error = "Gagal memperbarui profil.";
-        }
-
-        $stmt->close();
-    }
-}
+include '../backend/auth/auth_check.php';
+include '../backend/user/edit_profile_process.php';
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Edit Profil - ConnectCircle</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Edit Profil Saya</h2>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3>Edit Profil</h3>
+        </div>
+        <div class="card-body">
 
-    <?php if ($success): ?>
-        <p style="color: green"><?= $success ?></p>
-    <?php elseif ($error): ?>
-        <p style="color: red"><?= $error ?></p>
-    <?php endif; ?>
+            <?php if ($success): ?>
+                <div class="alert alert-success"><?= $success ?></div>
+            <?php elseif ($error): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
+            <?php endif; ?>
 
-    <form method="POST" action="">
-        <label>Username:</label><br>
-        <input type="text" name="username" value="<?= htmlspecialchars($username) ?>" required><br><br>
+            <form method="POST" action="" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Username *</label>
+                    <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($username) ?>" required>
+                </div>
 
-        <label>Kota:</label><br>
-        <input type="text" name="city" value="<?= htmlspecialchars($city) ?>"><br><br>
+                <div class="mb-3">
+                    <label class="form-label">Kota</label>
+                    <input type="text" name="city" class="form-control" value="<?= htmlspecialchars($city) ?>">
+                </div>
 
-        <label>Profesi:</label><br>
-        <input type="text" name="profession" value="<?= htmlspecialchars($profession) ?>"><br><br>
+                <div class="mb-3">
+                    <label class="form-label">Profesi</label>
+                    <input type="text" name="profession" class="form-control" value="<?= htmlspecialchars($profession) ?>">
+                </div>
 
-        <label>Bio:</label><br>
-        <textarea name="bio" rows="4" cols="40"><?= htmlspecialchars($bio) ?></textarea><br><br>
+                <div class="mb-3">
+                    <label class="form-label">Bio</label>
+                    <textarea name="bio" class="form-control" rows="3"><?= htmlspecialchars($bio) ?></textarea>
+                </div>
 
-        <button type="submit">Simpan Perubahan</button>
-    </form>
+                <div class="mb-3">
+                    <label class="form-label">Foto Profil (Opsional)</label><br>
+                    <?php if ($profile_picture): ?>
+                        <img src="../uploads/<?= htmlspecialchars($profile_picture) ?>" class="rounded mb-2" width="100">
+                    <?php endif; ?>
+                    <input type="file" name="profile_picture" class="form-control">
+                </div>
 
-    <br>
-    <a href="profile.php">Kembali ke Profil</a> | 
-    <a href="dashboard.php">Dashboard</a>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                <a href="profile.php" class="btn btn-secondary">Batal</a>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

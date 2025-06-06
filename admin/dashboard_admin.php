@@ -24,8 +24,7 @@ $username = $_SESSION['username'];
         <li><a href="manage_interests.php">Kelola Minat</a></li>
         <li><a href="manage_users.php">Kelola Pengguna</a></li>
         <li><a href="manage_roles.php">Kelola Role Pengguna</a></li>
-        <li><a href="manage_badges.php">Kelola Badge</a></li>
-        <li><a href="../auth/logout.php">Logout</a></li>
+        <li><a href="../backend/auth/logout.php">Logout</a></li>
     </ul>
 </body>
 </html>

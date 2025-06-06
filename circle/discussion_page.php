@@ -1,5 +1,5 @@
 <?php
-include '../auth/auth_check.php';
+include '../backend/auth/auth_check.php';
 include '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];

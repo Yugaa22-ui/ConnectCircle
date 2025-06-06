@@ -1,84 +1,62 @@
-<?php
-include '../auth/auth_check.php';
-include '../includes/db.php';
-include '../badges/check_and_assign_badges.php';
-assign_badges($conn, $_SESSION['user_id']);
-
-$user_id = $_SESSION['user_id'];
-
-$query = $conn->prepare("SELECT username, email, city, profession, bio FROM users WHERE id = ?");
-$query->bind_param("i", $user_id);
-$query->execute();
-$query->bind_result($username, $email, $city, $profession, $bio);
-$query->fetch();
-$query->close();
-?>
-
+<?php include '../backend/user/profile_data.php'; ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Profil Saya - ConnectCircle</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Profil Saya</h2>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Profil Saya</h3>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <?php if ($profile_picture): ?>
+                    <img src="../uploads/<?= htmlspecialchars($profile_picture) ?>" class="rounded-circle" width="120" height="120" alt="Foto Profil">
+                <?php else: ?>
+                    <img src="../assets/img/default-user.png" class="rounded-circle" width="120" height="120" alt="Foto Default">
+                <?php endif; ?>
+                <!-- <form method="POST" action="../backend/user/upload_photo.php" enctype="multipart/form-data" class="mt-3">
+                    <input type="file" name="profile_pic" accept="image/*" required>
+                    <button type="submit" class="btn btn-sm btn-outline-primary mt-2">Upload Foto</button>
+                </form> -->
+            </div>
 
-    <table>
-        <tr>
-            <td><strong>Username:</strong></td>
-            <td><?= htmlspecialchars($username) ?></td>
-        </tr>
-        <tr>
-            <td><strong>Email:</strong></td>
-            <td><?= htmlspecialchars($email) ?></td>
-        </tr>
-        <tr>
-            <td><strong>Kota:</strong></td>
-            <td><?= htmlspecialchars($city) ?></td>
-        </tr>
-        <tr>
-            <td><strong>Profesi:</strong></td>
-            <td><?= htmlspecialchars($profession) ?></td>
-        </tr>
-        <tr>
-            <td><strong>Bio:</strong></td>
-            <td><?= nl2br(htmlspecialchars($bio)) ?></td>
-        </tr>
-    </table>
-    <h3>Badge yang Dimiliki</h3>
+            <table class="table">
+                <tr><th>Username</th><td><?= htmlspecialchars($username) ?></td></tr>
+                <tr><th>Email</th><td><?= htmlspecialchars($email) ?></td></tr>
+                <tr><th>Kota</th><td><?= htmlspecialchars($city) ?></td></tr>
+                <tr><th>Profesi</th><td><?= htmlspecialchars($profession) ?></td></tr>
+                <tr><th>Bio</th><td><?= nl2br(htmlspecialchars($bio)) ?></td></tr>
+            </table>
 
-    <?php
-    $stmt = $conn->prepare("
-        SELECT b.name, b.description, b.icon
-        FROM user_badges ub
-        JOIN badges b ON ub.badge_id = b.id
-        WHERE ub.user_id = ?
-    ");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0):
-    ?>
-        <ul>
-            <?php while ($badge = $result->fetch_assoc()): ?>
-                <li>
-                    <?= $badge['icon'] ? $badge['icon'] . ' ' : '' ?>
-                    <strong><?= htmlspecialchars($badge['name']) ?></strong><br>
-                    <small><?= htmlspecialchars($badge['description']) ?></small>
-                </li>
-            <?php endwhile; ?>
-        </ul>
-    <?php else: ?>
-        <p>Belum ada badge. Yuk mulai aktif di circle!</p>
-    <?php endif;
-
-    $stmt->close();
-    ?>
-
-    <br>
-    <a href="edit_profile.php">Edit Profil</a> | 
-    <a href="dashboard.php">Kembali ke Dashboard</a>
-    <a href="change_password.php">Ubah Password</a>
+            <h5 class="mt-4">🎖️ Badge yang Dimiliki</h5>
+            <?php if ($badges_result->num_rows > 0): ?>
+                <ul class="list-group">
+                    <?php while ($badge = $badges_result->fetch_assoc()): ?>
+                        <li class="list-group-item">
+                            <?= $badge['icon'] ? $badge['icon'] . ' ' : '' ?>
+                            <strong><?= htmlspecialchars($badge['name']) ?></strong>
+                            <br><small><?= htmlspecialchars($badge['description']) ?></small>
+                        </li>
+                    <?php endwhile; ?>
+                </ul>
+            <?php else: ?>
+                <p class="text-muted">Belum ada badge.</p>
+            <?php endif; ?>
+        </div>
+        <div class="card-footer text-end">
+            <a href="edit_profile.php" class="btn btn-secondary">Edit Profil</a>
+            <a href="change_password.php" class="btn btn-warning">Ubah Password</a>
+            <a href="dashboard_user.php" class="btn btn-outline-dark">Kembali</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>
