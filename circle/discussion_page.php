@@ -11,6 +11,19 @@
 </head>
 <body class="bg-light">
 
+<?php if (isset($_GET['msg'])): ?>
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+  <div id="snackbar" class="toast show align-items-center text-white bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        <?= htmlspecialchars($_GET['msg']) ?>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Diskusi: <?= htmlspecialchars($circle_name) ?></h4>
@@ -19,7 +32,7 @@
                 <a href="manage_members.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Anggota</a>
             <?php endif; ?>
             <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">ℹ️ Info Circle</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="confirmLeave(<?= $circle_id ?>)">Keluar Circle</button>
+            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmLeaveModal">Keluar Circle</button>
             <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
         </div>
     </div>
@@ -93,14 +106,26 @@
   </div>
 </div>
 
+<!-- Modal Konfirmasi Keluar -->
+<div class="modal fade" id="confirmLeaveModal" tabindex="-1" aria-labelledby="confirmLeaveLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="confirmLeaveLabel">Konfirmasi Keluar Circle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        Yakin ingin keluar dari circle ini?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+        <a href="discussion_page.php?circle_id=<?= $circle_id ?>&leave=yes&msg=Berhasil keluar dari circle." class="btn btn-danger">Ya, Keluar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-function confirmLeave(circleId) {
-    if (confirm("Yakin ingin keluar dari circle ini?")) {
-        window.location.href = "discussion_page.php?circle_id=" + circleId + "&leave=yes";
-    }
-}
-</script>
 </body>
 </html>
