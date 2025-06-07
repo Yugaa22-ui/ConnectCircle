@@ -29,9 +29,9 @@
         <h4>Diskusi: <?= htmlspecialchars($circle_name) ?></h4>
         <div>
             <?php if ($is_creator): ?>
-                <a href="manage_members.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Anggota</a>
+                <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
             <?php endif; ?>
-            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">ℹ️ Info Circle</button>
+            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">Lihat Info Circle</button>
             <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmLeaveModal">Keluar Circle</button>
             <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
         </div>
