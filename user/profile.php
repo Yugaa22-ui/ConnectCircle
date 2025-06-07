@@ -16,14 +16,15 @@
             <h3 class="mb-0">Profil Saya</h3>
         </div>
         <div class="card-body">
-            <div class="text-center mb-4">
-                <?php if ($profile_picture): ?>
-                    <img src="../assets/uploads/img/<?= htmlspecialchars($profile_picture) ?>" class="rounded mb-2" width="100">
-                    <?php endif; ?>
-                <?php if (!$profile_picture): ?>
-                    <img src="../assets/img/default-user.png" class="rounded-circle" width="120" height="120" alt="Foto Default">
-                <?php endif; ?>
-            </div>
+        <div class="text-center mb-4">
+            <img
+                src="<?= $profile_picture ? '../assets/uploads/img/' . htmlspecialchars($profile_picture) : '../assets/img/default.png' ?>"
+                class="rounded-circle"
+                width="120"
+                height="120"
+                alt="Foto Profil">
+        </div>
+
 
             <table class="table">
                 <tr><th>Username</th><td><?= htmlspecialchars($username) ?></td></tr>

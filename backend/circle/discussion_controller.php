@@ -82,6 +82,37 @@ $posts = $conn->prepare("
     WHERE p.circle_id = ?
     ORDER BY p.created_at ASC
 ");
+
+// Ambil info circle lengkap (untuk modal informasi)
+function get_circle_detail($conn, $circle_id) {
+    $circle_stmt = $conn->prepare("
+        SELECT c.name, c.description, u.username AS creator_name, u.profile_picture AS creator_photo
+        FROM circles c
+        JOIN users u ON c.creator_id = u.id
+        WHERE c.id = ?
+    ");
+    $circle_stmt->bind_param("i", $circle_id);
+    $circle_stmt->execute();
+    $circle_info = $circle_stmt->get_result()->fetch_assoc();
+    $circle_stmt->close();
+
+    $members_stmt = $conn->prepare("
+        SELECT u.username, u.profile_picture
+        FROM circle_members cm
+        JOIN users u ON cm.user_id = u.id
+        WHERE cm.circle_id = ?
+    ");
+    $members_stmt->bind_param("i", $circle_id);
+    $members_stmt->execute();
+    $circle_info['members'] = $members_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $members_stmt->close();
+
+    return $circle_info;
+}
+
+$circle_detail = get_circle_detail($conn, $circle_id);
+
+
 $posts->bind_param("i", $circle_id);
 $posts->execute();
 $results = $posts->get_result();
