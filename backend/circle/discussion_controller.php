@@ -1,16 +1,19 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
+date_default_timezone_set('Asia/Makassar');
 include_once '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];
 $circle_id = isset($_GET['circle_id']) ? intval($_GET['circle_id']) : 0;
+$is_muted = false;
+$mute_message = '';
 
 if ($circle_id === 0) {
     header("Location: ../../circle/view_circle.php");
     exit;
 }
 
-// Cek apakah user tergabung dalam circle
+// Cek apakah user tergabung
 $cek = $conn->prepare("SELECT id FROM circle_members WHERE user_id = ? AND circle_id = ?");
 $cek->bind_param("ii", $user_id, $circle_id);
 $cek->execute();
@@ -21,7 +24,28 @@ if ($cek->num_rows === 0) {
 }
 $cek->close();
 
-// Ambil info circle (nama & creator)
+// Cek status mute
+$mute = $conn->prepare("SELECT until_time FROM circle_mutes WHERE user_id = ? AND circle_id = ?");
+$mute->bind_param("ii", $user_id, $circle_id);
+$mute->execute();
+$mute->store_result();
+
+$mute->bind_result($until_time);
+if ($mute->num_rows > 0 && $mute->fetch()) {
+    if (strtotime($until_time) > time()) {
+        $is_muted = true;
+        $mute_message = "Kamu sedang dimute hingga " . date("d M Y H:i", strtotime($until_time)) . ". Kamu tidak dapat mengirim pesan.";
+    } else {
+        // mute sudah expired — hapus dari DB
+        $clear = $conn->prepare("DELETE FROM circle_mutes WHERE user_id = ? AND circle_id = ?");
+        $clear->bind_param("ii", $user_id, $circle_id);
+        $clear->execute();
+        $clear->close();
+    }
+}
+$mute->close();
+
+// Ambil info circle
 $circle_info = $conn->prepare("SELECT name, creator_id FROM circles WHERE id = ?");
 $circle_info->bind_param("i", $circle_id);
 $circle_info->execute();
@@ -44,8 +68,8 @@ if (isset($_GET['leave']) && $_GET['leave'] === 'yes') {
     $out->close();
 }
 
-// Kirim pesan (text atau gambar)
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+// Kirim pesan (jika tidak sedang dimute)
+if ($_SERVER["REQUEST_METHOD"] === "POST" && !$is_muted) {
     $message = trim($_POST['message']);
     $image = '';
 
@@ -58,8 +82,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $filename = 'img_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
             $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/img/';
             if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
             $target = $upload_dir . $filename;
+
             if (move_uploaded_file($img['tmp_name'], $target)) {
                 $image = $filename;
             }
@@ -86,7 +110,7 @@ $posts->bind_param("i", $circle_id);
 $posts->execute();
 $results = $posts->get_result();
 
-// Ambil detail circle (untuk modal informasi)
+// Ambil detail circle (untuk modal info)
 function get_circle_detail($conn, $circle_id) {
     $circle_stmt = $conn->prepare("
         SELECT c.name, c.description, u.username AS creator_name, u.profile_picture AS creator_photo
@@ -99,10 +123,16 @@ function get_circle_detail($conn, $circle_id) {
     $circle_info = $circle_stmt->get_result()->fetch_assoc();
     $circle_stmt->close();
 
+    // Ambil anggota + status mute
     $members_stmt = $conn->prepare("
-        SELECT u.username, u.profile_picture
+        SELECT u.username, u.profile_picture,
+            CASE 
+                WHEN m.until_time > NOW() THEN 1
+                ELSE 0
+            END AS is_muted
         FROM circle_members cm
         JOIN users u ON cm.user_id = u.id
+        LEFT JOIN circle_mutes m ON m.user_id = u.id AND m.circle_id = cm.circle_id
         WHERE cm.circle_id = ?
     ");
     $members_stmt->bind_param("i", $circle_id);

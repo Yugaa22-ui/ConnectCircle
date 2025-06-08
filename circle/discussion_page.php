@@ -28,9 +28,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Diskusi: <?= htmlspecialchars($circle_name) ?></h4>
         <div>
-            <?php if ($is_creator): ?>
-                <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
-            <?php endif; ?>
+        <?php if ($is_creator || (isset($_SESSION['role_circle']) && $_SESSION['role_circle'] === 'moderator')): ?>
+            <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
+        <?php endif; ?>
             <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">Lihat Info Circle</button>
             <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmLeaveModal">Keluar Circle</button>
             <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
@@ -59,16 +59,22 @@
         </div>
     </div>
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <textarea name="message" class="form-control" rows="3" placeholder="Tulis pesan..."></textarea>
-        </div>
-        <div class="mb-3">
-            <label>Gambar (opsional):</label>
-            <input type="file" name="image" class="form-control" accept="image/*">
-        </div>
-        <button type="submit" class="btn btn-success">Kirim</button>
-    </form>
+    <?php if ($is_muted): ?>
+    <div class="alert alert-warning">
+        <?= $mute_message ?>
+    </div>
+    <?php else: ?>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <textarea name="message" class="form-control" rows="3" placeholder="Tulis pesan..."></textarea>
+            </div>
+            <div class="mb-3">
+                <label>Gambar (opsional):</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-success">Kirim</button>
+        </form>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Info Circle -->
@@ -95,6 +101,9 @@
                 <li class="col-md-4 d-flex align-items-center mb-2">
                     <img src="<?= $member['profile_picture'] ? '../assets/uploads/img/' . $member['profile_picture'] : '../assets/img/default.png' ?>" class="rounded-circle me-2" width="40" height="40">
                     <?= htmlspecialchars($member['username']) ?>
+                    <?php if (!empty($member['is_muted'])): ?>
+                        <span class="text-danger ms-1" title="Sedang dimute">🔇</span>
+                    <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
