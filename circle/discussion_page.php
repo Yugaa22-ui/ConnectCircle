@@ -128,7 +128,11 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-        <a href="discussion_page.php?circle_id=<?= $circle_id ?>&leave=yes&msg=Berhasil keluar dari circle." class="btn btn-danger">Ya, Keluar</a>
+        <form method="POST" action="">
+            <input type="hidden" name="leave_confirm" value="yes">
+            <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
+            <button type="submit" class="btn btn-danger">Ya, Keluar</button>
+        </form>
       </div>
     </div>
   </div>

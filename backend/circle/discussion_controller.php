@@ -4,7 +4,8 @@ date_default_timezone_set('Asia/Makassar');
 include_once '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];
-$circle_id = isset($_GET['circle_id']) ? intval($_GET['circle_id']) : 0;
+$circle_id = isset($_POST['circle_id']) ? intval($_POST['circle_id']) :
+             (isset($_GET['circle_id']) ? intval($_GET['circle_id']) : 0);
 $is_muted = false;
 $mute_message = '';
 
@@ -55,8 +56,8 @@ $circle_info->close();
 
 $is_creator = ($creator_id == $user_id);
 
-// Keluar dari circle
-if (isset($_GET['leave']) && $_GET['leave'] === 'yes') {
+// Keluar dari circle via POST (proteksi lebih aman)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_confirm']) && $_POST['leave_confirm'] === 'yes') {
     $out = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
     $out->bind_param("ii", $user_id, $circle_id);
     if ($out->execute()) {
