@@ -31,7 +31,7 @@
     </div>
     <?php endif; ?>
 
-    <!-- Form Edit -->
+    <!-- Form Edit Circle -->
     <form method="POST" class="mb-4">
         <div class="mb-3">
             <label class="form-label">Nama Circle</label>
@@ -48,7 +48,7 @@
         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
     </form>
 
-    <!-- Anggota -->
+    <!-- Daftar Anggota -->
     <h5 class="mb-3">Anggota Circle</h5>
     <ul class="list-group">
         <?php foreach ($members as $row): ?>
@@ -58,33 +58,100 @@
                 <?= htmlspecialchars($row['username']) ?>
                 <small class="ms-2 text-muted">(<?= $row['role'] ?>)</small>
             </div>
+
             <?php if ($row['id'] != $user_id): ?>
-                <div class="d-flex flex-wrap gap-1 align-items-center">
-            <!-- Kick -->
-            <form method="POST">
-                <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-                <button name="action" value="kick" class="btn btn-sm btn-outline-danger">Keluarkan</button>
-            </form>
+            <div class="d-flex flex-wrap gap-1 align-items-center">
+                <!-- Keluarkan -->
+                <form method="POST">
+                    <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                    <button name="action" value="kick" class="btn btn-sm btn-outline-danger">Keluarkan</button>
+                </form>
 
-            <!-- Mute -->
-            <form method="POST" class="d-flex gap-1 align-items-center">
-                <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-                <select name="mute_duration" class="form-select form-select-sm" style="width: auto;" required>
-                    <option value="1">1 jam</option>
-                    <option value="6">6 jam</option>
-                    <option value="24">1 hari</option>
-                </select>
-                <button name="action" value="mute" class="btn btn-sm btn-outline-warning">Mute</button>
-            </form>
+                <!-- Mute -->
+                <form method="POST" class="d-flex gap-1 align-items-center">
+                    <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                    <select name="mute_duration" class="form-select form-select-sm" style="width: auto;" required>
+                        <option value="1">1 jam</option>
+                        <option value="6">6 jam</option>
+                        <option value="24">1 hari</option>
+                    </select>
+                    <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#confirmMuteModal<?= $row['id'] ?>">Mute</button>
+                </form>
 
-            <!-- Promote -->
-            <form method="POST" onsubmit="return confirm('Yakin ingin menjadikan anggota ini sebagai moderator?')">
-                <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-                <button name="action" value="promote" class="btn btn-sm btn-outline-success">Promosikan</button>
-            </form>
-        </div>
+                <!-- Promosi / Demote -->
+                <form method="POST">
+                    <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                    <?php if ($row['role'] === 'moderator'): ?>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#confirmDemoteModal<?= $row['id'] ?>">Cabut Moderator</button>
+                    <?php else: ?>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#confirmPromoteModal<?= $row['id'] ?>">Promosikan</button>
+                    <?php endif; ?>
+                </form>
+            </div>
             <?php endif; ?>
         </li>
+
+        <!-- Modal Promosi -->
+        <div class="modal fade" id="confirmPromoteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Promosi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin menjadikan <?= htmlspecialchars($row['username']) ?> sebagai moderator?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="promote" class="btn btn-success">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Demote -->
+        <div class="modal fade" id="confirmDemoteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Cabut Moderator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin mencabut moderator dari <?= htmlspecialchars($row['username']) ?>?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="demote" class="btn btn-danger">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Mute -->
+        <div class="modal fade" id="confirmMuteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <input type="hidden" name="mute_duration" value="1">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Mute Anggota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin mute <?= htmlspecialchars($row['username']) ?> selama 1 jam?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="mute" class="btn btn-warning">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
         <?php endforeach; ?>
     </ul>
 

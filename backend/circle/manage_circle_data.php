@@ -61,9 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $del->close();
             $msg = "🚫 Anggota dikeluarkan.";
 
-        date_default_timezone_set('Asia/Makassar'); // atau 'Asia/Singapore'
-
-
         } elseif ($action === 'mute' && isset($_POST['mute_duration'])) {
             $duration = intval($_POST['mute_duration']);
             $until = date('Y-m-d H:i:s', strtotime("+$duration hour"));
@@ -80,6 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $promote->execute();
             $promote->close();
             $msg = "⭐ Anggota dipromosikan sebagai moderator.";
+
+        } elseif ($action === 'demote') {
+            $demote = $conn->prepare("UPDATE circle_members SET role = 'member' WHERE user_id = ? AND circle_id = ?");
+            $demote->bind_param("ii", $member_id, $circle_id);
+            $demote->execute();
+            $demote->close();
+            $msg = "🔽 Jabatan moderator telah dicabut.";
         }
     }
 }
