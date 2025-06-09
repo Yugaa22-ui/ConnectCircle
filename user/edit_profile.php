@@ -9,8 +9,6 @@ include '../backend/user/edit_profile_process.php';
     <meta charset="UTF-8">
     <title>Edit Profil - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -31,6 +29,11 @@ include '../backend/user/edit_profile_process.php';
                 <div class="mb-3">
                     <label class="form-label">Username *</label>
                     <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($username) ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email *</label>
+                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>" required>
                 </div>
 
                 <div class="mb-3">
