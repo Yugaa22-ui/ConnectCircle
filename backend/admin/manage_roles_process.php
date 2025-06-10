@@ -4,8 +4,8 @@ include_once '../backend/auth/auth_check.php';
 include_once '../includes/db.php';
 
 // Batasi akses hanya untuk admin & moderator
-if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator') {
-    echo "<script>alert('Akses hanya untuk admin dan moderator.'); window.location='../../admin/dashboard_admin.php';</script>";
+if ($_SESSION['role'] !== 'admin') {
+    echo "<script>alert('Akses hanya untuk admin.'); window.location='../admin/dashboard_admin.php';</script>";
     exit;
 }
 
