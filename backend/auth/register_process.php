@@ -5,6 +5,18 @@ include '../../includes/db.php';
 $errors = [];
 $old = [];
 
+// Fungsi validasi email sesuai standar + MX record
+function is_valid_email($email) {
+    // Validasi struktur
+    if (!preg_match('/^(?!.*@.*@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email)) {
+        return false;
+    }
+
+    // Validasi domain
+    $domain = substr(strrchr($email, "@"), 1);
+    return checkdnsrr($domain, "MX");
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username   = trim($_POST['username'] ?? '');
     $email      = trim($_POST['email'] ?? '');
@@ -23,23 +35,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($password)) $errors['password'] = "Password harus diisi.";
     if (empty($confirm)) $errors['confirm_password'] = "Konfirmasi password harus diisi.";
 
-    // Format email
-    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = "Format email tidak valid.";
+    // Validasi email
+    if (!empty($email) && !is_valid_email($email)) {
+        $errors['email'] = "Format email tidak valid atau domain tidak aktif.";
     }
 
-    // Format password: huruf besar, kecil, angka, min 8 karakter
+    // Validasi password
     if (!empty($password) && !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
         $errors['password'] = "Password minimal 8 karakter, harus mengandung huruf besar, kecil, dan angka.";
     }
 
-    // Cek kesamaan password
+    // Validasi konfirmasi password
     if ($password !== $confirm) {
         $errors['confirm_password'] = "Konfirmasi password tidak cocok.";
     }
 
-    // Cek duplikat email
-    if (!empty($email)) {
+    // Cek email unik
+    if (!isset($errors['email'])) {
         $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $check->bind_param("s", $email);
         $check->execute();
@@ -58,11 +70,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    // Simpan user
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert user
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password, city, profession, bio, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $username, $email, $hashed_password, $city, $profession, $bio, $default_avatar);
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password, city, profession, bio) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssss", $username, $email, $hashed_password, $city, $profession, $bio);
 
     if ($stmt->execute()) {
         $user_id = $stmt->insert_id;

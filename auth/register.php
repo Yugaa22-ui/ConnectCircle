@@ -15,14 +15,13 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <title>Daftar - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Bootstrap + Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         .form-error { color: red; font-size: 0.9em; }
-        .toggle-password {
-            background: none;
-            border: none;
-            padding: 0 10px;
-        }
     </style>
 </head>
 <body class="bg-light">
@@ -57,11 +56,11 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
                             <label class="form-label">Password *</label>
                             <div class="input-group">
                                 <input type="password" id="password" name="password" class="form-control">
-                                <button class="toggle-password" type="button" onclick="togglePassword('password')">
-                                    👁
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                                    <i class="bi bi-eye-slash" id="icon-password"></i>
                                 </button>
                             </div>
-                            <div class="form-text">Minimal 8 karakter, huruf besar, kecil, dan angka.</div>
+                            <div class="form-text">Minimal 8 karakter, harus mengandung huruf besar, huruf kecil, dan angka.</div>
                             <?php if (isset($errors['password'])): ?><div class="form-error"><?= $errors['password'] ?></div><?php endif; ?>
                         </div>
 
@@ -69,8 +68,8 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
                             <label class="form-label">Konfirmasi Password *</label>
                             <div class="input-group">
                                 <input type="password" id="confirm" name="confirm_password" class="form-control">
-                                <button class="toggle-password" type="button" onclick="togglePassword('confirm')">
-                                    👁
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm">
+                                    <i class="bi bi-eye-slash" id="icon-confirm"></i>
                                 </button>
                             </div>
                             <?php if (isset($errors['confirm_password'])): ?><div class="form-error"><?= $errors['confirm_password'] ?></div><?php endif; ?>
@@ -115,11 +114,24 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
     </div>
 </div>
 
+<!-- JS toggle icon password -->
 <script>
-function togglePassword(id) {
-    const input = document.getElementById(id);
-    input.type = input.type === 'password' ? 'text' : 'password';
-}
+document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const targetId = this.dataset.target;
+        const input = document.getElementById(targetId);
+        const icon = document.getElementById('icon-' + targetId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    });
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
