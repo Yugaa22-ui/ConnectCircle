@@ -6,8 +6,17 @@
     <title>Login - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap 5 CDN -->
+    <!-- Bootstrap 5 + Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .toggle-password {
+            background: none;
+            border: none;
+            padding: 0 10px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -35,7 +44,12 @@
 
                         <div class="mb-3">
                             <label class="form-label">Password *</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                                    <i class="bi bi-eye-slash" id="icon-password"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -52,7 +66,25 @@
     </div>
 </div>
 
-<!-- Bootstrap JS Bundle -->
+<!-- JS toggle password -->
+<script>
+document.querySelector('.toggle-password').addEventListener('click', function () {
+    const targetId = this.dataset.target;
+    const input = document.getElementById(targetId);
+    const icon = document.getElementById('icon-' + targetId);
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    }
+});
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
