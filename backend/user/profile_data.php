@@ -24,3 +24,21 @@ $badges_stmt = $conn->prepare("
 $badges_stmt->bind_param("i", $user_id);
 $badges_stmt->execute();
 $badges_result = $badges_stmt->get_result();
+
+// Ambil minat user
+$interests_stmt = $conn->prepare("
+    SELECT i.name 
+    FROM user_interests ui
+    JOIN interests i ON ui.interest_id = i.id
+    WHERE ui.user_id = ?
+");
+$interests_stmt->bind_param("i", $user_id);
+$interests_stmt->execute();
+$interests_result = $interests_stmt->get_result();
+
+$interests_list = [];
+while ($row = $interests_result->fetch_assoc()) {
+    $interests_list[] = $row['name'];
+}
+$interests_stmt->close();
+?>

@@ -32,6 +32,18 @@
                 <tr><th>Kota</th><td><?= htmlspecialchars($city) ?></td></tr>
                 <tr><th>Profesi</th><td><?= htmlspecialchars($profession) ?></td></tr>
                 <tr><th>Bio</th><td><?= nl2br(htmlspecialchars($bio)) ?></td></tr>
+                <tr>
+                    <th>Minat</th>
+                    <td>
+                        <?php if (!empty($interests_list)): ?>
+                            <?php foreach ($interests_list as $interest): ?>
+                                <span class="badge bg-info text-dark me-1 mb-1"><?= htmlspecialchars($interest) ?></span>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <span class="text-muted">Belum memilih minat</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
             </table>
 
             <h5 class="mt-4">🎖️ Badge yang Dimiliki</h5>
