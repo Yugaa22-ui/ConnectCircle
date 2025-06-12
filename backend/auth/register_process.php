@@ -7,12 +7,12 @@ $old = [];
 
 // Fungsi validasi email sesuai standar + MX record
 function is_valid_email($email) {
-    // Validasi struktur
+    // Validasi struktur email
     if (!preg_match('/^(?!.*@.*@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email)) {
         return false;
     }
 
-    // Validasi domain
+    // Validasi MX record domain
     $domain = substr(strrchr($email, "@"), 1);
     return checkdnsrr($domain, "MX");
 }
@@ -29,29 +29,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $old = compact('username', 'email', 'city', 'profession', 'bio', 'interests');
 
-    // Validasi kosong
+    // === Validasi Kosong ===
     if (empty($username)) $errors['username'] = "Username harus diisi.";
-    if (empty($email)) $errors['email'] = "Email harus diisi.";
+    if (empty($email))    $errors['email'] = "Email harus diisi.";
     if (empty($password)) $errors['password'] = "Password harus diisi.";
-    if (empty($confirm)) $errors['confirm_password'] = "Konfirmasi password harus diisi.";
+    if (empty($confirm))  $errors['confirm_password'] = "Konfirmasi password harus diisi.";
 
-    // Validasi email
+    // === Validasi Email ===
     if (!empty($email) && !is_valid_email($email)) {
         $errors['email'] = "Format email tidak valid atau domain tidak aktif.";
     }
 
-    // Validasi password
+    // === Validasi Password Format ===
     if (!empty($password) && !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
         $errors['password'] = "Password minimal 8 karakter, harus mengandung huruf besar, kecil, dan angka.";
     }
 
-    // Validasi konfirmasi password
+    // === Validasi Password Konfirmasi ===
     if ($password !== $confirm) {
         $errors['confirm_password'] = "Konfirmasi password tidak cocok.";
     }
 
-    // Cek email unik
-    if (!isset($errors['email'])) {
+    // === Validasi Minat (maks 3) ===
+    if (count($interests) > 3) {
+        $errors['interests'] = "Maksimal pilih 3 minat.";
+    }
+
+    // === Validasi Email Unik ===
+    if (!isset($errors['email']) && !empty($email)) {
         $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $check->bind_param("s", $email);
         $check->execute();
@@ -62,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $check->close();
     }
 
-    // Jika ada error
+    // === Jika Ada Error ===
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         $_SESSION['old'] = $old;
@@ -70,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Simpan user
+    // === Simpan User Baru ===
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $conn->prepare("INSERT INTO users (username, email, password, city, profession, bio) VALUES (?, ?, ?, ?, ?, ?)");
@@ -79,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         $user_id = $stmt->insert_id;
 
-        // Simpan minat
+        // === Simpan Minat ke user_interests ===
         if (!empty($interests)) {
             $insert = $conn->prepare("INSERT INTO user_interests (user_id, interest_id) VALUES (?, ?)");
             foreach ($interests as $iid) {

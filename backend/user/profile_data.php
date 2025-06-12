@@ -7,10 +7,10 @@ $user_id = $_SESSION['user_id'];
 assign_badges($conn, $user_id);
 
 // Ambil data user
-$stmt = $conn->prepare("SELECT username, email, city, profession, bio, profile_picture FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT username, city, profession, bio, profile_picture FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($username, $email, $city, $profession, $bio, $profile_picture);
+$stmt->bind_result($username, $city, $profession, $bio, $profile_picture);
 $stmt->fetch();
 $stmt->close();
 

@@ -28,7 +28,7 @@
 
             <table class="table">
                 <tr><th>Username</th><td><?= htmlspecialchars($username) ?></td></tr>
-                <tr><th>Email</th><td><?= htmlspecialchars($email) ?></td></tr>
+                <!-- <tr><th>Email</th><td><?= htmlspecialchars($email) ?></td></tr> -->
                 <tr><th>Kota</th><td><?= htmlspecialchars($city) ?></td></tr>
                 <tr><th>Profesi</th><td><?= htmlspecialchars($profession) ?></td></tr>
                 <tr><th>Bio</th><td><?= nl2br(htmlspecialchars($bio)) ?></td></tr>

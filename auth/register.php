@@ -15,11 +15,9 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <title>Daftar - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
     <!-- Bootstrap + Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
     <style>
         .form-error { color: red; font-size: 0.9em; }
     </style>
@@ -91,14 +89,19 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Minat</label>
-                            <select name="interests[]" class="form-select" multiple>
-                                <?php foreach ($interests as $int): ?>
-                                    <option value="<?= $int['id'] ?>" <?= in_array($int['id'], $old['interests'] ?? []) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($int['name']) ?>
-                                    </option>
+                            <label class="form-label">Minat (maksimal 3)</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <?php foreach ($interests as $index => $int): ?>
+                                    <?php
+                                        $selected = in_array($int['id'], $old['interests'] ?? []);
+                                        $checkboxId = 'interest_' . $index;
+                                    ?>
+                                    <input type="checkbox" class="btn-check" name="interests[]" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off"
+                                           <?= $selected ? 'checked' : '' ?>>
+                                    <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
                                 <?php endforeach; ?>
-                            </select>
+                            </div>
+                            <?php if (isset($errors['interests'])): ?><div class="form-error"><?= $errors['interests'] ?></div><?php endif; ?>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -108,13 +111,13 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
                     </form>
                 </div>
             </div>
-
             <p class="text-center text-muted mt-4">&copy; <?= date('Y') ?> ConnectCircle</p>
         </div>
     </div>
 </div>
 
-<!-- JS toggle icon password -->
+<!-- Bootstrap + Toggle Password -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.querySelectorAll('.toggle-password').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -132,8 +135,17 @@ document.querySelectorAll('.toggle-password').forEach(btn => {
         }
     });
 });
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+// Batasi pilihan minat maksimal 3
+document.querySelectorAll('input[name="interests[]"]').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function () {
+        const checked = document.querySelectorAll('input[name="interests[]"]:checked');
+        if (checked.length > 3) {
+            this.checked = false;
+            alert('Anda hanya dapat memilih maksimal 3 minat.');
+        }
+    });
+});
+</script>
 </body>
 </html>
