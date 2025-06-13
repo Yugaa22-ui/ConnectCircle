@@ -7,12 +7,7 @@ $old = [];
 
 // Fungsi validasi email sesuai standar + MX record
 function is_valid_email($email) {
-    // Validasi struktur email
-    if (!preg_match('/^(?!.*@.*@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email)) {
-        return false;
-    }
-
-    // Validasi MX record domain
+    if (!preg_match('/^(?!.*@.*@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email)) return false;
     $domain = substr(strrchr($email, "@"), 1);
     return checkdnsrr($domain, "MX");
 }
@@ -50,8 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors['confirm_password'] = "Konfirmasi password tidak cocok.";
     }
 
-    // === Validasi Minat (maks 3) ===
-    if (count($interests) > 3) {
+    // === Validasi Minat (min 1, maks 3) ===
+    if (count($interests) < 1) {
+        $errors['interests'] = "Pilih minimal 1 minat.";
+    } elseif (count($interests) > 3) {
         $errors['interests'] = "Maksimal pilih 3 minat.";
     }
 
