@@ -9,23 +9,21 @@ include '../backend/circle/view_circle_data.php';
     <meta charset="UTF-8">
     <title>Circle Saya - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container mt-5">
-
-    <!-- Notifikasi -->
     <?php if (isset($_GET['msg'])): ?>
-    <div class="alert alert-info"><?= htmlspecialchars($_GET['msg']) ?></div>
+        <div class="alert alert-info"><?= htmlspecialchars($_GET['msg']) ?></div>
     <?php endif; ?>
 
     <div class="card shadow">
         <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Circle yang Kamu Ikuti</h4>
             <form method="GET" class="d-flex" action="">
-                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Cari nama circle" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+                <input type="text" name="search" class="form-control form-control-sm me-2"
+                       placeholder="Cari nama circle" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                 <button class="btn btn-light btn-sm" type="submit">🔍 Cari</button>
             </form>
         </div>
@@ -73,12 +71,10 @@ include '../backend/circle/view_circle_data.php';
             <?php endif; ?>
 
         </div>
-
         <div class="card-footer text-end">
             <a href="../user/dashboard_user.php" class="btn btn-secondary">Kembali ke Dashboard</a>
         </div>
     </div>
-
 </div>
 </body>
 </html>

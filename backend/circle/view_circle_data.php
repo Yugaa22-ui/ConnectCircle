@@ -25,13 +25,13 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Ambil permintaan join yang belum disetujui
+// Ambil permintaan join yang masih pending
 $pending_requests = [];
 $req_stmt = $conn->prepare("
-    SELECT cr.circle_id, c.name, c.description
+    SELECT cr.id, cr.circle_id, c.name, c.description
     FROM circle_requests cr
     JOIN circles c ON cr.circle_id = c.id
-    WHERE cr.user_id = ?
+    WHERE cr.user_id = ? AND cr.status = 'pending'
 ");
 $req_stmt->bind_param("i", $user_id);
 $req_stmt->execute();
@@ -41,13 +41,13 @@ while ($row = $req_result->fetch_assoc()) {
 }
 $req_stmt->close();
 
-// Batalkan permintaan join jika ada POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_request'])) {
-    $cancel_circle_id = intval($_POST['cancel_request']);
-    $del = $conn->prepare("DELETE FROM circle_requests WHERE user_id = ? AND circle_id = ?");
-    $del->bind_param("ii", $user_id, $cancel_circle_id);
+// Logika pembatalan request join
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_request_id'])) {
+    $cancel_id = intval($_POST['cancel_request_id']);
+    $del = $conn->prepare("DELETE FROM circle_requests WHERE id = ? AND user_id = ?");
+    $del->bind_param("ii", $cancel_id, $user_id);
     $del->execute();
     $del->close();
-    header("Location: view_circle.php?msg=Permintaan dibatalkan");
+    header("Location: view_circle.php?msg=Permintaan gabung dibatalkan");
     exit;
 }
