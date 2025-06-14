@@ -31,28 +31,37 @@ if ($creator_id !== $user_id) {
     exit;
 }
 
-// === Update nama, deskripsi, rules circle ===
+// Ambil status is_private
+$get_visibility = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
+$get_visibility->bind_param("i", $circle_id);
+$get_visibility->execute();
+$get_visibility->bind_result($is_private);
+$get_visibility->fetch();
+$get_visibility->close();
+
+// === Update circle ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['circle_name'], $_POST['circle_description'], $_POST['rules'])) {
         $new_name  = trim($_POST['circle_name']);
         $new_desc  = trim($_POST['circle_description']);
         $new_rules = trim($_POST['rules']);
+        $is_private = isset($_POST['is_private']) ? 1 : 0;
 
-        $update = $conn->prepare("UPDATE circles SET name = ?, description = ?, rules = ? WHERE id = ?");
-        $update->bind_param("sssi", $new_name, $new_desc, $new_rules, $circle_id);
+        $update = $conn->prepare("UPDATE circles SET name = ?, description = ?, rules = ?, is_private = ? WHERE id = ?");
+        $update->bind_param("sssii", $new_name, $new_desc, $new_rules, $is_private, $circle_id);
         if ($update->execute()) {
-            $circle_name        = $new_name;
+            $circle_name = $new_name;
             $circle_description = $new_desc;
-            $rules              = $new_rules;
+            $rules = $new_rules;
             $msg = "✅ Circle berhasil diperbarui.";
         }
         $update->close();
     }
 
-    // === Aksi terhadap anggota ===
+    // Aksi terhadap anggota
     if (isset($_POST['action']) && isset($_POST['member_id'])) {
         $member_id = intval($_POST['member_id']);
-        $action    = $_POST['action'];
+        $action = $_POST['action'];
 
         if ($action === 'kick') {
             $del = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
@@ -88,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// === Ambil daftar anggota ===
+// Ambil daftar anggota
 $get_members = $conn->prepare("
     SELECT u.id, u.username, u.profile_picture, cm.role, cm.joined_at
     FROM circle_members cm
@@ -104,7 +113,7 @@ while ($row = $res->fetch_assoc()) {
 }
 $get_members->close();
 
-// === Anggota paling aktif ===
+// Anggota paling aktif
 $top_stmt = $conn->prepare("
     SELECT u.username FROM posts p
     JOIN users u ON u.id = p.user_id
@@ -119,7 +128,7 @@ $top_stmt->fetch();
 $top_active = $top_active_user;
 $top_stmt->close();
 
-// === Anggota terbaru ===
+// Anggota terbaru
 $new_stmt = $conn->prepare("
     SELECT u.username FROM circle_members cm
     JOIN users u ON cm.user_id = u.id
@@ -132,4 +141,3 @@ $new_stmt->bind_result($newest_user);
 $new_stmt->fetch();
 $newest = $newest_user;
 $new_stmt->close();
-?>
