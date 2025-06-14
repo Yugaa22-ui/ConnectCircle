@@ -37,6 +37,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
     } else {
+
+        if (isset($_POST['cropped_image']) && !empty($_POST['cropped_image'])) {
+            $data = $_POST['cropped_image'];
+            list(, $data) = explode(',', $data);
+            $data = base64_decode($data);
+        
+            $new_filename = 'user_' . $user_id . '_' . time() . '.png';
+            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/img/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        
+            file_put_contents($upload_dir . $new_filename, $data);
+        
+            if ($old_profile_picture && file_exists($upload_dir . $old_profile_picture)) {
+                unlink($upload_dir . $old_profile_picture);
+            }
+        
+            $profile_picture = $new_filename;
+            $uploaded_new_photo = true;
+        }
+
         // Upload foto jika ada
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
             $file = $_FILES['profile_picture'];
