@@ -37,7 +37,6 @@ if ($mute->num_rows > 0 && $mute->fetch()) {
         $is_muted = true;
         $mute_message = "Kamu sedang dimute hingga " . date("d M Y H:i", strtotime($until_time)) . ". Kamu tidak dapat mengirim pesan.";
     } else {
-        // mute sudah expired — hapus dari DB
         $clear = $conn->prepare("DELETE FROM circle_mutes WHERE user_id = ? AND circle_id = ?");
         $clear->bind_param("ii", $user_id, $circle_id);
         $clear->execute();
@@ -56,7 +55,15 @@ $circle_info->close();
 
 $is_creator = ($creator_id == $user_id);
 
-// Keluar dari circle via POST (proteksi lebih aman)
+// Ambil status private/public
+$circle_priv_stmt = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
+$circle_priv_stmt->bind_param("i", $circle_id);
+$circle_priv_stmt->execute();
+$circle_priv_stmt->bind_result($is_private);
+$circle_priv_stmt->fetch();
+$circle_priv_stmt->close();
+
+// Keluar dari circle
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_confirm']) && $_POST['leave_confirm'] === 'yes') {
     $out = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
     $out->bind_param("ii", $user_id, $circle_id);
@@ -69,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_confirm']) && $
     $out->close();
 }
 
-// Kirim pesan (jika tidak sedang dimute)
-if ($_SERVER["REQUEST_METHOD"] === "POST" && !$is_muted) {
+// Kirim pesan
+if ($_SERVER["REQUEST_METHOD"] === "POST" && !$is_muted && isset($_POST['message'])) {
     $message = trim($_POST['message']);
     $image = '';
 
@@ -99,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !$is_muted) {
     }
 }
 
-// Ambil semua pesan dalam circle
+// Ambil semua pesan
 $posts = $conn->prepare("
     SELECT u.username, p.content, p.created_at, p.image_path
     FROM posts p
@@ -111,7 +118,7 @@ $posts->bind_param("i", $circle_id);
 $posts->execute();
 $results = $posts->get_result();
 
-// Ambil detail circle (untuk modal info)
+// Detail circle untuk modal
 function get_circle_detail($conn, $circle_id) {
     $circle_stmt = $conn->prepare("
         SELECT c.name, c.description, u.username AS creator_name, u.profile_picture AS creator_photo
@@ -124,13 +131,9 @@ function get_circle_detail($conn, $circle_id) {
     $circle_info = $circle_stmt->get_result()->fetch_assoc();
     $circle_stmt->close();
 
-    // Ambil anggota + status mute
     $members_stmt = $conn->prepare("
         SELECT u.username, u.profile_picture,
-            CASE 
-                WHEN m.until_time > NOW() THEN 1
-                ELSE 0
-            END AS is_muted
+            CASE WHEN m.until_time > NOW() THEN 1 ELSE 0 END AS is_muted
         FROM circle_members cm
         JOIN users u ON cm.user_id = u.id
         LEFT JOIN circle_mutes m ON m.user_id = u.id AND m.circle_id = cm.circle_id

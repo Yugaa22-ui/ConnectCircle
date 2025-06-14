@@ -9,16 +9,14 @@ include '../backend/circle/join_circle_process.php';
     <meta charset="UTF-8">
     <title>Gabung Circle - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container mt-5">
     <div class="card shadow">
-        <div class="card-header bg-success text-white">
-            <h4>Daftar Circle yang Tersedia</h4>
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Gabung Circle Baru</h4>
         </div>
         <div class="card-body">
             <?php if (!empty($error)): ?>
@@ -31,15 +29,26 @@ include '../backend/circle/join_circle_process.php';
                 <div class="list-group">
                     <?php foreach ($available_circles as $circle): ?>
                         <div class="list-group-item">
-                            <h5><?= htmlspecialchars($circle['name']) ?></h5>
-                            <p><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
-                            <a href="?join=<?= $circle['id'] ?>" class="btn btn-outline-primary btn-sm"
-                               onclick="return confirm('Gabung ke circle ini?')">Gabung</a>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?>
+                                        <?= $circle['is_private'] ? '<span class="badge bg-secondary">Private</span>' : '<span class="badge bg-success">Public</span>' ?>
+                                    </h5>
+                                    <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
+                                    <small class="text-muted">👥 <?= $circle['member_count'] ?> anggota</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <a href="?join=<?= $circle['id'] ?>" class="btn btn-sm <?= $circle['is_private'] ? 'btn-outline-warning' : 'btn-outline-primary' ?>"
+                                       onclick="return confirm('Yakin ingin <?= $circle['is_private'] ? 'mengajukan bergabung' : 'bergabung' ?> ke circle ini?')">
+                                        <?= $circle['is_private'] ? 'Ajukan Bergabung' : 'Gabung' ?>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <p class="text-muted">Tidak ada circle baru yang bisa kamu ikuti saat ini.</p>
+                <div class="alert alert-info">Tidak ada circle yang tersedia untuk saat ini.</div>
             <?php endif; ?>
         </div>
         <div class="card-footer text-end">

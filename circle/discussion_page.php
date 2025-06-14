@@ -31,12 +31,12 @@
                 <form method="POST" action="">
                     <input type="hidden" name="toggle_visibility" value="1">
                     <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
-                    <button class="btn btn-sm btn-outline-<?= $is_private ? 'danger' : 'success' ?>" type="submit">
-                        <?= $is_private ? 'Ubah ke Public' : 'Ubah ke Private' ?>
+                    <button class="btn btn-sm btn-outline-<?= isset($is_private) && $is_private ? 'danger' : 'success' ?>" type="submit">
+                        <?= isset($is_private) && $is_private ? 'Ubah ke Public' : 'Ubah ke Private' ?>
                     </button>
                 </form>
                 <!-- Lihat Permintaan Join -->
-                <a href="manage_requests.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-warning">
+                <a href="circle_requests.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-warning">
                     Lihat Permintaan <i class="bi bi-person-plus"></i>
                 </a>
             <?php endif; ?>
