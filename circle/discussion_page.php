@@ -6,11 +6,31 @@
     <meta charset="UTF-8">
     <title>Diskusi - <?= htmlspecialchars($circle_name) ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap -->
+    <!-- Bootstrap & Icon -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .context-menu {
+            position: absolute;
+            z-index: 10000;
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        .context-menu li {
+            padding: 6px 12px;
+            list-style: none;
+            cursor: pointer;
+        }
+        .context-menu li:hover {
+            background-color: #eee;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
+<!-- Notifikasi -->
 <?php if (isset($_GET['msg'])): ?>
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
   <div class="toast show text-white bg-success border-0" role="alert">
@@ -23,22 +43,19 @@
 <?php endif; ?>
 
 <div class="container mt-4">
+    <!-- Header Circle -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Diskusi: <?= htmlspecialchars($circle_name) ?></h4>
         <div class="d-flex gap-2">
             <?php if ($is_creator): ?>
-                <!-- Switch Public/Private Circle -->
                 <form method="POST" action="">
                     <input type="hidden" name="toggle_visibility" value="1">
                     <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
                     <button class="btn btn-sm btn-outline-<?= isset($is_private) && $is_private ? 'danger' : 'success' ?>" type="submit">
-                        <?= isset($is_private) && $is_private ? 'Ubah ke Public' : 'Ubah ke Private' ?>
+                        <?= $is_private ? 'Ubah ke Public' : 'Ubah ke Private' ?>
                     </button>
                 </form>
-                <!-- Lihat Permintaan Join -->
-                <a href="circle_requests.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-warning">
-                    Lihat Permintaan <i class="bi bi-person-plus"></i>
-                </a>
+                <a href="circle_requests.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-warning">Lihat Permintaan</a>
             <?php endif; ?>
             <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
             <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">Lihat Info Circle</button>
@@ -47,12 +64,18 @@
         </div>
     </div>
 
-    <!-- Kolom Diskusi -->
+    <!-- Pesan Diskusi -->
     <div class="card mb-3">
-        <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+        <div class="card-body" id="message-container" style="max-height: 350px; overflow-y: auto;">
             <?php if ($results->num_rows > 0): ?>
                 <?php while ($row = $results->fetch_assoc()): ?>
-                    <div class="mb-3">
+                    <?php if (!$row['deleted']): ?>
+                    <div class="mb-3 message-item" 
+                         data-id="<?= $row['id'] ?>" 
+                         data-content="<?= htmlspecialchars($row['content']) ?>" 
+                         data-created="<?= $row['created_at'] ?>" 
+                         data-updated="<?= $row['updated_at'] ?>" 
+                         data-username="<?= htmlspecialchars($row['username']) ?>">
                         <strong><?= htmlspecialchars($row['username']) ?></strong><br>
                         <?= nl2br(htmlspecialchars($row['content'])) ?>
                         <?php if (!empty($row['image_path'])): ?>
@@ -63,6 +86,7 @@
                         <div><small class="text-muted"><?= $row['created_at'] ?></small></div>
                     </div>
                     <hr>
+                    <?php endif; ?>
                 <?php endwhile; ?>
             <?php else: ?>
                 <p class="text-muted">Belum ada pesan. Jadilah yang pertama!</p>
@@ -88,63 +112,58 @@
 </div>
 
 <!-- Modal Info Circle -->
-<div class="modal fade" id="circleInfoModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+<?php include 'modal_info_circle.php'; ?>
+
+<!-- Modal Keluar Circle -->
+<?php include 'modal_keluar_circle.php'; ?>
+
+<!-- Modal Edit Pesan -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h5 class="modal-title">Info Circle: <?= htmlspecialchars($circle_detail['name']) ?></h5>
+      <form method="POST" action="edit_post.php">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Pesan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <textarea name="new_content" id="editContent" class="form-control" rows="4"></textarea>
+          <input type="hidden" name="post_id" id="editPostId">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Info Pesan -->
+<div class="modal fade" id="infoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Info Pesan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Deskripsi:</strong><br><?= nl2br(htmlspecialchars($circle_detail['description'])) ?></p>
-        <p><strong>Dibuat oleh:</strong></p>
-        <div class="d-flex align-items-center mb-3">
-            <img src="<?= $circle_detail['creator_photo'] ? '../assets/uploads/img/' . $circle_detail['creator_photo'] : '../assets/img/default.png' ?>" class="rounded-circle me-2" width="40" height="40">
-            <?= htmlspecialchars($circle_detail['creator_name']) ?>
-        </div>
-        <hr>
-        <p><strong>Anggota:</strong></p>
-        <ul class="list-unstyled row">
-            <?php foreach ($circle_detail['members'] as $member): ?>
-                <li class="col-md-4 d-flex align-items-center mb-2">
-                    <img src="<?= $member['profile_picture'] ? '../assets/uploads/img/' . $member['profile_picture'] : '../assets/img/default.png' ?>" class="rounded-circle me-2" width="40" height="40">
-                    <?= htmlspecialchars($member['username']) ?>
-                    <?php if (!empty($member['is_muted'])): ?>
-                        <span class="text-danger ms-1" title="Sedang dimute">🔇</span>
-                    <?php endif; ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        <p><strong>Oleh:</strong> <span id="infoUser"></span></p>
+        <p><strong>Dibuat:</strong> <span id="infoCreated"></span></p>
+        <p><strong>Terakhir Diedit:</strong> <span id="infoUpdated"></span></p>
+        <p><strong>Sudah Dilihat Oleh:</strong> <span id="infoSeenBy">-</span></p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal Keluar Circle -->
-<div class="modal fade" id="confirmLeaveModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title">Konfirmasi Keluar Circle</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Yakin ingin keluar dari circle ini?</div>
-      <div class="modal-footer">
-        <form method="POST">
-            <input type="hidden" name="leave_confirm" value="yes">
-            <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
-            <button type="submit" class="btn btn-danger">Ya, Keluar</button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Context Menu -->
+<ul class="context-menu" id="contextMenu">
+    <li id="editBtn">✏️ Edit</li>
+    <li id="deleteBtn">🗑️ Hapus</li>
+    <li id="infoBtn">ℹ️ Info</li>
+</ul>
 
-<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/discussion.js"></script>
 </body>
 </html>
