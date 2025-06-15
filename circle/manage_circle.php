@@ -92,7 +92,65 @@
             </div>
             <?php endif; ?>
         </li>
-        <!-- (Modals tetap seperti sebelumnya) -->
+        <!-- Modal Promosi -->
+                <div class="modal fade" id="confirmPromoteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Promosi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin menjadikan <?= htmlspecialchars($row['username']) ?> sebagai moderator?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="promote" class="btn btn-success">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Demote -->
+        <div class="modal fade" id="confirmDemoteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Cabut Moderator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin mencabut moderator dari <?= htmlspecialchars($row['username']) ?>?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="demote" class="btn btn-danger">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Mute -->
+                <div class="modal fade" id="confirmMuteModal<?= $row['id'] ?>" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST">
+                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+                  <input type="hidden" name="mute_duration" value="1">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Mute Anggota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">Yakin ingin mute <?= htmlspecialchars($row['username']) ?> selama 1 jam?</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" name="action" value="mute" class="btn btn-warning">Ya</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
         <?php endforeach; ?>
     </ul>
 
