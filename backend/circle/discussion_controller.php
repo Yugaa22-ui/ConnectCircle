@@ -53,6 +53,16 @@ $circle_info->close();
 
 $is_creator = ($creator_id == $user_id);
 
+// Ambil role user (untuk cek moderator)
+$role_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
+$role_stmt->bind_param("ii", $user_id, $circle_id);
+$role_stmt->execute();
+$role_stmt->bind_result($role);
+$role_stmt->fetch();
+$role_stmt->close();
+
+$is_moderator = ($role === 'moderator');
+
 // Status private/public
 $circle_priv_stmt = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
 $circle_priv_stmt->bind_param("i", $circle_id);

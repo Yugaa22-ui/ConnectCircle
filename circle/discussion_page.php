@@ -57,7 +57,9 @@
                 </form>
                 <a href="circle_requests.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-warning">Lihat Permintaan</a>
             <?php endif; ?>
-            <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
+            <?php if ($is_creator || $is_moderator): ?>
+                <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
+            <?php endif; ?>
             <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">Lihat Info Circle</button>
             <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmLeaveModal">Keluar Circle</button>
             <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
@@ -70,13 +72,17 @@
             <?php if ($results->num_rows > 0): ?>
                 <?php while ($row = $results->fetch_assoc()): ?>
                     <?php if (!$row['deleted']): ?>
-                    <div class="mb-3 message-item" 
-                         data-id="<?= $row['id'] ?>" 
-                         data-content="<?= htmlspecialchars($row['content']) ?>" 
-                         data-created="<?= $row['created_at'] ?>" 
-                         data-updated="<?= $row['updated_at'] ?>" 
+                    <div class="mb-3 message-item message-block"
+                         data-id="<?= $row['id'] ?>"
+                         data-post-id="<?= $row['id'] ?>"
+                         data-content="<?= htmlspecialchars($row['content']) ?>"
+                         data-created="<?= $row['created_at'] ?>"
+                         data-updated="<?= $row['updated_at'] ?>"
                          data-username="<?= htmlspecialchars($row['username']) ?>">
-                        <strong><?= htmlspecialchars($row['username']) ?></strong><br>
+                        <strong><?= htmlspecialchars($row['username']) ?></strong>
+                        <button class="btn btn-sm btn-outline-secondary btn-info-post ms-2" data-post-id="<?= $row['id'] ?>">
+                            <i class="bi bi-info-circle"></i>
+                        </button><br>
                         <?= nl2br(htmlspecialchars($row['content'])) ?>
                         <?php if (!empty($row['image_path'])): ?>
                             <div class="mt-2">
@@ -112,10 +118,10 @@
 </div>
 
 <!-- Modal Info Circle -->
-<?php include 'modal_info_circle.php'; ?>
+<?php if (file_exists('modal_info_circle.php')) include 'modal_info_circle.php'; ?>
 
 <!-- Modal Keluar Circle -->
-<?php include 'modal_keluar_circle.php'; ?>
+<?php if (file_exists('modal_keluar_circle.php')) include 'modal_keluar_circle.php'; ?>
 
 <!-- Modal Edit Pesan -->
 <div class="modal fade" id="editModal" tabindex="-1">
@@ -139,18 +145,15 @@
 </div>
 
 <!-- Modal Info Pesan -->
-<div class="modal fade" id="infoModal" tabindex="-1">
-  <div class="modal-dialog">
+<div class="modal fade" id="messageInfoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-info text-white">
         <h5 class="modal-title">Info Pesan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <p><strong>Oleh:</strong> <span id="infoUser"></span></p>
-        <p><strong>Dibuat:</strong> <span id="infoCreated"></span></p>
-        <p><strong>Terakhir Diedit:</strong> <span id="infoUpdated"></span></p>
-        <p><strong>Sudah Dilihat Oleh:</strong> <span id="infoSeenBy">-</span></p>
+      <div class="modal-body" id="messageInfoContent">
+        <div class="text-center text-muted">Memuat...</div>
       </div>
     </div>
   </div>
@@ -158,9 +161,9 @@
 
 <!-- Context Menu -->
 <ul class="context-menu" id="contextMenu">
-    <li id="editBtn">✏️ Edit</li>
-    <li id="deleteBtn">🗑️ Hapus</li>
-    <li id="infoBtn">ℹ️ Info</li>
+    <li id="editBtn"><i class="bi bi-pencil"></i> Edit</li>
+    <li id="deleteBtn"><i class="bi bi-trash"></i> Hapus</li>
+    <li id="infoBtn"><i class="bi bi-info-circle"></i> Info</li>
 </ul>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
