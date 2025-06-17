@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-include '../includes/db.php';
+include __DIR__ . '/../../includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['status' => 'unauthorized']);

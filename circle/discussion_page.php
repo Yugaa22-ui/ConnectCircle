@@ -125,7 +125,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <textarea name="content" id="editContent" class="form-control" rows="4"></textarea>
+          <textarea name="new_content" id="editContent" class="form-control" rows="4"></textarea>
           <input type="hidden" name="post_id" id="editPostId">
         </div>
         <div class="modal-footer d-flex justify-content-between">
@@ -155,7 +155,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
 <script>
-// Konfirmasi sebelum menghapus
+  // Konfirmasi sebelum menghapus
   document.querySelectorAll('.delete-form').forEach(form => {
     form.addEventListener('submit', function(e) {
       if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) {

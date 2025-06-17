@@ -84,23 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(res => res.json())
             .then(data => {
+                console.log('Edit response:', data); // DEBUG
                 snackbar.classList.remove('text-danger', 'text-success');
                 if (data.status === 'success') {
                     snackbar.classList.add('text-success');
                     snackbar.textContent = 'Pesan berhasil diperbarui. Memuat ulang...';
                     setTimeout(() => window.location.reload(), 1000);
-                } else if (data.status === 'unauthorized') {
-                    snackbar.classList.add('text-danger');
-                    snackbar.textContent = 'Tidak diizinkan mengedit pesan ini.';
-                } else if (data.status === 'invalid') {
-                    snackbar.classList.add('text-danger');
-                    snackbar.textContent = 'Input tidak valid.';
                 } else {
                     snackbar.classList.add('text-danger');
-                    snackbar.textContent = 'Gagal memperbarui pesan.';
+                    snackbar.textContent = data.status === 'unauthorized' ? 'Tidak diizinkan mengedit pesan ini.' :
+                                           data.status === 'invalid' ? 'Input tidak valid.' :
+                                           'Gagal memperbarui pesan.';
                 }
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('Fetch error:', err);
                 snackbar.classList.add('text-danger');
                 snackbar.textContent = 'Terjadi kesalahan.';
             });
