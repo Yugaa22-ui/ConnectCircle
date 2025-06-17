@@ -113,14 +113,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Scroll otomatis ke bawah saat halaman dibuka
-document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById('message-container');
     container.scrollTop = container.scrollHeight;
-});
 
-// Klik tombol galeri memicu input file
-document.getElementById('uploadBtn')?.addEventListener('click', () => {
-    document.getElementById('imageInput')?.click();
-});
+    // Preview gambar sebelum dikirim & tombol batal
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('preview-image');
+    const previewContainer = document.getElementById('preview-image-container');
 
+    if (imageInput) {
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+
+                    // Tambah tombol cancel kalau belum ada
+                    if (!document.getElementById('cancelImageBtn')) {
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'btn btn-sm btn-outline-danger mt-2';
+                        cancelBtn.id = 'cancelImageBtn';
+                        cancelBtn.textContent = 'Batalkan Gambar';
+                        cancelBtn.onclick = () => {
+                            imageInput.value = '';
+                            previewContainer.style.display = 'none';
+                            cancelBtn.remove();
+                        };
+                        previewContainer.appendChild(cancelBtn);
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+    }
 });

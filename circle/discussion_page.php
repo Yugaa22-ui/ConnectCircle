@@ -12,7 +12,6 @@
 </head>
 <body class="bg-light">
 
-<!-- Notifikasi -->
 <?php if (isset($_GET['msg'])): ?>
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
   <div class="toast show text-white bg-success border-0" role="alert">
@@ -40,7 +39,6 @@
         </div>
     </div>
 
-    <!-- Pesan Diskusi -->
     <div class="card mb-3">
         <div class="card-body" id="message-container" style="max-height: 500px; overflow-y: auto;">
             <?php if ($results->num_rows > 0): ?>
@@ -89,11 +87,14 @@
         </div>
     </div>
 
-    <!-- Form Kirim Pesan -->
     <?php if ($is_muted): ?>
         <div class="alert alert-warning"><?= $mute_message ?></div>
     <?php else: ?>
+        <div id="preview-image-container" class="mb-2" style="display: none;">
+            <img id="preview-image" src="#" class="img-thumbnail" style="max-width: 150px;">
+        </div>
         <form method="POST" enctype="multipart/form-data" class="input-message-wrapper">
+            <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
             <div class="d-flex">
                 <label for="imageInput" class="btn btn-outline-secondary me-2" id="uploadBtn" title="Unggah Gambar">
                     <i class="bi bi-image"></i>
@@ -180,6 +181,8 @@
 
     const uploadBtn = document.getElementById('uploadBtn');
     const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('preview-image');
+    const previewContainer = document.getElementById('preview-image-container');
 
     if (uploadBtn && imageInput) {
       uploadBtn.addEventListener('click', function (e) {
@@ -188,11 +191,18 @@
       });
     }
 
-    document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
-      button.addEventListener('click', function () {
-        const postId = this.getAttribute('data-post-id');
-        document.getElementById('deletePostId').value = postId;
-      });
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImage.src = e.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.style.display = 'none';
+      }
     });
   });
 </script>
