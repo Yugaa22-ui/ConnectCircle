@@ -42,7 +42,7 @@
 
     <!-- Pesan Diskusi -->
     <div class="card mb-3">
-        <div class="card-body" id="message-container" style="max-height: 350px; overflow-y: auto;">
+        <div class="card-body" id="message-container" style="max-height: 500px; overflow-y: auto;">
             <?php if ($results->num_rows > 0): ?>
                 <?php while ($row = $results->fetch_assoc()): ?>
                     <?php if (!$row['deleted']): ?>
@@ -93,15 +93,15 @@
     <?php if ($is_muted): ?>
         <div class="alert alert-warning"><?= $mute_message ?></div>
     <?php else: ?>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <textarea name="message" class="form-control" rows="3" placeholder="Tulis pesan..."></textarea>
+        <form method="POST" enctype="multipart/form-data" class="input-message-wrapper">
+            <div class="d-flex">
+                <label for="imageInput" class="btn btn-outline-secondary me-2" id="uploadBtn" title="Unggah Gambar">
+                    <i class="bi bi-image"></i>
+                </label>
+                <textarea name="message" class="form-control me-2" rows="1" placeholder="Tulis pesan..."></textarea>
+                <button type="submit" class="btn btn-success"><i class="bi bi-send"></i></button>
             </div>
-            <div class="mb-3">
-                <label>Gambar (opsional):</label>
-                <input type="file" name="image" class="form-control" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-success">Kirim</button>
+            <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;">
         </form>
     <?php endif; ?>
 </div>
@@ -174,11 +174,25 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
 <script>
-  // Set ID ke form modal hapus
-  document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
-    button.addEventListener('click', function () {
-      const postId = this.getAttribute('data-post-id');
-      document.getElementById('deletePostId').value = postId;
+  document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('message-container');
+    container.scrollTop = container.scrollHeight;
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageInput = document.getElementById('imageInput');
+
+    if (uploadBtn && imageInput) {
+      uploadBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        imageInput.click();
+      });
+    }
+
+    document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
+      button.addEventListener('click', function () {
+        const postId = this.getAttribute('data-post-id');
+        document.getElementById('deletePostId').value = postId;
+      });
     });
   });
 </script>

@@ -111,4 +111,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('deletePostId').value = postId;
         });
     });
+
+    // Scroll otomatis ke bawah saat halaman dibuka
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById('message-container');
+    container.scrollTop = container.scrollHeight;
+});
+
+// Klik tombol galeri memicu input file
+document.getElementById('uploadBtn')?.addEventListener('click', () => {
+    document.getElementById('imageInput')?.click();
+});
+
 });

@@ -16,3 +16,19 @@
 .context-menu li:hover {
     background-color: #eee;
 }
+
+#message-container {
+    scroll-behavior: smooth;
+}
+
+.input-message-wrapper {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding-top: 10px;
+}
+
+textarea[name="message"] {
+    resize: none;
+    height: 40px;
+}
