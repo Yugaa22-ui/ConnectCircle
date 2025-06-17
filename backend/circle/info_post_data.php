@@ -1,6 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once '../../includes/db.php';
+include_once '../includes/db.php';
 
 function get_post_info($conn, $post_id) {
     $stmt = $conn->prepare("SELECT p.content, p.image_path, p.created_at, p.updated_at, u.username, u.profile_picture FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?");

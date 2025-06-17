@@ -1,7 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
 
-    // Tombol Info Pesan
+    // Fungsi untuk menampilkan info pesan
+    function loadInfoModal(postId) {
+        const modalBody = document.getElementById('messageInfoContent');
+        modalBody.innerHTML = '<div class="text-center text-muted">Memuat...</div>';
+
+        fetch(`info_post.php?post_id=${postId}`)
+            .then(res => res.text())
+            .then(html => {
+                modalBody.innerHTML = html;
+                new bootstrap.Modal(document.getElementById('messageInfoModal')).show();
+            })
+            .catch(() => {
+                modalBody.innerHTML = '<div class="text-danger">Gagal memuat info.</div>';
+            });
+    }
+
+    // Event tombol info
     document.querySelectorAll('.btn-info-post').forEach(btn => {
         btn.addEventListener('click', function () {
             const postId = this.dataset.postId;
@@ -9,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Klik kanan & Tahan lama (info)
+    // Event klik kanan & tahan lama (kontekstual)
     document.querySelectorAll('.message-block').forEach(msg => {
         let timeoutId;
         const postId = msg.dataset.postId;
@@ -28,22 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Fungsi load modal info
-    function loadInfoModal(postId) {
-        const modalBody = document.getElementById('messageInfoContent');
-        modalBody.innerHTML = '<div class="text-center text-muted">Memuat...</div>';
-
-        fetch(`../backend/circle/info_post.php?post_id=${postId}`)
-            .then(res => res.text())
-            .then(html => {
-                modalBody.innerHTML = html;
-                new bootstrap.Modal(document.getElementById('messageInfoModal')).show();
-            })
-            .catch(() => {
-                modalBody.innerHTML = '<div class="text-danger">Gagal memuat info.</div>';
-            });
-    }
-
     // Tombol Edit
     document.querySelectorAll('.btn-edit-post').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -60,42 +60,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Submit Edit
     const editForm = document.getElementById('editPostForm');
-    editForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        const postId = document.getElementById('editPostId').value;
-        const content = document.getElementById('editContent').value.trim();
-        const snackbar = document.getElementById('editSnackbar');
+            const postId = document.getElementById('editPostId').value;
+            const content = document.getElementById('editContent').value.trim();
+            const snackbar = document.getElementById('editSnackbar');
 
-        if (content === '') {
-            snackbar.textContent = 'Isi pesan tidak boleh kosong.';
-            return;
-        }
-
-        fetch('../backend/circle/edit_post.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `post_id=${encodeURIComponent(postId)}&new_content=${encodeURIComponent(content)}`
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                snackbar.classList.remove('text-danger');
-                snackbar.classList.add('text-success');
-                snackbar.textContent = 'Pesan berhasil diperbarui. Memuat ulang...';
-                setTimeout(() => window.location.reload(), 1000);
-            } else if (data.status === 'unauthorized') {
-                snackbar.textContent = 'Tidak diizinkan mengedit pesan ini.';
-            } else if (data.status === 'invalid') {
-                snackbar.textContent = 'Input tidak valid.';
-            } else {
-                snackbar.textContent = 'Gagal memperbarui pesan.';
+            if (content === '') {
+                snackbar.classList.remove('text-success');
+                snackbar.classList.add('text-danger');
+                snackbar.textContent = 'Isi pesan tidak boleh kosong.';
+                return;
             }
-        })
-        .catch(() => {
-            snackbar.textContent = 'Terjadi kesalahan.';
+
+            fetch('../backend/circle/edit_post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `post_id=${encodeURIComponent(postId)}&new_content=${encodeURIComponent(content)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                snackbar.classList.remove('text-danger', 'text-success');
+                if (data.status === 'success') {
+                    snackbar.classList.add('text-success');
+                    snackbar.textContent = 'Pesan berhasil diperbarui. Memuat ulang...';
+                    setTimeout(() => window.location.reload(), 1000);
+                } else if (data.status === 'unauthorized') {
+                    snackbar.classList.add('text-danger');
+                    snackbar.textContent = 'Tidak diizinkan mengedit pesan ini.';
+                } else if (data.status === 'invalid') {
+                    snackbar.classList.add('text-danger');
+                    snackbar.textContent = 'Input tidak valid.';
+                } else {
+                    snackbar.classList.add('text-danger');
+                    snackbar.textContent = 'Gagal memperbarui pesan.';
+                }
+            })
+            .catch(() => {
+                snackbar.classList.add('text-danger');
+                snackbar.textContent = 'Terjadi kesalahan.';
+            });
         });
+    }
+
+    // Konfirmasi hapus pesan
+    document.querySelectorAll('form[action="delete_post.php"], form.d-inline').forEach(form => {
+        const deleteBtn = form.querySelector('button[type="submit"]');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function (e) {
+                const confirmDelete = confirm('Apakah kamu yakin ingin menghapus pesan ini?');
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+            });
+        }
     });
 });

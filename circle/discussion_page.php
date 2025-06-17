@@ -63,16 +63,16 @@
                             <div class="flex-grow-1">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <strong><?= htmlspecialchars($row['username']) ?></strong>
-                                    <?php if ($row['user_id'] == $_SESSION['user_id']): ?>
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-secondary btn-info-post" data-post-id="<?= $row['id'] ?>" title="Info"><i class="bi bi-info-circle"></i></button>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary btn-info-post" data-post-id="<?= $row['id'] ?>" title="Info"><i class="bi bi-info-circle"></i></button>
+                                        <?php if ($row['user_id'] == $_SESSION['user_id']): ?>
                                             <button class="btn btn-outline-secondary btn-edit-post" data-id="<?= $row['id'] ?>" data-content="<?= htmlspecialchars($row['content']) ?>" title="Edit"><i class="bi bi-pencil"></i></button>
-                                            <form method="POST" class="d-inline">
+                                            <form method="POST" class="d-inline delete-form">
                                                 <input type="hidden" name="delete_post_id" value="<?= $row['id'] ?>">
                                                 <button type="submit" class="btn btn-outline-danger" title="Hapus"><i class="bi bi-trash"></i></button>
                                             </form>
-                                        </div>
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div><?= nl2br(htmlspecialchars($row['content'])) ?></div>
                                 <?php if (!empty($row['image_path'])): ?>
@@ -154,5 +154,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
+<script>
+// Konfirmasi sebelum menghapus
+  document.querySelectorAll('.delete-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
 </body>
 </html>
