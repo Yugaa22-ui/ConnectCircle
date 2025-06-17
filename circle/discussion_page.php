@@ -67,10 +67,7 @@
                                         <button class="btn btn-outline-secondary btn-info-post" data-post-id="<?= $row['id'] ?>" title="Info"><i class="bi bi-info-circle"></i></button>
                                         <?php if ($row['user_id'] == $_SESSION['user_id']): ?>
                                             <button class="btn btn-outline-secondary btn-edit-post" data-id="<?= $row['id'] ?>" data-content="<?= htmlspecialchars($row['content']) ?>" title="Edit"><i class="bi bi-pencil"></i></button>
-                                            <form method="POST" class="d-inline delete-form">
-                                                <input type="hidden" name="delete_post_id" value="<?= $row['id'] ?>">
-                                                <button type="submit" class="btn btn-outline-danger" title="Hapus"><i class="bi bi-trash"></i></button>
-                                            </form>
+                                            <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-post-id="<?= $row['id'] ?>"><i class="bi bi-trash"></i></button>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -107,6 +104,28 @@
             <button type="submit" class="btn btn-success">Kirim</button>
         </form>
     <?php endif; ?>
+</div>
+
+<!-- Modal Konfirmasi Hapus Pesan -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" id="deletePostForm">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Konfirmasi Hapus Pesan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Apakah Anda yakin ingin menghapus pesan ini?
+          <input type="hidden" name="delete_post_id" id="deletePostId">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger">Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Info Circle -->
@@ -155,12 +174,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
 <script>
-  // Konfirmasi sebelum menghapus
-  document.querySelectorAll('.delete-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) {
-        e.preventDefault();
-      }
+  // Set ID ke form modal hapus
+  document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
+    button.addEventListener('click', function () {
+      const postId = this.getAttribute('data-post-id');
+      document.getElementById('deletePostId').value = postId;
     });
   });
 </script>

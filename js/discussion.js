@@ -84,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(res => res.json())
             .then(data => {
-                console.log('Edit response:', data); // DEBUG
                 snackbar.classList.remove('text-danger', 'text-success');
                 if (data.status === 'success') {
                     snackbar.classList.add('text-success');
@@ -105,16 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Konfirmasi hapus pesan
-    document.querySelectorAll('form[action="delete_post.php"], form.d-inline').forEach(form => {
-        const deleteBtn = form.querySelector('button[type="submit"]');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function (e) {
-                const confirmDelete = confirm('Apakah kamu yakin ingin menghapus pesan ini?');
-                if (!confirmDelete) {
-                    e.preventDefault();
-                }
-            });
-        }
+    // Modal konfirmasi hapus
+    document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
+        button.addEventListener('click', function () {
+            const postId = this.getAttribute('data-post-id');
+            document.getElementById('deletePostId').value = postId;
+        });
     });
 });
