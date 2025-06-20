@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Scroll otomatis ke bawah saat halaman dibuka
-    const container = document.getElementById('message-container');
     container.scrollTop = container.scrollHeight;
 
     // Preview gambar sebelum dikirim & tombol batal

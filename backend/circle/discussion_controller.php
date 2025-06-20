@@ -43,6 +43,39 @@ if ($mute->num_rows > 0 && $mute->fetch()) {
 }
 $mute->close();
 
+// Kirim Pesan Baru
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && !$is_muted) {
+    $message = trim($_POST['message'] ?? '');
+    $image = '';
+
+    if (!empty($_FILES['image']['name'])) {
+        $img = $_FILES['image'];
+        $ext = pathinfo($img['name'], PATHINFO_EXTENSION);
+        $valid = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array(strtolower($ext), $valid)) {
+            $filename = 'img_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/img/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+            $target = $upload_dir . $filename;
+            if (move_uploaded_file($img['tmp_name'], $target)) {
+                $image = $filename;
+            }
+        }
+    }
+
+    if (!empty($message) || $image) {
+        $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiss", $circle_id, $user_id, $message, $image);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: discussion_page.php?circle_id=$circle_id&msg=Pesan dikirim");
+    } else {
+        header("Location: discussion_page.php?circle_id=$circle_id&msg=Pesan kosong tidak dikirim");
+    }
+    exit;
+}
+
 // Info circle
 $circle_info = $conn->prepare("SELECT name, creator_id FROM circles WHERE id = ?");
 $circle_info->bind_param("i", $circle_id);
@@ -53,7 +86,7 @@ $circle_info->close();
 
 $is_creator = ($creator_id == $user_id);
 
-// Ambil role user (untuk cek moderator)
+// Ambil role user
 $role_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
 $role_stmt->bind_param("ii", $user_id, $circle_id);
 $role_stmt->execute();
@@ -83,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_confirm']) && $
 }
 
 // Hapus pesan
-if (isset($_POST['delete_post_id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id'])) {
     $post_id = intval($_POST['delete_post_id']);
     $del = $conn->prepare("UPDATE posts SET deleted = 1 WHERE id = ? AND user_id = ?");
     $del->bind_param("ii", $post_id, $user_id);
@@ -105,46 +138,17 @@ if (isset($_POST['edit_post_id'], $_POST['edit_message'])) {
     exit;
 }
 
-// Kirim pesan baru
-if ($_SERVER["REQUEST_METHOD"] === "POST" && !$is_muted && isset($_POST['message'])) {
-    $message = trim($_POST['message']);
-    $image = '';
-
-    if (!empty($_FILES['image']['name'])) {
-        $img = $_FILES['image'];
-        $ext = pathinfo($img['name'], PATHINFO_EXTENSION);
-        $valid = ['jpg', 'jpeg', 'png', 'gif'];
-
-        if (in_array(strtolower($ext), $valid)) {
-            $filename = 'img_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
-            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/img/';
-            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-            $target = $upload_dir . $filename;
-            if (move_uploaded_file($img['tmp_name'], $target)) {
-                $image = $filename;
-            }
-        }
-    }
-
-    if (!empty($message) || $image) {
-        $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiss", $circle_id, $user_id, $message, $image);
-        $stmt->execute();
-        $stmt->close();
-    }
-}
-
 // Catat siapa yang lihat
 $conn->query("SET time_zone = '+08:00'");
 $conn->query("INSERT IGNORE INTO post_views (post_id, user_id) SELECT id, $user_id FROM posts WHERE circle_id = $circle_id");
 
-// Ambil semua pesan (kecuali yang dihapus)
-$posts = $conn->prepare("SELECT p.id, u.username, p.content, p.created_at, p.updated_at, p.image_path, p.user_id, p.deleted FROM posts p JOIN users u ON p.user_id = u.id WHERE p.circle_id = ? ORDER BY p.created_at ASC");
+// Ambil semua pesan
+$posts = $conn->prepare("SELECT p.id, u.username, u.profile_picture, p.content, p.created_at, p.updated_at, p.image_path, p.user_id, p.deleted FROM posts p JOIN users u ON p.user_id = u.id WHERE p.circle_id = ? ORDER BY p.created_at ASC");
 $posts->bind_param("i", $circle_id);
 $posts->execute();
 $results = $posts->get_result();
 
-// Ambil detail circle
+// Detail circle
 function get_circle_detail($conn, $circle_id) {
     $circle_stmt = $conn->prepare("SELECT c.name, c.description, u.username AS creator_name, u.profile_picture AS creator_photo FROM circles c JOIN users u ON c.creator_id = u.id WHERE c.id = ?");
     $circle_stmt->bind_param("i", $circle_id);

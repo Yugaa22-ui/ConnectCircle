@@ -14,13 +14,19 @@
 
 <?php if (isset($_GET['msg'])): ?>
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
-  <div class="toast show text-white bg-success border-0" role="alert">
+  <div class="toast show text-white bg-success border-0" role="alert" id="snackbar">
     <div class="d-flex">
       <div class="toast-body"><?= htmlspecialchars($_GET['msg']) ?></div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
+<script>
+  setTimeout(() => {
+    const toast = document.getElementById('snackbar');
+    if (toast) toast.style.display = 'none';
+  }, 2000);
+</script>
 <?php endif; ?>
 
 <div class="container mt-4">
@@ -100,14 +106,21 @@
                     <i class="bi bi-image"></i>
                 </label>
                 <textarea name="message" class="form-control me-2" rows="1" placeholder="Tulis pesan..."></textarea>
-                <button type="submit" class="btn btn-success"><i class="bi bi-send"></i></button>
+                <button type="submit" name="submit_message" class="btn btn-success">
+                  <i class="bi bi-send"></i>
+                </button>
             </div>
             <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;">
         </form>
+
     <?php endif; ?>
 </div>
 
-<!-- Modal Konfirmasi Hapus Pesan -->
+<!-- Include modal info, keluar, hapus, edit seperti sebelumnya -->
+<?php if (file_exists(__DIR__ . '/modal_info_circle.php')) include 'modal_info_circle.php'; ?>
+<?php if (file_exists(__DIR__ . '/modal_keluar_circle.php')) include 'modal_keluar_circle.php'; ?>
+
+<!-- Modal Konfirmasi Hapus -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -129,13 +142,7 @@
   </div>
 </div>
 
-<!-- Modal Info Circle -->
-<?php if (file_exists(__DIR__ . '/modal_info_circle.php')) include 'modal_info_circle.php'; ?>
-
-<!-- Modal Keluar Circle -->
-<?php if (file_exists(__DIR__ . '/modal_keluar_circle.php')) include 'modal_keluar_circle.php'; ?>
-
-<!-- Modal Edit Pesan -->
+<!-- Modal Edit -->
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -157,7 +164,7 @@
   </div>
 </div>
 
-<!-- Modal Info Pesan -->
+<!-- Modal Info -->
 <div class="modal fade" id="messageInfoModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -184,14 +191,12 @@
     const previewImage = document.getElementById('preview-image');
     const previewContainer = document.getElementById('preview-image-container');
 
-    if (uploadBtn && imageInput) {
-      uploadBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        imageInput.click();
-      });
-    }
+    uploadBtn?.addEventListener('click', function (e) {
+      e.preventDefault();
+      imageInput.click();
+    });
 
-    imageInput.addEventListener('change', function () {
+    imageInput?.addEventListener('change', function () {
       const file = this.files[0];
       if (file) {
         const reader = new FileReader();
