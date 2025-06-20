@@ -11,7 +11,7 @@ $circle_detail = [];
 $members = [];
 $top_active = $newest = null;
 
-// Validasi kepemilikan circle
+// Validasi circle dan ambil creator_id
 $cek = $conn->prepare("SELECT name, description, creator_id, rules FROM circles WHERE id = ?");
 $cek->bind_param("i", $circle_id);
 $cek->execute();
@@ -26,8 +26,17 @@ $cek->bind_result($circle_name, $circle_description, $creator_id, $rules);
 $cek->fetch();
 $cek->close();
 
-if ($creator_id !== $user_id) {
-    echo "<script>alert('Hanya pembuat circle yang dapat mengelola.'); window.location='view_circle.php';</script>";
+// Ambil role user dari circle_members
+$role_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
+$role_stmt->bind_param("ii", $user_id, $circle_id);
+$role_stmt->execute();
+$role_stmt->bind_result($role);
+$role_stmt->fetch();
+$role_stmt->close();
+
+// Validasi akses: hanya creator atau moderator
+if ($creator_id !== $user_id && $role !== 'moderator') {
+    echo "<script>alert('Hanya pembuat circle atau moderator yang dapat mengelola.'); window.location='view_circle.php';</script>";
     exit;
 }
 
