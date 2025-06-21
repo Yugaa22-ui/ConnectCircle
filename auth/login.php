@@ -1,4 +1,9 @@
 <?php session_start(); ?>
+<?php
+$errors = $_SESSION['login_errors'] ?? [];
+$old_email = $_SESSION['old_email'] ?? '';
+unset($_SESSION['login_errors'], $_SESSION['old_email']);
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -29,26 +34,30 @@
                 </div>
                 <div class="card-body">
 
-                    <!-- Notifikasi -->
-                    <?php if (isset($_GET['error'])): ?>
-                        <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
-                    <?php elseif (isset($_GET['success'])): ?>
+                    <!-- Notifikasi untuk redirect sukses -->
+                    <?php if (isset($_GET['success'])): ?>
                         <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="../backend/auth/login_process.php">
+                    <form method="POST" action="../backend/auth/login_process.php" novalidate>
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
-                            <input type="email" name="email" class="form-control" required autofocus>
+                            <input type="email" name="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old_email) ?>" required autofocus>
+                            <?php if (isset($errors['email'])): ?>
+                                <div class="invalid-feedback"><?= $errors['email'] ?></div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Password *</label>
                             <div class="input-group">
-                                <input type="password" name="password" id="password" class="form-control" required>
+                                <input type="password" name="password" id="password" class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" required>
                                 <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
                                     <i class="bi bi-eye-slash" id="icon-password"></i>
                                 </button>
+                                <?php if (isset($errors['password'])): ?>
+                                    <div class="invalid-feedback d-block"><?= $errors['password'] ?></div>
+                                <?php endif; ?>
                             </div>
                         </div>
 

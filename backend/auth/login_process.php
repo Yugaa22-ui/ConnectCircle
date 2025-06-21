@@ -2,18 +2,27 @@
 session_start();
 include '../../includes/db.php';
 
-// Proses hanya jika dari POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email    = trim($_POST['email']);
-    $password = $_POST['password'];
+    $email    = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    // Validasi dasar
-    if (empty($email) || empty($password)) {
-        header("Location: ../../auth/login.php?error=Email dan password wajib diisi!");
+    $errors = [];
+
+    if (empty($email)) {
+        $errors['email'] = "Email harus diisi.";
+    }
+    if (empty($password)) {
+        $errors['password'] = "Password harus diisi.";
+    }
+
+    if (!empty($errors)) {
+        $_SESSION['login_errors'] = $errors;
+        $_SESSION['old_email'] = $email; // supaya email tetap terisi di form
+        header("Location: ../../auth/login.php");
         exit;
     }
 
-    // Cek akun berdasarkan email
+    // Cek akun
     $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -37,11 +46,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             exit;
         } else {
-            header("Location: ../../auth/login.php?error=Password salah!");
+            $_SESSION['login_errors'] = ['password' => 'Password salah.'];
+            $_SESSION['old_email'] = $email;
+            header("Location: ../../auth/login.php");
             exit;
         }
     } else {
-        header("Location: ../../auth/login.php?error=Akun dengan email tersebut tidak ditemukan!");
+        $_SESSION['login_errors'] = ['email' => 'Email tidak ditemukan.'];
+        $_SESSION['old_email'] = $email;
+        header("Location: ../../auth/login.php");
         exit;
     }
 
