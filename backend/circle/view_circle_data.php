@@ -6,12 +6,20 @@ include_once '../includes/db.php';
 
 $user_id = $_SESSION['user_id'];
 $search = isset($_GET['search']) ? '%' . trim($_GET['search']) . '%' : '%';
-$circles = [];
 
-// Ambil circle yang sudah diikuti user
+$managed_circles = [];
+$joined_circles = [];
+
+// Ambil circle yang diikuti user dan pisahkan berdasarkan role
 $stmt = $conn->prepare("
-    SELECT c.id, c.name, c.description,
-        (SELECT COUNT(*) FROM circle_members cm2 WHERE cm2.circle_id = c.id) AS member_count
+    SELECT
+        c.id, c.name, c.description, c.creator_id,
+        cm.role,
+        (SELECT COUNT(*) FROM circle_members WHERE circle_id = c.id) AS member_count,
+        CASE
+            WHEN c.creator_id = cm.user_id THEN 'creator'
+            ELSE cm.role
+        END AS actual_role
     FROM circle_members cm
     JOIN circles c ON cm.circle_id = c.id
     WHERE cm.user_id = ? AND c.name LIKE ?
@@ -21,7 +29,11 @@ $stmt->bind_param("is", $user_id, $search);
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
-    $circles[] = $row;
+    if ($row['actual_role'] === 'creator' || $row['actual_role'] === 'moderator') {
+        $managed_circles[] = $row;
+    } else {
+        $joined_circles[] = $row;
+    }
 }
 $stmt->close();
 

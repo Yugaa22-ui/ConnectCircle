@@ -20,7 +20,7 @@ include '../backend/circle/view_circle_data.php';
 
     <div class="card shadow">
         <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Circle yang Kamu Ikuti</h4>
+            <h4 class="mb-0">Circle Saya</h4>
             <form method="GET" class="d-flex" action="">
                 <input type="text" name="search" class="form-control form-control-sm me-2"
                        placeholder="Cari nama circle" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
@@ -29,9 +29,24 @@ include '../backend/circle/view_circle_data.php';
         </div>
         <div class="card-body">
 
-            <?php if (count($circles) > 0): ?>
+            <?php if (count($managed_circles) > 0): ?>
+                <h5 class="text-primary">🛠️ Circle yang Kamu Kelola</h5>
                 <div class="list-group mb-4">
-                    <?php foreach ($circles as $circle): ?>
+                    <?php foreach ($managed_circles as $circle): ?>
+                        <div class="list-group-item">
+                            <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?></h5>
+                            <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
+                            <small class="text-muted">👥 <?= $circle['member_count'] ?> anggota</small><br>
+                            <a href="discussion_page.php?circle_id=<?= $circle['id'] ?>" class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (count($joined_circles) > 0): ?>
+                <h5 class="text-secondary">👥 Circle yang Kamu Ikuti</h5>
+                <div class="list-group mb-4">
+                    <?php foreach ($joined_circles as $circle): ?>
                         <div class="list-group-item">
                             <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?></h5>
                             <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
@@ -43,25 +58,25 @@ include '../backend/circle/view_circle_data.php';
             <?php endif; ?>
 
             <?php if (!empty($pending_requests)): ?>
-                <h5 class="text-muted mb-3">Permintaan Gabung yang Menunggu</h5>
+                <h5 class="text-muted mb-3">⏳ Permintaan Gabung yang Menunggu</h5>
                 <div class="list-group">
                     <?php foreach ($pending_requests as $req): ?>
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="mb-1"><?= htmlspecialchars($req['name']) ?></h6>
                                 <p class="mb-1"><?= nl2br(htmlspecialchars($req['description'])) ?></p>
-                                <small class="text-muted">⏳ Menunggu Persetujuan</small>
+                                <small class="text-muted">Menunggu Persetujuan</small>
                             </div>
                             <form method="POST" class="ms-3">
                                 <input type="hidden" name="cancel_request_id" value="<?= $req['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Batalkan Permintaan</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Batalkan</button>
                             </form>
                         </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
 
-            <?php if (count($circles) === 0 && count($pending_requests) === 0): ?>
+            <?php if (count($joined_circles) === 0 && count($managed_circles) === 0 && count($pending_requests) === 0): ?>
                 <div class="alert alert-warning mt-4">
                     Kamu belum bergabung di circle manapun.
                     <br>
