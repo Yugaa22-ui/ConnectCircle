@@ -9,7 +9,6 @@ include '../backend/user/edit_profile_process.php';
     <meta charset="UTF-8">
     <title>Edit Profil - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Bootstrap & Cropper CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/cropper-style.css" rel="stylesheet">
@@ -27,9 +26,9 @@ include '../backend/user/edit_profile_process.php';
         </div>
         <div class="card-body">
             <?php if (!empty($success)): ?>
-                <div class="alert alert-success"><?= $success ?></div>
+                <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
             <?php elseif (!empty($error)): ?>
-                <div class="alert alert-danger"><?= $error ?></div>
+                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
             <form method="POST" action="" enctype="multipart/form-data">
@@ -70,6 +69,7 @@ include '../backend/user/edit_profile_process.php';
                             <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
                         <?php endforeach; ?>
                     </div>
+                    <div id="interest-error" class="form-error mt-1 d-none">Maksimal hanya bisa memilih 3 minat.</div>
                 </div>
 
                 <div class="mb-3">
@@ -87,7 +87,7 @@ include '../backend/user/edit_profile_process.php';
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Cropper -->
 <div class="modal fade" id="cropperModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -115,9 +115,12 @@ include '../backend/user/edit_profile_process.php';
     document.querySelectorAll('.interest-checkbox').forEach(cb => {
         cb.addEventListener('change', function () {
             const checked = document.querySelectorAll('.interest-checkbox:checked');
+            const errorMsg = document.getElementById('interest-error');
             if (checked.length > 3) {
                 this.checked = false;
-                alert('Maksimal hanya bisa memilih 3 minat.');
+                errorMsg.classList.remove('d-none');
+            } else {
+                errorMsg.classList.add('d-none');
             }
         });
     });
