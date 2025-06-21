@@ -14,6 +14,9 @@ include '../backend/user/edit_profile_process.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/cropper-style.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <style>
+        .form-error { color: red; font-size: 0.9em; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -23,9 +26,9 @@ include '../backend/user/edit_profile_process.php';
             <h3>Edit Profil</h3>
         </div>
         <div class="card-body">
-            <?php if ($success): ?>
+            <?php if (!empty($success)): ?>
                 <div class="alert alert-success"><?= $success ?></div>
-            <?php elseif ($error): ?>
+            <?php elseif (!empty($error)): ?>
                 <div class="alert alert-danger"><?= $error ?></div>
             <?php endif; ?>
 
@@ -56,10 +59,26 @@ include '../backend/user/edit_profile_process.php';
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Minat (maksimal 3)</label>
+                    <div class="d-flex flex-wrap gap-2" id="interests-container">
+                        <?php foreach ($all_interests as $index => $int): ?>
+                            <?php
+                                $selected = in_array($int['id'], array_column($user_interests, 'interest_id'));
+                                $checkboxId = 'interest_' . $index;
+                            ?>
+                            <input type="checkbox" class="btn-check interest-checkbox" name="interests[]" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off" <?= $selected ? 'checked' : '' ?>>
+                            <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Foto Profil</label><br>
                     <img id="preview" src="<?= $profile_picture ? '../assets/uploads/img/' . htmlspecialchars($profile_picture) : '#' ?>" class="<?= $profile_picture ? '' : 'd-none' ?>" width="100">
                     <input type="file" name="profile_picture" id="profileInput" class="form-control mt-2" accept="image/*">
                 </div>
+
+                <input type="hidden" name="cropped_image" id="cropped_image_input">
 
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <a href="profile.php" class="btn btn-secondary">Batal</a>
@@ -91,5 +110,17 @@ include '../backend/user/edit_profile_process.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script src="../js/cropper-handler.js"></script>
+<script>
+    // Batas maksimal 3 checkbox minat
+    document.querySelectorAll('.interest-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const checked = document.querySelectorAll('.interest-checkbox:checked');
+            if (checked.length > 3) {
+                this.checked = false;
+                alert('Maksimal hanya bisa memilih 3 minat.');
+            }
+        });
+    });
+</script>
 </body>
 </html>
