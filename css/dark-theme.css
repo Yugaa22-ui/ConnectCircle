@@ -231,3 +231,14 @@ button:focus {
 .text-muted {
     color: #bbbbbb !important; /* Lebih cerah dari default Bootstrap */
 }
+
+.list-group-item:hover,
+.list-group-item:focus {
+    background-color: #292929;
+}
+
+.list-group-item.active {
+    background-color: #00BFFF;
+    border-color: #00BFFF;
+    color: #000;
+}
