@@ -14,13 +14,13 @@
       <a href="https://github.com/Yugaa22-ui/connectcircle" target="_blank" class="text-white-50 text-decoration-none me-3" title="GitHub">
         <i class="bi bi-github fs-5"></i>
       </a>
-      <a href="mailto: 2301010301@universitasbumigora.ac.id" class="text-white-50 text-decoration-none me-3" title="Email">
+      <a href="https://mail.google.com/mail/?view=cm&to=laluyoga2704@gmail.com" target="_blank" class="text-white-50 text-decoration-none me-3" title="Kirim Email via Gmail">
         <i class="bi bi-envelope-fill fs-5"></i>
       </a>
-      <a href="https://instagram.com/usernamekamu" target="_blank" class="text-white-50 text-decoration-none me-3" title="Instagram">
+      <a href="https://www.instagram.com/alpredofx/" target="_blank" class="text-white-50 text-decoration-none me-3" title="Instagram">
         <i class="bi bi-instagram fs-5"></i>
       </a>
-      <a href="https://discord.gg/kodekamu" target="_blank" class="text-white-50 text-decoration-none" title="Discord">
+      <a href="https://discord.gg/HGBFKXN3wE" target="_blank" class="text-white-50 text-decoration-none" title="Discord">
         <i class="bi bi-discord fs-5"></i>
       </a>
     </div>
