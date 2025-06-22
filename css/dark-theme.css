@@ -9,8 +9,8 @@ body {
 }
 
 .navbar-brand {
-    font-weight: bold;
     color: #FFFFFF;
+    margin-top: 2px;
 }
 
 .navbar-brand:hover {
@@ -107,6 +107,10 @@ select:focus {
     font-size: 0.9rem;
 }
 
+footer {
+    flex-shrink: 0;
+}
+
 .badge-success {
     background-color: #28A745;
 }
@@ -144,8 +148,8 @@ a:hover {
 
 .hero-section {
     padding: 4rem 0;
-    text-align: center;
     background-color: #1a1a1a;
+    text-align: center;
 }
 
 .navbar-brand {
@@ -155,4 +159,9 @@ a:hover {
 
 .container {
     flex: 1;
+}
+
+main.container,
+.container.flex-grow-1 {
+    flex: 1 0 auto;
 }

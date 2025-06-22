@@ -2,7 +2,7 @@
 
 <!-- Hero Section -->
 <section class="hero-section text-center py-5">
-  <div class="container">
+<div class="container mt-4 flex-grow-1">
     <h1 class="display-4 fw-bold text-white">Temukan Teman Sejalan</h1>
     <p class="lead text-white">
       ConnectCircle membantumu menemukan kolaborator berdasarkan minat yang sama.<br>
