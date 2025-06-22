@@ -1,6 +1,10 @@
 <?php
 include '../backend/auth/auth_check.php';
 include '../backend/friend/friend_request_process.php';
+
+// Ambil notifikasi dari query string jika ada
+$success = $_GET['success'] ?? '';
+$error   = $_GET['error'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -9,6 +13,7 @@ include '../backend/friend/friend_request_process.php';
     <meta charset="UTF-8">
     <title>Permintaan Pertemanan - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -17,8 +22,10 @@ include '../backend/friend/friend_request_process.php';
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Permintaan Pertemanan</h4>
-            <a href="../user/dashboard_user.php" class="btn btn-light btn-sm">Kembali</a>
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill me-1"></i> Permintaan Pertemanan</h4>
+            <a href="../user/dashboard_user.php" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left-circle"></i> Kembali
+            </a>
         </div>
         <div class="card-body">
             <?php if (!empty($success)): ?>
@@ -35,10 +42,14 @@ include '../backend/friend/friend_request_process.php';
                                 <strong><?= htmlspecialchars($req['username']) ?></strong><br>
                                 <small class="text-muted">Dari: <?= htmlspecialchars($req['city']) ?> | Profesi: <?= htmlspecialchars($req['profession']) ?></small>
                             </div>
-                            <form method="POST" class="d-flex gap-2">
+                            <form method="POST" class="d-flex gap-2 mb-0">
                                 <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
-                                <button type="submit" name="action" value="accept" class="btn btn-success btn-sm">Terima</button>
-                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">Tolak</button>
+                                <button type="submit" name="action" value="accept" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check-circle"></i> Terima
+                                </button>
+                                <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-x-circle"></i> Tolak
+                                </button>
                             </form>
                         </li>
                     <?php endforeach; ?>
@@ -50,6 +61,8 @@ include '../backend/friend/friend_request_process.php';
     </div>
 </div>
 
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

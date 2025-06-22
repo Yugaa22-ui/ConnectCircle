@@ -47,21 +47,21 @@
                                     <small class="text-muted">Minat: <?= htmlspecialchars($row['interest']) ?></small>
                                 </div>
                                 <div>
-                                    <?php
-                                        $target_id = $row['id'];
-                                        $status = getFriendStatus($conn, $_SESSION['user_id'], $target_id);
+                                <?php
+                                    $target_id = $row['id'];
+                                    $status = getFriendStatus($conn, $_SESSION['user_id'], $target_id);
 
-                                        if ($status === 'none' || $status === null) {
-                                            echo '<form method="POST" action="../backend/friend/send_friend_request.php" class="d-inline">';
-                                            echo '<input type="hidden" name="target_user" value="' . $target_id . '">';
-                                            echo '<button type="submit" class="btn btn-sm btn-outline-primary">Tambah Teman</button>';
-                                            echo '</form>';
-                                        } elseif ($status === 'pending') {
-                                            echo '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
-                                        } elseif ($status === 'friends') {
-                                            echo '<span class="badge bg-success">Sudah berteman</span>';
-                                        }
-                                    ?>
+                                    if ($status === 'none' || $status === null) {
+                                        echo '<form method="POST" action="../backend/friend/send_friend_request.php" class="d-inline">';
+                                        echo '<input type="hidden" name="target_user" value="' . $target_id . '">';
+                                        echo '<button type="submit" class="btn btn-sm btn-outline-primary">Tambah Teman</button>';
+                                        echo '</form>';
+                                    } elseif ($status === 'pending') {
+                                        echo '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
+                                    } elseif ($status === 'friends') {
+                                        echo '<span class="badge bg-success">Sudah berteman</span>';
+                                    }
+                                ?>
                                 </div>
                             </div>
                         <?php endwhile; ?>

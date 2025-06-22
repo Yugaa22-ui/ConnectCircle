@@ -10,6 +10,19 @@ $results = [];
 $total_matches = 0;
 
 function getFriendStatus($conn, $current_user_id, $target_user_id) {
+    // Cek apakah sudah berteman di tabel friends
+    $checkFriend = $conn->prepare("SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?");
+    $checkFriend->bind_param("ii", $current_user_id, $target_user_id);
+    $checkFriend->execute();
+    $checkFriend->store_result();
+
+    if ($checkFriend->num_rows > 0) {
+        $checkFriend->close();
+        return 'friends';
+    }
+    $checkFriend->close();
+
+    // Jika belum, cek status permintaan
     $stmt = $conn->prepare("
         SELECT status FROM friend_requests
         WHERE (sender_id = ? AND receiver_id = ?)
