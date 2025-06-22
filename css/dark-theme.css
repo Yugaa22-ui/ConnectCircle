@@ -221,3 +221,13 @@ button:focus {
 .form-label {
     color: #ffffff;
 }
+
+.list-group-item {
+    background-color: #1E1E1E;
+    color: #fff;
+    border-color: #333;
+}
+
+.text-muted {
+    color: #bbbbbb !important; /* Lebih cerah dari default Bootstrap */
+}
