@@ -16,13 +16,6 @@
             <h4>Cari Teman Berdasarkan Minat</h4>
         </div>
         <div class="card-body">
-            <!-- Tampilkan notifikasi jika ada -->
-            <?php if (isset($_GET['success'])): ?>
-                <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
-            <?php elseif (isset($_GET['error'])): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
-            <?php endif; ?>
-
             <form method="GET" action="">
                 <div class="mb-3">
                     <label class="form-label">Masukkan Kata Kunci Minat:</label>
@@ -46,22 +39,19 @@
                                     <p class="mb-0"><?= htmlspecialchars($row['profession']) ?> dari <?= htmlspecialchars($row['city']) ?></p>
                                     <small class="text-muted">Minat: <?= htmlspecialchars($row['interest']) ?></small>
                                 </div>
-                                <div>
-                                <?php
-                                    $target_id = $row['id'];
-                                    $status = getFriendStatus($conn, $_SESSION['user_id'], $target_id);
+                                <div id="friend-btn-<?= $row['id'] ?>">
+                                    <?php
+                                        $target_id = $row['id'];
+                                        $status = getFriendStatus($conn, $_SESSION['user_id'], $target_id);
 
-                                    if ($status === 'none' || $status === null) {
-                                        echo '<form method="POST" action="../backend/friend/send_friend_request.php" class="d-inline">';
-                                        echo '<input type="hidden" name="target_user" value="' . $target_id . '">';
-                                        echo '<button type="submit" class="btn btn-sm btn-outline-primary">Tambah Teman</button>';
-                                        echo '</form>';
-                                    } elseif ($status === 'pending') {
-                                        echo '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
-                                    } elseif ($status === 'friends') {
-                                        echo '<span class="badge bg-success">Sudah berteman</span>';
-                                    }
-                                ?>
+                                        if ($status === 'none' || $status === 'rejected') {
+                                            echo '<button type="button" class="btn btn-sm btn-outline-primary" onclick="sendFriendRequest(' . $target_id . ')">Tambah Teman</button>';
+                                        } elseif ($status === 'pending') {
+                                            echo '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
+                                        } elseif ($status === 'friends') {
+                                            echo '<span class="badge bg-success">Sudah berteman</span>';
+                                        }
+                                    ?>
                                 </div>
                             </div>
                         <?php endwhile; ?>
@@ -77,5 +67,44 @@
     </div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function sendFriendRequest(targetId) {
+    const btnContainer = document.querySelector(`#friend-btn-${targetId}`);
+    const original = btnContainer.innerHTML;
+
+    // Disable tombol
+    btnContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>';
+
+    fetch('../backend/friend/send_friend_request.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'target_user=' + encodeURIComponent(targetId)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            btnContainer.innerHTML = '<span class="badge bg-success">Permintaan dikirim</span>';
+        } else if (data.status === 'already_friends') {
+            btnContainer.innerHTML = '<span class="badge bg-success">Sudah berteman</span>';
+        } else if (data.status === 'already_sent') {
+            btnContainer.innerHTML = '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
+        } else {
+            btnContainer.innerHTML = '<span class="badge bg-danger">Gagal mengirim</span>';
+            setTimeout(() => {
+                btnContainer.innerHTML = original;
+            }, 2500);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        btnContainer.innerHTML = '<span class="badge bg-danger">Terjadi kesalahan</span>';
+        setTimeout(() => {
+            btnContainer.innerHTML = original;
+        }, 2500);
+    });
+}
+</script>
 </body>
 </html>

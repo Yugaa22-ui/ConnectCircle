@@ -1,46 +1,74 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-include_once '../../includes/db.php'; // ← karena file ini ada di folder backend/friend/
+if (session_status() === PHP_SESSION_NONE) session_start();
+header('Content-Type: application/json');
+
+include_once '../../includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../auth/login.php");
+    echo json_encode(['status' => 'unauthorized']);
     exit;
 }
 
 $current_user = $_SESSION['user_id'];
-$target_user = isset($_POST['target_user']) ? intval($_POST['target_user']) : 0;
+$target_user  = isset($_POST['target_user']) ? intval($_POST['target_user']) : 0;
 
+// Validasi awal
 if ($target_user <= 0 || $target_user === $current_user) {
-    header("Location: ../../search/search.php?error=Permintaan tidak valid.");
+    echo json_encode(['status' => 'invalid']);
     exit;
 }
 
-// Cek apakah sudah ada permintaan sebelumnya
+// Cek apakah sudah berteman (di tabel friends)
+$checkFriend = $conn->prepare("SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?");
+$checkFriend->bind_param("ii", $current_user, $target_user);
+$checkFriend->execute();
+$checkFriend->store_result();
+if ($checkFriend->num_rows > 0) {
+    echo json_encode(['status' => 'already_friends']);
+    $checkFriend->close();
+    exit;
+}
+$checkFriend->close();
+
+// Cek apakah sudah ada permintaan sebelumnya dari current_user ke target_user
 $check = $conn->prepare("
-    SELECT id FROM friend_requests
-    WHERE (sender_id = ? AND receiver_id = ?)
-       OR (sender_id = ? AND receiver_id = ?)
+    SELECT id, status FROM friend_requests
+    WHERE sender_id = ? AND receiver_id = ?
 ");
-$check->bind_param("iiii", $current_user, $target_user, $target_user, $current_user);
+$check->bind_param("ii", $current_user, $target_user);
 $check->execute();
 $check->store_result();
-
-if ($check->num_rows > 0) {
-    $check->close();
-    header("Location: ../../search/search.php?error=Permintaan sudah dikirim atau telah ada status.");
-    exit;
-}
+$check->bind_result($req_id, $status);
+$found = $check->fetch();
 $check->close();
 
-// Simpan permintaan baru
+if ($found) {
+    if ($status === 'pending') {
+        echo json_encode(['status' => 'already_sent']);
+        exit;
+    } elseif ($status === 'accepted') {
+        echo json_encode(['status' => 'already_friends']);
+        exit;
+    } elseif ($status === 'rejected') {
+        // Ubah jadi pending lagi
+        $update = $conn->prepare("UPDATE friend_requests SET status = 'pending' WHERE id = ?");
+        $update->bind_param("i", $req_id);
+        if ($update->execute()) {
+            echo json_encode(['status' => 'ok']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        $update->close();
+        exit;
+    }
+}
+
+// Jika belum pernah mengirim ke user ini
 $insert = $conn->prepare("INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES (?, ?, 'pending')");
 $insert->bind_param("ii", $current_user, $target_user);
 if ($insert->execute()) {
-    header("Location: ../../search/search.php?success=Permintaan pertemanan berhasil dikirim.");
+    echo json_encode(['status' => 'ok']);
 } else {
-    header("Location: ../../search/search.php?error=Gagal mengirim permintaan.");
+    echo json_encode(['status' => 'error']);
 }
 $insert->close();
-?>
