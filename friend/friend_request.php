@@ -2,9 +2,6 @@
 include '../backend/auth/auth_check.php';
 include '../backend/friend/friend_request_process.php';
 
-// Ambil notifikasi dari query string jika ada
-$success = $_GET['success'] ?? '';
-$error   = $_GET['error'] ?? '';
 ?>
 
 <!DOCTYPE html>
