@@ -1,17 +1,15 @@
-document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
+document.querySelectorAll('[data-page]').forEach(link => {
     link.addEventListener('click', function (e) {
       e.preventDefault();
-      const page = this.dataset.page;
+      const page = this.getAttribute('href');
       fetch(page)
         .then(res => res.text())
         .then(html => {
           document.getElementById('content-area').innerHTML = html;
+          // close sidebar offcanvas (if mobile)
+          const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
+          if (sidebar) sidebar.hide();
         });
     });
-  });
-  
-  document.getElementById('toggleSidebar').addEventListener('click', function () {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('d-none');
   });
   
