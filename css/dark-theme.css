@@ -216,3 +216,8 @@ button:focus {
     border-bottom: 1px solid #333;
     color: #FFFFFF;
 }
+
+
+.form-label {
+    color: #ffffff;
+}
