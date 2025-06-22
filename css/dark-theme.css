@@ -1,0 +1,153 @@
+/* === DARK THEME FOR CONNECTCIRCLE === */
+
+body {
+    background-color: #121212;
+    color: #FFFFFF;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.navbar {
+    background-color: #000000;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.navbar-brand:hover {
+    color: #00BFFF;
+}
+
+.card {
+    background-color: #1E1E1E;
+    border: none;
+}
+
+.card-header {
+    background-color: #1F1F1F;
+    border-bottom: 1px solid #333;
+}
+
+.card-body,
+.card-footer {
+    background-color: #1E1E1E;
+}
+
+input.form-control,
+button,
+.btn,
+textarea,
+select {
+    background-color: #2A2A2A;
+    color: #FFFFFF;
+    border-color: #444;
+}
+
+input::placeholder {
+    color: #AAAAAA;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    background-color: #2A2A2A;
+    color: #FFFFFF;
+    border-color: #00BFFF;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: #00BFFF;
+    border-color: #00BFFF;
+    color: #000;
+}
+
+.btn-primary:hover {
+    background-color: #009ACD;
+    border-color: #009ACD;
+}
+
+.btn-outline-primary {
+    border-color: #00BFFF;
+    color: #00BFFF;
+}
+
+.btn-outline-primary:hover {
+    background-color: #00BFFF;
+    color: #000;
+}
+
+.btn-secondary {
+    background-color: #343A40;
+    color: #FFF;
+}
+
+.alert {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.alert-success {
+    background-color: #1E4620;
+    color: #28a745;
+}
+
+.alert-warning {
+    background-color: #4e3e10;
+    color: #ffc107;
+}
+
+.alert-danger {
+    background-color: #4a1d1d;
+    color: #dc3545;
+}
+
+.footer {
+    color: #BBBBBB;
+    font-size: 0.9rem;
+}
+
+.badge-success {
+    background-color: #28A745;
+}
+
+.badge-warning {
+    background-color: #FD7E14;
+    color: #000;
+}
+
+.badge-danger {
+    background-color: #DC3545;
+}
+
+a {
+    color: #00BFFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #009ACD;
+}
+
+/* Logo */
+.logo-image {
+    width: 200px;
+    height: 200px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.lead,
+.lead.text-white {
+    color: #ffffff !important;
+}
+
+.hero-section {
+    padding: 4rem 0;
+    text-align: center;
+    background-color: #1a1a1a;
+}
+
