@@ -17,9 +17,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
   <div class="container d-flex align-items-center">
-    <img src="/connectcircle/assets/img/logo_aplikasi.svg" alt="Logo ConnectCircle" height="40" class="me-2 logo-image" />
-    <a class="navbar-brand fw-bold fs-4" href="/connectcircle/">ConnectCircle</a>
+    <img src="/connectcircle/assets/img/logo_aplikasi.svg" alt="Logo ConnectCircle" class="logo-image" />
   </div>
 </nav>
+
 
 <div class="container mt-4">
