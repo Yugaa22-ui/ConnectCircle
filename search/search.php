@@ -6,8 +6,6 @@
     <meta charset="UTF-8">
     <title>Cari Teman Berdasarkan Minat - ConnectCircle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -18,10 +16,17 @@
             <h4>Cari Teman Berdasarkan Minat</h4>
         </div>
         <div class="card-body">
+            <!-- Tampilkan notifikasi jika ada -->
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
+            <?php elseif (isset($_GET['error'])): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
+            <?php endif; ?>
+
             <form method="GET" action="">
                 <div class="mb-3">
                     <label class="form-label">Masukkan Kata Kunci Minat:</label>
-                    <input type="text" name="minat" class="form-control" value="<?= htmlspecialchars($search_term) ?>" placeholder="Contoh: Coding, Musik, Desain" required>
+                    <input type="text" name="minat" class="form-control" value="<?= htmlspecialchars($search_term) ?>" placeholder="Contoh: Pemrograman, Musik, Desain" required>
                 </div>
                 <button type="submit" class="btn btn-success">Cari</button>
             </form>
@@ -35,10 +40,29 @@
                     <p><strong><?= $total_matches ?></strong> pengguna ditemukan.</p>
                     <div class="list-group">
                         <?php while ($row = $results->fetch_assoc()): ?>
-                            <div class="list-group-item">
-                                <h6><?= htmlspecialchars($row['username']) ?></h6>
-                                <p class="mb-0"><?= htmlspecialchars($row['profession']) ?> dari <?= htmlspecialchars($row['city']) ?></p>
-                                <small class="text-muted">Minat: <?= htmlspecialchars($row['interest']) ?></small>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6><?= htmlspecialchars($row['username']) ?></h6>
+                                    <p class="mb-0"><?= htmlspecialchars($row['profession']) ?> dari <?= htmlspecialchars($row['city']) ?></p>
+                                    <small class="text-muted">Minat: <?= htmlspecialchars($row['interest']) ?></small>
+                                </div>
+                                <div>
+                                    <?php
+                                        $target_id = $row['id'];
+                                        $status = getFriendStatus($conn, $_SESSION['user_id'], $target_id);
+
+                                        if ($status === 'none' || $status === null) {
+                                            echo '<form method="POST" action="../backend/friend/send_friend_request.php" class="d-inline">';
+                                            echo '<input type="hidden" name="target_user" value="' . $target_id . '">';
+                                            echo '<button type="submit" class="btn btn-sm btn-outline-primary">Tambah Teman</button>';
+                                            echo '</form>';
+                                        } elseif ($status === 'pending') {
+                                            echo '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
+                                        } elseif ($status === 'friends') {
+                                            echo '<span class="badge bg-success">Sudah berteman</span>';
+                                        }
+                                    ?>
+                                </div>
                             </div>
                         <?php endwhile; ?>
                     </div>
