@@ -16,13 +16,19 @@
             <h4>Cari Teman Berdasarkan Minat</h4>
         </div>
         <div class="card-body">
-            <form method="GET" action="">
-                <div class="mb-3">
-                    <label class="form-label">Masukkan Kata Kunci Minat:</label>
-                    <input type="text" name="minat" class="form-control" value="<?= htmlspecialchars($search_term) ?>" placeholder="Contoh: Pemrograman, Musik, Desain" required>
-                </div>
-                <button type="submit" class="btn btn-success">Cari</button>
-            </form>
+        <form method="GET" action="">
+            <div class="mb-3">
+                <label class="form-label">Masukkan Kata Kunci Minat:</label>
+                <input type="text" name="minat"
+                    class="form-control <?= !empty($search_error) ? 'is-invalid' : '' ?>"
+                    value="<?= htmlspecialchars($search_term) ?>"
+                    placeholder="Contoh: Pemrograman, Musik, Desain">
+                <?php if (!empty($search_error)): ?>
+                    <div class="invalid-feedback"><?= htmlspecialchars($search_error) ?></div>
+                <?php endif; ?>
+            </div>
+            <button type="submit" class="btn btn-success">Cari</button>
+        </form>
 
             <hr>
 
@@ -69,42 +75,7 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-function sendFriendRequest(targetId) {
-    const btnContainer = document.querySelector(`#friend-btn-${targetId}`);
-    const original = btnContainer.innerHTML;
-
-    // Disable tombol
-    btnContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>';
-
-    fetch('../backend/friend/send_friend_request.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'target_user=' + encodeURIComponent(targetId)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            btnContainer.innerHTML = '<span class="badge bg-success">Permintaan dikirim</span>';
-        } else if (data.status === 'already_friends') {
-            btnContainer.innerHTML = '<span class="badge bg-success">Sudah berteman</span>';
-        } else if (data.status === 'already_sent') {
-            btnContainer.innerHTML = '<span class="badge bg-warning text-dark">Menunggu konfirmasi</span>';
-        } else {
-            btnContainer.innerHTML = '<span class="badge bg-danger">Gagal mengirim</span>';
-            setTimeout(() => {
-                btnContainer.innerHTML = original;
-            }, 2500);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        btnContainer.innerHTML = '<span class="badge bg-danger">Terjadi kesalahan</span>';
-        setTimeout(() => {
-            btnContainer.innerHTML = original;
-        }, 2500);
-    });
-}
-</script>
+<!-- JS Tambah Teman -->
+<script src="../js/search_friend.js"></script>
 </body>
 </html>

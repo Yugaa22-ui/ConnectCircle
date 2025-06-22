@@ -6,6 +6,7 @@ include_once '../includes/db.php';
 
 $current_user_id = $_SESSION['user_id'] ?? 0;
 $search_term = '';
+$search_error = '';
 $results = [];
 $total_matches = 0;
 
@@ -22,7 +23,7 @@ function getFriendStatus($conn, $current_user_id, $target_user_id) {
     }
     $checkFriend->close();
 
-    // Jika belum, cek status permintaan
+// Jika belum, cek status permintaan
     $stmt = $conn->prepare("
         SELECT status FROM friend_requests
         WHERE (sender_id = ? AND receiver_id = ?)
@@ -46,7 +47,9 @@ function getFriendStatus($conn, $current_user_id, $target_user_id) {
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['minat'])) {
     $search_term = trim($_GET['minat']);
 
-    if (!empty($search_term)) {
+    if (empty($search_term)) {
+        $search_error = "Kata kunci minat tidak boleh kosong.";
+    } else {
         $stmt = $conn->prepare("
             SELECT u.id, u.username, u.city, u.profession, i.name AS interest
             FROM users u
