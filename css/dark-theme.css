@@ -19,7 +19,8 @@ body {
 
 .card {
     background-color: #1E1E1E;
-    border: none;
+    border-radius: 8px;
+    border: 1px solid #333;
 }
 
 .card-header {
@@ -74,6 +75,7 @@ select:focus {
 .btn-outline-primary:hover {
     background-color: #00BFFF;
     color: #000;
+    box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
 }
 
 .btn-secondary {
@@ -134,12 +136,14 @@ a:hover {
     color: #009ACD;
 }
 
+
 .logo-image {
     max-height: 40px;
     width: auto;
-    object-fit: contain;
     margin-right: 10px;
+    object-fit: contain;
 }
+
 
 .lead,
 .lead.text-white {
@@ -167,11 +171,6 @@ a:hover {
         0 2px 5px rgba(255, 255, 255, 0.07);
 }
 
-.navbar-brand {
-    margin-top: 2px;
-}
-
-
 .container {
     flex: 1;
 }
@@ -179,4 +178,41 @@ a:hover {
 main.container,
 .container.flex-grow-1 {
     flex: 1 0 auto;
+}
+
+input.form-control,
+textarea.form-control {
+    background-color: #2A2A2A;
+    color: #FFF;
+    border: 1px solid #555;
+}
+
+input.form-control:focus {
+    border-color: #00BFFF;
+    box-shadow: none;
+}
+
+.btn-outline-light:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.btn-outline-light {
+    border-color: #bbb;
+    color: #fff;
+  }
+
+.border-secondary {
+    border-color: #333 !important;
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.4);
+}
+
+.card-header-dark {
+    background-color: #1F1F1F;
+    border-bottom: 1px solid #333;
+    color: #FFFFFF;
 }

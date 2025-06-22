@@ -1,99 +1,63 @@
-<?php session_start(); ?>
 <?php
+session_start();
 $errors = $_SESSION['login_errors'] ?? [];
 $old_email = $_SESSION['old_email'] ?? '';
 unset($_SESSION['login_errors'], $_SESSION['old_email']);
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Login - ConnectCircle</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap 5 + Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<?php include '../templates/header.php'; ?>
 
-    <style>
-        .toggle-password {
-            background: none;
-            border: none;
-            padding: 0 10px;
-        }
-    </style>
-</head>
-<body class="bg-light">
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+      <div class="card-header card-header-dark">
+            <h3 class="mb-0">Login ke ConnectCircle</h3>
+        </div>
+        <div class="card-body">
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Login ke ConnectCircle</h3>
-                </div>
-                <div class="card-body">
+          <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
+          <?php endif; ?>
 
-                    <!-- Notifikasi untuk redirect sukses -->
-                    <?php if (isset($_GET['success'])): ?>
-                        <div class="alert alert-success"><?= htmlspecialchars($_GET['success']) ?></div>
-                    <?php endif; ?>
-
-                    <form method="POST" action="../backend/auth/login_process.php" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label">Email *</label>
-                            <input type="email" name="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old_email) ?>" required autofocus>
-                            <?php if (isset($errors['email'])): ?>
-                                <div class="invalid-feedback"><?= $errors['email'] ?></div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Password *</label>
-                            <div class="input-group">
-                                <input type="password" name="password" id="password" class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" required>
-                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
-                                    <i class="bi bi-eye-slash" id="icon-password"></i>
-                                </button>
-                                <?php if (isset($errors['password'])): ?>
-                                    <div class="invalid-feedback d-block"><?= $errors['password'] ?></div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Login</button>
-                            <a href="register.php" class="btn btn-outline-secondary">Belum punya akun? Daftar</a>
-                        </div>
-                    </form>
-
-                </div>
+          <form method="POST" action="../backend/auth/login_process.php" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Email *</label>
+              <input type="email" name="email"
+                class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
+                value="<?= htmlspecialchars($old_email) ?>" required autofocus>
+              <?php if (isset($errors['email'])): ?>
+                <div class="invalid-feedback"><?= $errors['email'] ?></div>
+              <?php endif; ?>
             </div>
 
-            <p class="text-center text-muted mt-4">&copy; <?= date('Y') ?> ConnectCircle</p>
+            <div class="mb-3">
+              <label class="form-label">Password *</label>
+              <div class="input-group">
+                <input type="password" name="password" id="password"
+                  class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" required>
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                  <i class="bi bi-eye-slash" id="icon-password"></i>
+                </button>
+              </div>
+              <?php if (isset($errors['password'])): ?>
+                <div class="invalid-feedback d-block"><?= $errors['password'] ?></div>
+              <?php endif; ?>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-outline-light">Login</button>  
+                <a href="register.php" class="btn btn-secondary">Belum punya akun? Daftar</a>
+            </div>
+          </form>
+
         </div>
+      </div>
     </div>
-</div>
+  </div>
+</main>
 
-<!-- JS toggle password -->
-<script>
-document.querySelector('.toggle-password').addEventListener('click', function () {
-    const targetId = this.dataset.target;
-    const input = document.getElementById(targetId);
-    const icon = document.getElementById('icon-' + targetId);
+<!-- Script toggle password -->
+<script src="../js/toggle_password.js"></script>
 
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
-    }
-});
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../templates/footer.php'; ?>
