@@ -242,3 +242,14 @@ button:focus {
     border-color: #00BFFF;
     color: #000;
 }
+
+.interest-badge {
+    background-color: #0dcaf0;
+    color: #000;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .interest-badge:hover {
+    background-color: #000;
+    color: #fff;
+  }
+  
