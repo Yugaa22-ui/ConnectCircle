@@ -48,6 +48,15 @@ document.querySelectorAll('[data-page]').forEach(link => {
           }
         });
       }
+
+      if (page.includes('view_circle.php')) {
+        loadScriptIfNotExists('../js/view_circle.js', () => {
+          if (typeof initViewCirclePage === 'function') {
+            initViewCirclePage();
+          }
+        });
+      }
+      
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
         if (sidebar) sidebar.hide();
