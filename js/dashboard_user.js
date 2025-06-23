@@ -14,6 +14,18 @@ document.querySelectorAll('[data-page]').forEach(link => {
         .then(res => res.text())
         .then(html => {
           document.getElementById('content-area').innerHTML = html;
+
+              // Re-init JS jika halaman tersebut membutuhkan
+        if (page.includes('create_circle.php')) {
+            const script = document.createElement('script');
+            script.src = '../js/create_circle.js';
+            script.onload = () => {
+            if (typeof initCreateCircleForm === 'function') {
+                initCreateCircleForm();
+            }
+            };
+            document.body.appendChild(script);
+        }
   
           // Tutup sidebar (offcanvas) jika sedang di mobile
           const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));

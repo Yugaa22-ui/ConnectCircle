@@ -13,7 +13,7 @@
           <a href="profile.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="profile.php">
             <i class="bi bi-person-circle me-2"></i> Lihat Profil
           </a>
-          <a href="../circle/create_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/create_circle.php">
+          <a href="../circle/create_circle.php?embed=1" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/create_circle.php?embed=1">
             <i class="bi bi-plus-circle me-2"></i> Buat Circle
           </a>
           <a href="../circle/join_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/join_circle.php">
