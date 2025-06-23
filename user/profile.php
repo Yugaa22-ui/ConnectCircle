@@ -1,4 +1,8 @@
-<?php include '../backend/user/profile_data.php'; ?>
+<?php
+$include_template = $_GET['embed'] ?? false;
+if (!$include_template) include '../templates/header.php';
+include '../backend/user/profile_data.php';
+?>
 
 <main class="container py-5">
   <div class="row justify-content-center">
@@ -19,18 +23,10 @@
           </div>
 
           <ul class="list-group list-group-flush">
-            <li class="list-group-item bg-dark text-white">
-              <strong>Username:</strong> <?= htmlspecialchars($username) ?>
-            </li>
-            <li class="list-group-item bg-dark text-white">
-              <strong>Kota:</strong> <?= htmlspecialchars($city) ?>
-            </li>
-            <li class="list-group-item bg-dark text-white">
-              <strong>Profesi:</strong> <?= htmlspecialchars($profession) ?>
-            </li>
-            <li class="list-group-item bg-dark text-white">
-              <strong>Bio:</strong> <br><?= nl2br(htmlspecialchars($bio)) ?>
-            </li>
+            <li class="list-group-item bg-dark text-white"><strong>Username:</strong> <?= htmlspecialchars($username) ?></li>
+            <li class="list-group-item bg-dark text-white"><strong>Kota:</strong> <?= htmlspecialchars($city) ?></li>
+            <li class="list-group-item bg-dark text-white"><strong>Profesi:</strong> <?= htmlspecialchars($profession) ?></li>
+            <li class="list-group-item bg-dark text-white"><strong>Bio:</strong><br><?= nl2br(htmlspecialchars($bio)) ?></li>
             <li class="list-group-item bg-dark text-white">
               <strong>Minat:</strong><br>
               <?php if (!empty($interests_list)): ?>
@@ -68,3 +64,5 @@
     </div>
   </div>
 </main>
+
+<?php if (!$include_template) include '../templates/footer.php'; ?>
