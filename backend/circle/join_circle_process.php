@@ -15,7 +15,8 @@ $user_id = $_SESSION['user_id'];
 $available_circles = [];
 
 // Deteksi apakah permintaan adalah AJAX JSON
-$is_ajax = $_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false;
+$is_ajax = $_SERVER['REQUEST_METHOD'] === 'POST' &&
+           strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false;
 
 if ($is_ajax) {
     header('Content-Type: application/json');
@@ -88,16 +89,18 @@ if ($is_ajax) {
     exit;
 }
 
-// Jika bukan AJAX (GET biasa untuk tampilan awal daftar circle)
+// --- GET: Ambil daftar circle yang belum diikuti DAN belum diajukan ---
 $stmt = $conn->prepare("
     SELECT c.id, c.name, c.description, c.is_private,
         (SELECT COUNT(*) FROM circle_members cm WHERE cm.circle_id = c.id) AS member_count
     FROM circles c
     WHERE c.id NOT IN (
         SELECT circle_id FROM circle_members WHERE user_id = ?
+        UNION
+        SELECT circle_id FROM circle_requests WHERE user_id = ?
     )
 ");
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("ii", $user_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 

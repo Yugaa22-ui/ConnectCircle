@@ -6,9 +6,9 @@ include '../backend/auth/auth_check.php';
 include '../backend/circle/join_circle_process.php';
 ?>
 
-<main class="container py-5">
+<main class="container-fluid py-4 px-2 px-md-4">
   <div class="row justify-content-center">
-    <div class="col-lg-10">
+    <div class="col-12 col-md-11 col-lg-10">
       <div class="card bg-dark text-white border-secondary shadow">
         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
           <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i> Gabung Circle Baru</h5>

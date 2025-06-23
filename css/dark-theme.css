@@ -254,20 +254,22 @@ button:focus {
   }
 
   .snackbar {
+    background-color: #2a2a2a;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7);
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #222;
-    color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    z-index: 1055;
     opacity: 0.95;
-    font-size: 1rem;
-    box-shadow: 0 0 10px #000;
-    animation: fadein 0.3s, fadeout 0.3s 3.5s;
+    z-index: 2000;
+    transition: all 0.3s ease;
   }
+  
   @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 0.95; }
