@@ -47,7 +47,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
             initJoinCircleButtons();
           }
         });
-      }      
+      }
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
         if (sidebar) sidebar.hide();

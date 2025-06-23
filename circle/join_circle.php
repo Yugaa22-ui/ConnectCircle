@@ -49,15 +49,28 @@ include '../backend/circle/join_circle_process.php';
             <div class="alert alert-info">Tidak ada circle yang tersedia untuk saat ini.</div>
           <?php endif; ?>
         </div>
-
-        <div class="card-footer border-top border-secondary text-end">
-          <a href="../user/dashboard_user.php" class="btn btn-outline-light">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
-          </a>
-        </div>
       </div>
     </div>
   </div>
+  <!-- Modal Konfirmasi Gabung -->
+<div class="modal fade" id="confirmJoinModal" tabindex="-1" aria-labelledby="confirmJoinLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title" id="confirmJoinLabel">Konfirmasi</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmJoinMessage" class="mb-0"></p>
+      </div>
+      <div class="modal-footer border-top">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-outline-light" id="confirmJoinBtn">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>
