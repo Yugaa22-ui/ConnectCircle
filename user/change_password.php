@@ -1,68 +1,87 @@
 <?php
+$include_template = $_GET['embed'] ?? false;
+if (!$include_template) include '../templates/header.php';
+
 include '../backend/auth/auth_check.php';
 include '../backend/user/change_password_process.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Ubah Password - ConnectCircle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>.form-error { color: red; font-size: 0.9em; }</style>
-</head>
-<body class="bg-light">
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card bg-dark text-white border-secondary shadow">
+        <div class="card-header bg-secondary text-white d-flex align-items-center">
+          <i class="bi bi-key-fill me-2"></i>
+          <h5 class="mb-0">Ubah Password</h5>
+        </div>
 
-<div class="container mt-5">
-  <div class="card shadow">
-    <div class="card-header bg-warning text-dark">
-      <h4>Ubah Password</h4>
-    </div>
-    <div class="card-body">
-      <?php if (!empty($success)): ?>
-        <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-      <?php elseif (!empty($errors['global'])): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($errors['global']) ?></div>
-      <?php endif; ?>
-
-      <form method="POST" action="">
-        <!-- Password Lama -->
-        <div class="mb-3">
-          <label class="form-label">Password Lama *</label>
-          <input type="password" name="old_password" class="form-control">
-          <?php if (isset($errors['old_password'])): ?>
-            <div class="form-error"><?= $errors['old_password'] ?></div>
+        <div class="card-body">
+          <?php if (!empty($success)): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+          <?php elseif (!empty($errors['global'])): ?>
+            <div class="alert alert-danger"><?= htmlspecialchars($errors['global']) ?></div>
           <?php endif; ?>
-        </div>
 
-        <!-- Password Baru -->
-        <div class="mb-3">
-          <label class="form-label">Password Baru *</label>
-          <input type="password" name="new_password" class="form-control">
-          <div class="form-text">Minimal 8 karakter, kombinasi huruf besar, kecil, dan angka.</div>
-          <?php if (isset($errors['new_password'])): ?>
-            <div class="form-error"><?= $errors['new_password'] ?></div>
-          <?php endif; ?>
-        </div>
+          <form method="POST" action="">
+            <!-- Password Lama -->
+            <div class="mb-3">
+              <label class="form-label text-white">Password Lama *</label>
+              <div class="input-group">
+                <input type="password" name="old_password" id="old_password" class="form-control <?= isset($errors['old_password']) ? 'is-invalid' : '' ?>">
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="old_password">
+                  <i class="bi bi-eye-slash" id="icon-old_password"></i>
+                </button>
+                <?php if (isset($errors['old_password'])): ?>
+                  <div class="invalid-feedback d-block"><?= $errors['old_password'] ?></div>
+                <?php endif; ?>
+              </div>
+            </div>
 
-        <!-- Konfirmasi Password Baru -->
-        <div class="mb-3">
-          <label class="form-label">Konfirmasi Password Baru *</label>
-          <input type="password" name="confirm_password" class="form-control">
-          <?php if (isset($errors['confirm_password'])): ?>
-            <div class="form-error"><?= $errors['confirm_password'] ?></div>
-          <?php endif; ?>
-        </div>
+            <!-- Password Baru -->
+            <div class="mb-3">
+              <label class="form-label text-white">Password Baru *</label>
+              <div class="input-group">
+                <input type="password" name="new_password" id="new_password" class="form-control <?= isset($errors['new_password']) ? 'is-invalid' : '' ?>">
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password">
+                  <i class="bi bi-eye-slash" id="icon-new_password"></i>
+                </button>
+              </div>
+              <div class="form-text text-white-50">Minimal 8 karakter, kombinasi huruf besar, kecil, dan angka.</div>
+              <?php if (isset($errors['new_password'])): ?>
+                <div class="invalid-feedback d-block"><?= $errors['new_password'] ?></div>
+              <?php endif; ?>
+            </div>
 
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Simpan Password Baru</button>
-          <a href="profile.php" class="btn btn-secondary">Kembali</a>
+            <!-- Konfirmasi Password Baru -->
+            <div class="mb-3">
+              <label class="form-label text-white">Konfirmasi Password Baru *</label>
+              <div class="input-group">
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control <?= isset($errors['confirm_password']) ? 'is-invalid' : '' ?>">
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm_password">
+                  <i class="bi bi-eye-slash" id="icon-confirm_password"></i>
+                </button>
+              </div>
+              <?php if (isset($errors['confirm_password'])): ?>
+                <div class="invalid-feedback d-block"><?= $errors['confirm_password'] ?></div>
+              <?php endif; ?>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="submit" class="btn btn-outline-light">
+                <i class="bi bi-check-circle me-1"></i> Simpan
+              </button>
+              <a href="profile.php" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Kembali
+              </a>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </div>
-</div>
+</main>
 
-</body>
-</html>
+<!-- Link toggle password -->
+<script src="../js/toggle_password.js"></script>
+
+<?php if (!$include_template) include '../templates/footer.php'; ?>
