@@ -1,5 +1,6 @@
 function initJoinCircleButtons() {
-  const modal = new bootstrap.Modal(document.getElementById('confirmJoinModal'));
+  const modalEl = document.getElementById('confirmJoinModal');
+  const modal = new bootstrap.Modal(modalEl);
   const confirmMessage = document.getElementById('confirmJoinMessage');
   const confirmBtn = document.getElementById('confirmJoinBtn');
 
@@ -15,44 +16,61 @@ function initJoinCircleButtons() {
       confirmMessage.innerHTML = `Yakin ingin ${actionText} circle <strong>${circleName}</strong>?`;
       confirmBtn.dataset.circleId = circleId;
       confirmBtn.dataset.isPrivate = isPrivate;
-      confirmBtn.dataset.buttonRef = button.dataset.circleId;
+      confirmBtn.dataset.buttonRef = circleId;
 
       modal.show();
     });
   });
 
-  confirmBtn.addEventListener('click', async function () {
-    const id = this.dataset.circleId;
-    const isPrivate = this.dataset.isPrivate === 'true';
-  
-    // Feedback loading
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Memproses...';
-  
-    try {
-      const res = await fetch(`../backend/circle/join_circle_process.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ circle_id: id, is_private: isPrivate ? 1 : 0 })
-      });
-  
-      const result = await res.json();
-      showSnackbar(result.success || result.error, result.success ? 'success' : 'danger');
-  
-      if (result.success) {
-        document.querySelectorAll(`.join-btn[data-circle-id="${id}"]`).forEach(btn => {
-          btn.disabled = true;
-          btn.textContent = isPrivate ? 'Menunggu Persetujuan' : 'Tergabung';
+  if (!confirmBtn.classList.contains('bound')) {
+    confirmBtn.classList.add('bound');
+
+    confirmBtn.addEventListener('click', async function () {
+      const id = this.dataset.circleId;
+      const isPrivate = this.dataset.isPrivate === 'true';
+
+      // Simpan label asli tombol
+      const originalLabel = this.innerHTML;
+      this.disabled = true;
+      this.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Memproses...`;
+
+      try {
+        const res = await fetch(`../backend/circle/join_circle_process.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ circle_id: id, is_private: isPrivate ? 1 : 0 })
         });
+
+        const result = await res.json();
+
+        showSnackbar(result.success || result.error, result.success ? 'success' : 'danger');
+
+        if (result.success) {
+          document.querySelectorAll(`.join-btn[data-circle-id="${id}"]`).forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = isPrivate ? 'Menunggu Persetujuan' : 'Tergabung';
+          });
+        }
+      } catch {
+        showSnackbar('Terjadi kesalahan saat mengirim permintaan.', 'danger');
+      } finally {
+        // Kembalikan tombol dan tutup modal
+        this.disabled = false;
+        this.innerHTML = originalLabel;
+        bootstrap.Modal.getInstance(modalEl).hide();
       }
-  
-    } catch {
-      showSnackbar('Terjadi kesalahan saat mengirim permintaan.', 'danger');
-    } finally {
-      // Reset tombol
-      confirmBtn.disabled = false;
-      confirmBtn.textContent = 'Ya, Lanjutkan';
-      bootstrap.Modal.getInstance(document.getElementById('confirmJoinModal')).hide();
-    }
-  });  
+    });
+  }
+}
+
+function showSnackbar(message, type = 'info') {
+  const container = document.getElementById('snackbar-container');
+  container.innerHTML = `
+    <div class="snackbar ${type}">
+      ${message}
+    </div>
+  `;
+  setTimeout(() => {
+    container.innerHTML = '';
+  }, 3500);
 }
