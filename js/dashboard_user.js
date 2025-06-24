@@ -29,6 +29,9 @@ document.querySelectorAll('[data-page]').forEach(link => {
       .then(html => {
         document.getElementById('content-area').innerHTML = html;
 
+        // Set active menu
+        setActiveLink(this);
+
         // Jika memuat halaman tertentu, muat JS terkait
         if (page.includes('create_circle.php')) {
           const script = document.createElement('script');
@@ -63,3 +66,17 @@ document.querySelectorAll('[data-page]').forEach(link => {
       });
   });
 });
+
+function setActiveLink(clickedLink) {
+  const allLinks = document.querySelectorAll('.sidebar-link');
+  const clickedHref = clickedLink.getAttribute('href').split('?')[0]; // Tanpa query
+
+  allLinks.forEach(link => {
+    const href = link.getAttribute('href').split('?')[0];
+    if (href === clickedHref) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}

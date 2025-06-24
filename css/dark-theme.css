@@ -258,3 +258,57 @@ body {
     flex: 1 0 auto;
   }
   
+  .list-group-item.active {
+    background-color: #00BFFF;
+    color: #000 !important;
+    border-left: 4px solid #ffffff;
+    font-weight: bold;
+  }
+
+  /* Efek hover dan transisi smooth */
+.list-group-item {
+    transition: background-color 0.3s ease, color 0.3s ease, border-left 0.3s ease;
+    border-left: 4px solid transparent;
+    padding-left: 1rem;
+  }
+  
+  .list-group-item:hover {
+    background-color: #292929;
+    color: #a5a5a5;
+  }
+  
+  /* Saat aktif */
+  .list-group-item.active {
+    background-color: #00BFFF;
+    color: #000 !important;
+    border-left: 4px solid #ffffff;
+    font-weight: bold;
+  }
+  
+  /* Icon di dalam item aktif */
+  .list-group-item.active i {
+    color: #000 !important;
+  }
+  
+  /* Icon normal */
+  .list-group-item i {
+    transition: color 0.3s ease;
+    color: #bbb;
+  }
+  
+  /* Icon saat hover */
+  .list-group-item:hover i {
+    color: #fff;
+  }
+  
+  .sidebar-link.active {
+    background-color: #e5e5e5 !important;
+    color: #000 !important;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .sidebar-link.active i {
+    color: #000 !important;
+  }
+  

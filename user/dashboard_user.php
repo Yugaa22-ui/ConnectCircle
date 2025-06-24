@@ -1,5 +1,8 @@
-<?php include '../backend/user/dashboard_user_data.php'; ?>
-<?php include '../templates/header.php'; ?>
+<?php
+include '../backend/user/dashboard_user_data.php';
+include '../templates/header.php';
+$current = basename($_SERVER['PHP_SELF']);
+?>
 
 <main class="container-fluid mt-4">
   <div class="row">
@@ -10,28 +13,28 @@
           <span class="fw-bold">Menu</span>
         </div>
         <div class="list-group list-group-flush">
-          <a href="profile.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="profile.php">
+          <a href="profile.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'profile.php' ? 'active' : '' ?>" data-page="profile.php">
             <i class="bi bi-person-circle me-2"></i> Lihat Profil
           </a>
-          <a href="../circle/create_circle.php?embed=1" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/create_circle.php?embed=1">
+          <a href="../circle/create_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'create_circle.php' ? 'active' : '' ?>" data-page="../circle/create_circle.php">
             <i class="bi bi-plus-circle me-2"></i> Buat Circle
           </a>
-          <a href="../circle/join_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/join_circle.php">
+          <a href="../circle/join_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'join_circle.php' ? 'active' : '' ?>" data-page="../circle/join_circle.php">
             <i class="bi bi-search me-2"></i> Gabung Circle
           </a>
-          <a href="../circle/view_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/view_circle.php">
+          <a href="../circle/view_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'view_circle.php' ? 'active' : '' ?>" data-page="../circle/view_circle.php">
             <i class="bi bi-collection me-2"></i> Lihat Circle Saya
           </a>
-          <a href="../search/search.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../search/search.php">
+          <a href="../search/search.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'search.php' ? 'active' : '' ?>" data-page="../search/search.php">
             <i class="bi bi-person-plus me-2"></i> Cari Teman Berdasarkan Minat
           </a>
-          <a href="../friend/friend_request.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../friend/friend_request.php">
+          <a href="../friend/friend_request.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'friend_request.php' ? 'active' : '' ?>" data-page="../friend/friend_request.php">
             <i class="bi bi-person-check me-2"></i> Permintaan Pertemanan
           </a>
-          <a href="../friend/friend_list.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../friend/friend_list.php">
+          <a href="../friend/friend_list.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'friend_list.php' ? 'active' : '' ?>" data-page="../friend/friend_list.php">
             <i class="bi bi-people-fill me-2"></i> Daftar Teman
           </a>
-          <a href="#" class="list-group-item list-group-item-action bg-dark text-white" data-bs-toggle="modal" data-bs-target="#logoutModal">
+          <a href="#" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
             <i class="bi bi-box-arrow-right me-2"></i> Logout
           </a>
         </div>
@@ -45,7 +48,7 @@
       </button>
     </div>
 
-    <!-- Offcanvas sidebar (mobile) -->
+    <!-- Sidebar Mobile -->
     <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="mobileSidebar">
       <div class="offcanvas-header border-bottom border-secondary">
         <h5 class="offcanvas-title">Menu</h5>
@@ -53,29 +56,28 @@
       </div>
       <div class="offcanvas-body p-0">
         <div class="list-group list-group-flush">
-          <!-- Duplicate of sidebar for mobile -->
-          <a href="profile.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="profile.php">
+          <a href="profile.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="profile.php">
             <i class="bi bi-person-circle me-2"></i> Lihat Profil
           </a>
-          <a href="../circle/create_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/create_circle.php">
+          <a href="../circle/create_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../circle/create_circle.php">
             <i class="bi bi-plus-circle me-2"></i> Buat Circle
           </a>
-          <a href="../circle/join_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/join_circle.php">
+          <a href="../circle/join_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../circle/join_circle.php">
             <i class="bi bi-search me-2"></i> Gabung Circle
           </a>
-          <a href="../circle/view_circle.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../circle/view_circle.php">
+          <a href="../circle/view_circle.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../circle/view_circle.php">
             <i class="bi bi-collection me-2"></i> Lihat Circle Saya
           </a>
-          <a href="../search/search.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../search/search.php">
+          <a href="../search/search.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../search/search.php">
             <i class="bi bi-person-plus me-2"></i> Cari Teman Berdasarkan Minat
           </a>
-          <a href="../friend/friend_request.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../friend/friend_request.php">
+          <a href="../friend/friend_request.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../friend/friend_request.php">
             <i class="bi bi-person-check me-2"></i> Permintaan Pertemanan
           </a>
-          <a href="../friend/friend_list.php" class="list-group-item list-group-item-action bg-dark text-white" data-page="../friend/friend_list.php">
+          <a href="../friend/friend_list.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-page="../friend/friend_list.php">
             <i class="bi bi-people-fill me-2"></i> Daftar Teman
           </a>
-          <a href="#" class="list-group-item list-group-item-action bg-dark text-white" data-bs-toggle="modal" data-bs-target="#logoutModal">
+          <a href="#" class="list-group-item list-group-item-action bg-dark text-white sidebar-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
             <i class="bi bi-box-arrow-right me-2"></i> Logout
           </a>
         </div>
