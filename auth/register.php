@@ -97,9 +97,12 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
               <textarea name="bio" class="form-control" rows="3"><?= htmlspecialchars($old['bio'] ?? '') ?></textarea>
             </div>
 
-            <!-- Minat -->
-            <div class="mb-3">
+            <<!-- Minat -->
+          <div class="mb-3 position-relative">
+            <div class="d-flex justify-content-between align-items-start">
               <label class="form-label">Minat (maksimal 3)</label>
+              <div id="interests-limit-error" class="text-danger small ms-2" style="white-space: nowrap; display: none;"></div>
+            </div>
               <div class="d-flex flex-wrap gap-2" id="interests-container">
                 <?php foreach ($interests as $index => $int): ?>
                   <?php
@@ -133,12 +136,24 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
   document.querySelectorAll('.interest-checkbox').forEach(cb => {
     cb.addEventListener('change', function () {
       const checked = document.querySelectorAll('.interest-checkbox:checked');
+      const errorEl = document.getElementById('interests-limit-error');
+
       if (checked.length > 3) {
         this.checked = false;
-        alert('Maksimal hanya bisa memilih 3 minat.');
+
+        // Tampilkan pesan di samping label
+        errorEl.textContent = 'Maksimal hanya bisa memilih 3 minat.';
+        errorEl.style.display = 'inline';
+
+        // Sembunyikan otomatis setelah 3 detik
+        clearTimeout(errorEl._timeout);
+        errorEl._timeout = setTimeout(() => {
+          errorEl.style.display = 'none';
+        }, 3000);
       }
     });
   });
 </script>
+
 
 <?php include '../templates/footer.php'; ?>
