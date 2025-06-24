@@ -12,18 +12,19 @@ include '../backend/circle/view_circle_data.php';
   <?php endif; ?>
 
   <div class="card bg-dark text-white border-secondary shadow">
-    <div class="card-header bg-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="card-header bg-secondary d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
       <h5 class="mb-0"><i class="bi bi-collection me-2"></i> Circle Saya</h5>
-      <form method="GET" class="d-flex flex-wrap align-items-center gap-2" action="">
-        <input type="text" name="search" class="form-control form-control-sm bg-dark text-white border-secondary"
-               placeholder="Cari nama circle" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
-        <button class="btn btn-sm btn-outline-light" type="submit">🔍 Cari</button>
+      <form method="GET" class="d-flex flex-wrap align-items-center gap-2 search-form">
+        <div class="input-group input-group-sm">
+          <input type="text" name="search" class="form-control bg-dark text-white border-secondary" placeholder="Cari nama circle" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+          <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>
+        </div>
       </form>
     </div>
 
-    <div class="card-body">
+    <div class="card-body" id="circle-results">
       <?php if (count($managed_circles) > 0): ?>
-        <h6 class="text-info">🛠️ Circle yang Kamu Kelola</h6>
+        <h6 class="text-info mb-2"><i class="bi bi-tools me-1"></i> Circle yang Kamu Kelola</h6>
         <div class="list-group mb-4">
           <?php foreach ($managed_circles as $circle): ?>
             <div class="list-group-item bg-dark text-white border-secondary">
@@ -37,13 +38,13 @@ include '../backend/circle/view_circle_data.php';
       <?php endif; ?>
 
       <?php if (count($joined_circles) > 0): ?>
-        <h6 class="text-primary">👥 Circle yang Kamu Ikuti</h6>
+        <h6 class="text-primary mb-2"><i class="bi bi-people me-1"></i> Circle yang Kamu Ikuti</h6>
         <div class="list-group mb-4">
           <?php foreach ($joined_circles as $circle): ?>
             <div class="list-group-item bg-dark text-white border-secondary">
               <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?></h5>
               <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
-              <small class="text-muted">👥 <?= $circle['member_count'] ?> anggota</small><br>
+              <small class="text-muted"><i class="bi bi-people-fill me-1"></i><?= $circle['member_count'] ?> anggota</small><br>
               <a href="discussion_page.php?circle_id=<?= $circle['id'] ?>" class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
             </div>
           <?php endforeach; ?>
@@ -51,7 +52,7 @@ include '../backend/circle/view_circle_data.php';
       <?php endif; ?>
 
       <?php if (!empty($pending_requests)): ?>
-        <h6 class="text-muted">⏳ Permintaan Gabung yang Menunggu</h6>
+        <h6 class="text-muted mb-2"><i class="bi bi-hourglass-split me-1"></i> Permintaan Gabung yang Menunggu</h6>
         <div class="list-group mb-4">
           <?php foreach ($pending_requests as $req): ?>
             <div class="list-group-item bg-dark text-white border-secondary d-flex justify-content-between flex-wrap align-items-start">
@@ -77,10 +78,6 @@ include '../backend/circle/view_circle_data.php';
           <a href="join_circle.php" class="btn btn-sm btn-outline-primary mt-2">Gabung Circle</a>
         </div>
       <?php endif; ?>
-    </div>
-
-    <div class="card-footer text-end border-top border-secondary">
-      <a href="../user/dashboard_user.php" class="btn btn-outline-light"><i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard</a>
     </div>
   </div>
 </main>

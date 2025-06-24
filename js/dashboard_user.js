@@ -51,8 +51,8 @@ document.querySelectorAll('[data-page]').forEach(link => {
 
       if (page.includes('view_circle.php')) {
         loadScriptIfNotExists('../js/view_circle.js', () => {
-          if (typeof initViewCirclePage === 'function') {
-            initViewCirclePage();
+          if (typeof initViewCircleSearch === 'function') {
+            initViewCircleSearch();
           }
         });
       }
