@@ -92,6 +92,7 @@ include '../backend/circle/discussion_controller.php';
       <?php else: ?>
         <div id="preview-image-container" class="mb-2" style="display: none;">
           <img id="preview-image" src="#" class="img-thumbnail" style="max-width: 150px;">
+          <div id="cancel-image-wrapper" class="mt-2"></div>
         </div>
         <form method="POST" enctype="multipart/form-data" class="input-message-wrapper">
           <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
@@ -176,35 +177,6 @@ include '../backend/circle/discussion_controller.php';
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const container = document.getElementById('message-container');
-  container.scrollTop = container.scrollHeight;
 
-  const uploadBtn = document.getElementById('uploadBtn');
-  const imageInput = document.getElementById('imageInput');
-  const previewImage = document.getElementById('preview-image');
-  const previewContainer = document.getElementById('preview-image-container');
-
-  uploadBtn?.addEventListener('click', function (e) {
-    e.preventDefault();
-    imageInput.click();
-  });
-
-  imageInput?.addEventListener('change', function () {
-    const file = this.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        previewImage.src = e.target.result;
-        previewContainer.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    } else {
-      previewContainer.style.display = 'none';
-    }
-  });
-});
-</script>
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>

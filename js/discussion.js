@@ -1,7 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('preview-image');
+    const previewContainer = document.getElementById('preview-image-container');
+    const cancelWrapper = document.getElementById('cancel-image-wrapper');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-    // Fungsi untuk menampilkan info pesan
+    // Auto scroll ke bawah saat load
+    if (messageContainer) {
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    // Klik icon upload gambar
+    if (uploadBtn && imageInput) {
+        uploadBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            imageInput.click();
+        });
+    }
+
+    // Preview gambar & tombol batal
+    if (imageInput) {
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+
+                    // Hapus tombol lama dulu
+                    const oldBtn = document.getElementById('cancelImageBtn');
+                    if (oldBtn) oldBtn.remove();
+
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'btn btn-sm btn-outline-danger mt-2';
+                    cancelBtn.id = 'cancelImageBtn';
+                    cancelBtn.textContent = 'Batalkan Gambar';
+                    cancelBtn.onclick = () => {
+                        imageInput.value = '';
+                        previewImage.src = '';
+                        previewContainer.style.display = 'none';
+                        cancelBtn.remove();
+                    };
+                    cancelWrapper?.appendChild(cancelBtn);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+    }
+
+    // Load modal info pesan
     function loadInfoModal(postId) {
         const modalBody = document.getElementById('messageInfoContent');
         modalBody.innerHTML = '<div class="text-center text-muted">Memuat...</div>';
@@ -17,15 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Event tombol info
     document.querySelectorAll('.btn-info-post').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const postId = this.dataset.postId;
-            loadInfoModal(postId);
-        });
+        btn.addEventListener('click', () => loadInfoModal(btn.dataset.postId));
     });
 
-    // Event klik kanan & tahan lama (kontekstual)
     document.querySelectorAll('.message-block').forEach(msg => {
         let timeoutId;
         const postId = msg.dataset.postId;
@@ -44,26 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Tombol Edit
+    // Edit pesan
     document.querySelectorAll('.btn-edit-post').forEach(btn => {
         btn.addEventListener('click', function () {
-            const postId = this.dataset.id;
-            const content = this.dataset.content;
-
-            document.getElementById('editPostId').value = postId;
-            document.getElementById('editContent').value = content;
+            document.getElementById('editPostId').value = this.dataset.id;
+            document.getElementById('editContent').value = this.dataset.content;
             document.getElementById('editSnackbar').textContent = '';
-
             new bootstrap.Modal(document.getElementById('editModal')).show();
         });
     });
 
-    // Submit Edit
     const editForm = document.getElementById('editPostForm');
     if (editForm) {
         editForm.addEventListener('submit', function (e) {
             e.preventDefault();
-
             const postId = document.getElementById('editPostId').value;
             const content = document.getElementById('editContent').value.trim();
             const snackbar = document.getElementById('editSnackbar');
@@ -77,9 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch('../backend/circle/edit_post.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `post_id=${encodeURIComponent(postId)}&new_content=${encodeURIComponent(content)}`
             })
             .then(res => res.json())
@@ -91,62 +129,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => window.location.reload(), 1000);
                 } else {
                     snackbar.classList.add('text-danger');
-                    snackbar.textContent = data.status === 'unauthorized' ? 'Tidak diizinkan mengedit pesan ini.' :
-                                           data.status === 'invalid' ? 'Input tidak valid.' :
-                                           'Gagal memperbarui pesan.';
+                    snackbar.textContent = 'Gagal memperbarui pesan.';
                 }
             })
-            .catch(err => {
-                console.error('Fetch error:', err);
+            .catch(() => {
                 snackbar.classList.add('text-danger');
                 snackbar.textContent = 'Terjadi kesalahan.';
             });
         });
     }
 
-    // Modal konfirmasi hapus
+    // Konfirmasi hapus
     document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
         button.addEventListener('click', function () {
-            const postId = this.getAttribute('data-post-id');
-            document.getElementById('deletePostId').value = postId;
+            document.getElementById('deletePostId').value = this.getAttribute('data-post-id');
         });
     });
-
-    // Scroll otomatis ke bawah saat halaman dibuka
-    container.scrollTop = container.scrollHeight;
-
-    // Preview gambar sebelum dikirim & tombol batal
-    const imageInput = document.getElementById('imageInput');
-    const previewImage = document.getElementById('preview-image');
-    const previewContainer = document.getElementById('preview-image-container');
-
-    if (imageInput) {
-        imageInput.addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
-
-                    // Tambah tombol cancel kalau belum ada
-                    if (!document.getElementById('cancelImageBtn')) {
-                        const cancelBtn = document.createElement('button');
-                        cancelBtn.className = 'btn btn-sm btn-outline-danger mt-2';
-                        cancelBtn.id = 'cancelImageBtn';
-                        cancelBtn.textContent = 'Batalkan Gambar';
-                        cancelBtn.onclick = () => {
-                            imageInput.value = '';
-                            previewContainer.style.display = 'none';
-                            cancelBtn.remove();
-                        };
-                        previewContainer.appendChild(cancelBtn);
-                    }
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewContainer.style.display = 'none';
-            }
-        });
-    }
 });
