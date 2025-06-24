@@ -1,6 +1,15 @@
 <?php
-require __DIR__ . '/../templates/header.php'; // pastikan header mengatur tema gelap
+require __DIR__ . '/../templates/header.php';
 require __DIR__ . '/../backend/circle/circle_requests_process.php';
+
+// Snackbar feedback (dari handle_request.php pakai ?status=success|error&msg=...)
+$snackbar = null;
+if (isset($_GET['status']) && isset($_GET['msg'])) {
+  $snackbar = [
+    'type' => $_GET['status'] === 'success' ? 'success' : 'danger',
+    'msg' => htmlspecialchars($_GET['msg'])
+  ];
+}
 ?>
 
 <div class="container my-5">
@@ -25,17 +34,24 @@ require __DIR__ . '/../backend/circle/circle_requests_process.php';
                   <small class="text-muted"><?= date('d M Y H:i', strtotime($row['created_at'])) ?></small>
                 </div>
               </div>
-              <form method="POST" action="../backend/circle/handle_request.php" class="d-flex gap-2">
-                <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
-                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
-                <input type="hidden" name="user_id" value="<?= $row['user_id'] ?>">
-                <button name="action" value="approve" class="btn btn-success btn-sm" title="Setujui" onclick="return confirm('Terima permintaan ini?')">
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success btn-sm"
+                        data-bs-toggle="modal" data-bs-target="#confirmModal"
+                        data-username="<?= htmlspecialchars($row['username']) ?>"
+                        data-action="approve"
+                        data-request-id="<?= $row['id'] ?>"
+                        data-user-id="<?= $row['user_id'] ?>">
                   <i class="bi bi-check-circle"></i>
                 </button>
-                <button name="action" value="reject" class="btn btn-danger btn-sm" title="Tolak" onclick="return confirm('Tolak permintaan ini?')">
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal" data-bs-target="#confirmModal"
+                        data-username="<?= htmlspecialchars($row['username']) ?>"
+                        data-action="reject"
+                        data-request-id="<?= $row['id'] ?>"
+                        data-user-id="<?= $row['user_id'] ?>">
                   <i class="bi bi-x-circle"></i>
                 </button>
-              </form>
+              </div>
             </li>
           <?php endwhile; ?>
         </ul>
@@ -45,5 +61,63 @@ require __DIR__ . '/../backend/circle/circle_requests_process.php';
     </div>
   </div>
 </div>
+
+<!-- Modal Konfirmasi -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light border border-secondary shadow">
+      <div class="modal-header border-bottom border-secondary">
+        <h5 class="modal-title">Konfirmasi Aksi</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Yakin ingin melanjutkan aksi ini?</p>
+      </div>
+      <div class="modal-footer border-top border-secondary">
+        <form method="POST" action="../backend/circle/handle_request.php" id="confirmForm">
+          <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
+          <input type="hidden" name="request_id" id="confirmRequestId">
+          <input type="hidden" name="user_id" id="confirmUserId">
+          <input type="hidden" name="action" id="confirmAction">
+          <button type="submit" class="btn btn-primary px-4">Ya, Lanjutkan</button>
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Batal</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Snackbar -->
+<?php if ($snackbar): ?>
+  <div id="snackbar" class="position-fixed bottom-0 end-0 m-4 z-3 alert alert-<?= $snackbar['type'] ?> shadow border border-light" role="alert">
+    <?= $snackbar['msg'] ?>
+  </div>
+  <script>
+    setTimeout(() => {
+      const snackbar = document.getElementById('snackbar');
+      if (snackbar) snackbar.remove();
+    }, 4000);
+  </script>
+<?php endif; ?>
+
+<script>
+  const confirmModal = document.getElementById('confirmModal');
+  confirmModal.addEventListener('show.bs.modal', event => {
+    const button = event.relatedTarget;
+    const username = button.getAttribute('data-username');
+    const action = button.getAttribute('data-action');
+    const requestId = button.getAttribute('data-request-id');
+    const userId = button.getAttribute('data-user-id');
+
+    const message = action === 'approve'
+      ? `Yakin ingin <strong>menyetujui</strong> permintaan dari <strong>${username}</strong>?`
+      : `Yakin ingin <strong>menolak</strong> permintaan dari <strong>${username}</strong>?`;
+
+    document.getElementById('confirmMessage').innerHTML = message;
+    document.getElementById('confirmRequestId').value = requestId;
+    document.getElementById('confirmUserId').value = userId;
+    document.getElementById('confirmAction').value = action;
+  });
+</script>
 
 <?php include __DIR__ . '/../templates/footer.php'; ?>
