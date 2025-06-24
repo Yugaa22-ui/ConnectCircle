@@ -32,3 +32,28 @@ textarea[name="message"] {
     resize: none;
     height: 40px;
 }
+
+/* Untuk modal info circle */
+.modal-content.bg-dark {
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal-body .col {
+    transition: background-color 0.2s ease;
+  }
+  
+  .modal-body .col:hover {
+    background-color: #2c2c2c;
+  }
+  
+/* Efek hover anggota */
+.modal-body .col .d-flex:hover {
+    background-color: #2c2c2c;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Gaya tombol lebih lembut */
+  .modal-footer .btn-outline-light {
+    border-color: #666;
+  }
+  

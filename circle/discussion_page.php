@@ -34,7 +34,7 @@ include '../backend/circle/discussion_controller.php';
         <?php if ($is_creator || $is_moderator): ?>
           <a href="manage_circle.php?circle_id=<?= $circle_id ?>" class="btn btn-sm btn-outline-primary">Kelola Circle</a>
         <?php endif; ?>
-        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal">Lihat Info Circle</button>
+        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#circleInfoModal" data-circle-id="<?= (int)$_GET['circle_id'] ?>">Lihat Info Circle</button>
         <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmLeaveModal">Keluar Circle</button>
         <a href="view_circle.php" class="btn btn-sm btn-secondary">Kembali</a>
       </div>
