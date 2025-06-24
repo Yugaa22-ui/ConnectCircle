@@ -262,3 +262,19 @@ button:focus {
     to   { opacity: 0; }
   }
   
+  .input-message-wrapper textarea {
+    resize: none;
+  }
+  
+  .card-header, .card-footer {
+    background-color: #1e1e1e;
+  }
+  
+  .card-body {
+    background-color: #222;
+  }
+  
+  .message-block:hover {
+    background-color: #2a2a2a;
+  }
+  

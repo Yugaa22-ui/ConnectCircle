@@ -31,7 +31,7 @@ include '../backend/circle/view_circle_data.php';
               <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?></h5>
               <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
               <small class="text-muted"><i class="bi bi-people-fill me-1"></i><?= $circle['member_count'] ?> anggota</small>
-              <a href="discussion_page.php?circle_id=<?= $circle['id'] ?>" class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
+              <a href="../circle/discussion_page.php?circle_id=<?= $circle['id'] ?>"class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
             </div>
           <?php endforeach; ?>
         </div>
@@ -45,7 +45,7 @@ include '../backend/circle/view_circle_data.php';
               <h5 class="mb-1"><?= htmlspecialchars($circle['name']) ?></h5>
               <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
               <small class="text-muted"><i class="bi bi-people-fill me-1"></i><?= $circle['member_count'] ?> anggota</small><br>
-              <a href="discussion_page.php?circle_id=<?= $circle['id'] ?>" class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
+              <a href="../circle/discussion_page.php?circle_id=<?= $circle['id'] ?>" class="btn btn-outline-success btn-sm mt-2">Masuk Diskusi</a>
             </div>
           <?php endforeach; ?>
         </div>
