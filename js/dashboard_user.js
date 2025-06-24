@@ -74,7 +74,24 @@ document.querySelectorAll('[data-page]').forEach(link => {
             }
           }, 100);
         });
+      }
+
+      if (page.includes('friend_request.php')) {
+        loadScriptIfNotExists('../js/friend_request.js', () => {
+          console.log("✅ friend_request.js dimuat");
+      
+          setTimeout(() => {
+            console.log("📌 window keys:", Object.keys(window));
+            if (typeof window.initFriendRequestHandler === 'function') {
+              console.log("✅ initFriendRequestHandler tersedia dan dipanggil");
+              window.initFriendRequestHandler();
+            } else {
+              console.warn("❌ initFriendRequestHandler tidak ditemukan meskipun script dimuat.");
+            }
+          }, 100);
+        });
       }      
+
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
         if (sidebar) sidebar.hide();
