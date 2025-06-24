@@ -60,6 +60,21 @@ document.querySelectorAll('[data-page]').forEach(link => {
         });
       }
       
+      if (page.includes('search.php')) {
+        loadScriptIfNotExists('../js/search_friend.js', () => {
+          
+          // Polling untuk menunggu fungsi tersedia
+          let tries = 0;
+          const interval = setInterval(() => {
+            if (typeof window.initSearchFriendForm === 'function') {
+              window.initSearchFriendForm();
+              clearInterval(interval);
+            } else if (tries++ > 10) {
+              clearInterval(interval);
+            }
+          }, 100);
+        });
+      }      
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
         if (sidebar) sidebar.hide();

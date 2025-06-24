@@ -312,3 +312,17 @@ body {
     color: #000 !important;
   }
   
+  /* Agar input dan list-item konsisten di dark mode */
+    input.form-control.bg-dark,
+    input.form-control.bg-dark:focus {
+    background-color: #1c1c1c !important;
+    color: white !important;
+    border-color: #444;
+    }
+
+    .list-group-item.bg-dark {
+    transition: background 0.3s;
+    }
+    .list-group-item.bg-dark:hover {
+    background-color: #2a2a2a;
+    }
