@@ -32,15 +32,15 @@ if (!$embed) include '../templates/header.php';
                       <strong><?= htmlspecialchars($req['username']) ?></strong><br>
                       <small class="text-muted">Dari: <?= htmlspecialchars($req['city']) ?> | Profesi: <?= htmlspecialchars($req['profession']) ?></small>
                   </div>
-                  <form method="POST" data-request-form class="d-flex gap-2 mb-0">
-                      <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
-                      <button type="submit" name="action" value="accept" class="btn btn-sm btn-success">
-                        <i class="bi bi-check-circle"></i> Terima
-                      </button>
-                      <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">
-                        <i class="bi bi-x-circle"></i> Tolak
-                      </button>
-                  </form>
+                  <form method="POST" data-request-form class="d-flex gap-2 mb-0" onsubmit="return false;">
+                        <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
+                        <button type="submit" name="action" value="accept" class="btn btn-sm btn-success">
+                            <i class="bi bi-check-circle"></i> Terima
+                        </button>
+                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">
+                            <i class="bi bi-x-circle"></i> Tolak
+                        </button>
+                    </form>
                 </li>
             <?php endforeach; ?>
         </ul>
