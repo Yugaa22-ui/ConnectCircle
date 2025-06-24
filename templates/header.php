@@ -12,7 +12,7 @@
   <!-- Custom Dark Theme -->
   <link rel="stylesheet" href="/connectcircle/css/dark-theme.css" />
 </head>
-<body class="bg-dark text-white">
+<body class="bg-dark text-white d-flex flex-column min-vh-100"> <!-- Sticky layout -->
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
@@ -21,5 +21,5 @@
   </div>
 </nav>
 
-
-<div class="container mt-4">
+<!-- Main content start -->
+<main class="flex-grow-1">
