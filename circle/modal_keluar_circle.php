@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-secondary">
       <div class="modal-header border-bottom border-secondary" style="background-color: #2c2c2c;">
-        <h5 class="modal-title text-warning">Konfirmasi Keluar Circle</h5>
+        <h5 class="modal-title text-light">Konfirmasi Keluar Circle</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
