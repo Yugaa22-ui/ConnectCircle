@@ -24,7 +24,7 @@
         <hr class="border-secondary">
 
         <div class="mb-2">
-          <strong>Anggota yang paling aktif (3):</strong>
+          <strong>Top Anggota yang paling aktif (3):</strong>
         </div>
 
         <div id="top-member-list" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
