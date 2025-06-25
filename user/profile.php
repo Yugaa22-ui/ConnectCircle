@@ -58,11 +58,16 @@ include '../backend/user/profile_data.php';
         <div class="card-footer border-top border-secondary d-flex justify-content-end gap-2">
           <a href="edit_profile.php" class="btn btn-outline-info"><i class="bi bi-pencil-square"></i> Edit Profil</a>
           <a href="change_password.php" class="btn btn-outline-warning"><i class="bi bi-key"></i> Ubah Password</a>
-          <a href="dashboard_user.php" class="btn btn-outline-light"><i class="bi bi-arrow-left"></i> Kembali</a>
         </div>
       </div>
     </div>
   </div>
 </main>
-
+<?php if (!$include_template): ?>
+  <div class="text-center mt-4">
+    <a href="../user/dashboard_user.php" class="btn btn-outline-light">
+      <i class="bi bi-close-left-circle"></i> Kembali ke Dashboard
+    </a>
+  </div>
+<?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>

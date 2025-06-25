@@ -74,7 +74,7 @@ include '../templates/header.php';
 
             <div class="d-flex justify-content-between flex-wrap gap-2">
               <button type="submit" class="btn btn-outline-light">Simpan Perubahan</button>
-              <a href="profile.php" class="btn btn-secondary">Batal</a>
+              <a href="profile.php" class="btn btn-secondary">Kembali</a>
             </div>
           </form>
         </div>

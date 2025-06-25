@@ -70,7 +70,12 @@ include '../backend/circle/join_circle_process.php';
     </div>
   </div>
 </div>
-
 </main>
-
+<?php if (!$include_template): ?>
+  <div class="text-center mt-4">
+    <a href="../user/dashboard_user.php" class="btn btn-outline-light">
+      <i class="bi bi-arrow-left-circle"></i> Kembali ke Dashboard
+    </a>
+  </div>
+<?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>

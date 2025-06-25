@@ -4,7 +4,6 @@ if (!$include_template) include '../templates/header.php';
 
 include '../backend/auth/auth_check.php';
 ?>
-
 <main class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10">
@@ -44,6 +43,12 @@ include '../backend/auth/auth_check.php';
     </div>
   </div>
 </main>
-
+<?php if (!$include_template): ?>
+  <div class="text-center mt-4">
+    <a href="../user/dashboard_user.php" class="btn btn-outline-light">
+      <i class="bi bi-arrow-left-circle"></i> Kembali ke Dashboard
+    </a>
+  </div>
+<?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>
 <script src="../js/create_circle.js"></script>
