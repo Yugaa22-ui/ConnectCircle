@@ -51,6 +51,9 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
         </div>
         <button type="submit" name="update_circle" value="1" class="btn btn-primary">Simpan Perubahan</button>
       </form>
+      <a href="discussion_page.php?circle_id=<?= $circle_id ?>" class="btn btn-outline-light mt-3">
+        <i class="bi bi-arrow-left-circle"></i> Kembali ke Diskusi
+      </a>
     </div>
 
     <!-- Tab: Anggota -->
@@ -175,5 +178,13 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
     </div>
   </div>
 </div>
-
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    if (toastEl) {
+      const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      bsToast.show();
+    }
+  });
+</script>
 <?php require __DIR__ . '/../templates/footer.php'; ?>

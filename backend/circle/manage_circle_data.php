@@ -56,15 +56,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_rules = trim($_POST['rules']);
         $is_private = isset($_POST['is_private']) ? 1 : 0;
 
-        $update = $conn->prepare("UPDATE circles SET name = ?, description = ?, rules = ?, is_private = ? WHERE id = ?");
-        $update->bind_param("sssii", $new_name, $new_desc, $new_rules, $is_private, $circle_id);
-        if ($update->execute()) {
-            $circle_name = $new_name;
-            $circle_description = $new_desc;
-            $rules = $new_rules;
-            $msg = "✅ Circle berhasil diperbarui.";
-        }
-        $update->close();
+        $is_data_changed = (
+            $new_name !== $circle_name ||
+            $new_desc !== $circle_description ||
+            $new_rules !== $rules ||
+            $is_private != $is_private  // perbandingan sebelumnya tidak masuk akal
+        );
+        
+        // Perlu mengambil ulang nilai is_private asli dari DB
+        $get_visibility = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
+        $get_visibility->bind_param("i", $circle_id);
+        $get_visibility->execute();
+        $get_visibility->bind_result($current_private_status);
+        $get_visibility->fetch();
+        $get_visibility->close();
+        
+        // Periksa apakah ada perubahan
+        $is_data_changed = (
+            $new_name !== $circle_name ||
+            $new_desc !== $circle_description ||
+            $new_rules !== $rules ||
+            $is_private != $current_private_status
+        );
+        
+        if ($is_data_changed) {
+            $update = $conn->prepare("UPDATE circles SET name = ?, description = ?, rules = ?, is_private = ? WHERE id = ?");
+            $update->bind_param("sssii", $new_name, $new_desc, $new_rules, $is_private, $circle_id);
+            if ($update->execute()) {
+                $circle_name = $new_name;
+                $circle_description = $new_desc;
+                $rules = $new_rules;
+                $msg = "✅ Circle berhasil diperbarui.";
+            }
+            $update->close();
+        } else {
+            $msg = "ℹ️ Tidak ada data yang diubah.";
+        }        
     }
 
     // Aksi terhadap anggota
