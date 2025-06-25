@@ -54,11 +54,10 @@ document.querySelectorAll('[data-page]').forEach(link => {
 
       if (page.includes('view_circle.php')) {
         loadScriptIfNotExists('../js/view_circle.js', () => {
-          if (typeof initViewCircleSearch === 'function') {
-            initViewCircleSearch();
-          }
+          if (typeof initViewCircleSearch === 'function') initViewCircleSearch();
+          if (typeof initCancelJoinRequest === 'function') initCancelJoinRequest();
         });
-      }
+      }      
       
       if (page.includes('search.php')) {
         loadScriptIfNotExists('../js/search_friend.js', () => {

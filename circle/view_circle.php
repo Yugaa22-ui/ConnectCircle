@@ -61,8 +61,7 @@ include '../backend/circle/view_circle_data.php';
                 <p class="mb-1"><?= nl2br(htmlspecialchars($req['description'])) ?></p>
                 <small class="text-muted">Menunggu Persetujuan</small>
               </div>
-              <form method="POST" class="ms-3 mt-2">
-                <input type="hidden" name="cancel_request_id" value="<?= $req['id'] ?>">
+              <form class="cancel-request-form ms-3 mt-2" data-circle-id="<?= $req['circle_id'] ?>">
                 <button type="submit" class="btn btn-sm btn-outline-danger">Batalkan</button>
               </form>
             </div>
@@ -87,5 +86,8 @@ include '../backend/circle/view_circle_data.php';
       <i class="bi bi-arrow-left-circle"></i> Kembali ke Dashboard
     </a>
   </div>
+<?php endif; ?>
+<?php if (!$include_template): ?>
+  <script src="../js/view_circle.js"></script>
 <?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>
