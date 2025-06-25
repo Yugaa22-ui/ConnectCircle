@@ -77,5 +77,15 @@ include '../backend/circle/join_circle_process.php';
       <i class="bi bi-arrow-left-circle"></i> Kembali ke Dashboard
     </a>
   </div>
+
+  <!-- Hanya load JS & init saat bukan embed -->
+  <script src="../js/join_circle.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initJoinCircleButtons === 'function') {
+        initJoinCircleButtons();
+      }
+    });
+  </script>
 <?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>
