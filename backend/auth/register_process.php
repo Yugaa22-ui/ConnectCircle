@@ -5,8 +5,15 @@ include '../../includes/db.php';
 $errors = [];
 $old = [];
 
-function is_valid_email($email) {
-    if (!preg_match('/^(?!.*@.*@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email)) return false;
+// Validasi format email
+function is_valid_email_format($email) {
+    // Cek format email valid dan TLD minimal 2 huruf
+    return preg_match('/^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email);
+}
+
+// Validasi domain email aktif
+function is_valid_email_domain($email) {
+    // Cek domain MX aktif
     $domain = substr(strrchr($email, "@"), 1);
     return checkdnsrr($domain, "MX");
 }
@@ -23,35 +30,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $old = compact('username', 'email', 'city', 'profession', 'bio', 'interests');
 
-    // Validasi form Kosong
+    // Validasi form kosong
     if (empty($username)) $errors['username'] = "Username harus diisi.";
     if (empty($email))    $errors['email'] = "Email harus diisi.";
     if (empty($password)) $errors['password'] = "Password harus diisi.";
     if (empty($confirm))  $errors['confirm_password'] = "Konfirmasi password harus diisi.";
 
     // Validasi format email
-    if (!empty($email) && !is_valid_email($email)) {
-        $errors['email'] = "Format email tidak valid atau domain tidak aktif.";
+    if (!empty($email)) {
+        if (!is_valid_email_format($email)) {
+            $errors['email'] = "Format email tidak valid.";
+        } elseif (!is_valid_email_domain($email)) {
+            $errors['email'] = "Domain email tidak aktif.";
+        }
     }
 
-    //  Validasi format Password
+    // Validasi password format
     if (!empty($password) && !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
         $errors['password'] = "Password minimal 8 karakter, harus mengandung huruf besar, kecil, dan angka.";
     }
 
-    // Validasi Konfirmasi Password
-    if ($password !== $confirm) {
+    // Validasi konfirmasi password
+    if (!empty($password) && !empty($confirm) && $password !== $confirm) {
         $errors['confirm_password'] = "Konfirmasi password tidak cocok.";
     }
 
-    // Validasi Minat (Minimal 1, Maksimal 3)
+    // Validasi minat
     if (count($interests) < 1) {
         $errors['interests'] = "Pilih minimal 1 minat.";
     } elseif (count($interests) > 3) {
         $errors['interests'] = "Maksimal pilih 3 minat.";
     }
 
-    // Validasi Email Unik
+    // Validasi email unik (hanya jika format dan domain sudah valid)
     if (!isset($errors['email']) && !empty($email)) {
         $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $check->bind_param("s", $email);
@@ -63,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $check->close();
     }
 
+    // Jika ada error, redirect kembali dengan error & old input
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         $_SESSION['old'] = $old;
@@ -70,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Simpan data ke database
+    // Simpan data ke tabel users
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $conn->prepare("INSERT INTO users (username, email, password, city, profession, bio) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssss", $username, $email, $hashed_password, $city, $profession, $bio);
@@ -78,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         $user_id = $stmt->insert_id;
 
-        // Simpan minat user ke database
+        // Simpan minat ke user_interests
         if (!empty($interests)) {
             $insert = $conn->prepare("INSERT INTO user_interests (user_id, interest_id) VALUES (?, ?)");
             foreach ($interests as $iid) {
