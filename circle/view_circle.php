@@ -74,8 +74,8 @@ include '../backend/circle/view_circle_data.php';
         <div class="alert alert-warning mt-4">
           Kamu belum bergabung di circle manapun.
           <br>
-          <a href="create_circle.php" class="btn btn-sm btn-primary mt-2">Buat Circle Baru</a>
-          <a href="join_circle.php" class="btn btn-sm btn-outline-primary mt-2">Gabung Circle</a>
+          <a href="../circle/create_circle.php" class="btn btn-sm btn-primary mt-2" data-page>Buat Circle Baru</a>
+          <a href="../circle/join_circle.php" class="btn btn-sm btn-outline-primary mt-2" data-page>Gabung Circle</a>
         </div>
       <?php endif; ?>
     </div>
