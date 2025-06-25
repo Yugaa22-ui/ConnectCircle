@@ -326,3 +326,18 @@ body {
     .list-group-item.bg-dark:hover {
     background-color: #2a2a2a;
     }
+
+    /* Modal customization for dark theme (optional if not yet styled) */
+.modal-content.bg-dark {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.modal-header.bg-secondary {
+  background-color: #343a40;
+  border-bottom: 1px solid #444;
+}
+
+.btn-close-white {
+  filter: invert(1); /* Membuat btn-close jadi putih */
+}
