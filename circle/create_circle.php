@@ -52,3 +52,13 @@ include '../backend/auth/auth_check.php';
 <?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>
 <script src="../js/create_circle.js"></script>
+<?php if (!$include_template): ?>
+<script>
+  // Panggil langsung jika bukan embed
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof initCreateCircleForm === 'function') {
+      initCreateCircleForm();
+    }
+  });
+</script>
+<?php endif; ?>
