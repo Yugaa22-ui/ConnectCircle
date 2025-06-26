@@ -1,6 +1,8 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
+ob_clean(); // Bersihkan output buffer sebelum header
 header('Content-Type: application/json');
+
 include_once __DIR__ . '/../../includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -50,6 +52,9 @@ if (isset($_POST['action'], $_POST['request_id']) && is_numeric($_POST['request_
             $reject->close();
 
             echo json_encode(["status" => "ok", "message" => "Permintaan telah ditolak."]);
+            exit;
+        } else {
+            echo json_encode(["status" => "error", "message" => "Aksi tidak dikenali."]);
             exit;
         }
     } else {
