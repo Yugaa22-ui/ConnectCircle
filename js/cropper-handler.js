@@ -22,7 +22,8 @@ document.getElementById('cropperModal').addEventListener('shown.bs.modal', funct
     if (cropper) cropper.destroy();
     cropper = new Cropper(image, {
         aspectRatio: 1,
-        viewMode: 1,
+        initialAspectRatio: 1,
+        viewMode: 2,
         autoCropArea: 1,
         dragMode: 'move',
         movable: true,

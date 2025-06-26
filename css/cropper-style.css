@@ -1,3 +1,11 @@
+#cropperModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
 #preview {
     display: block;
     max-width: 100px;
@@ -7,7 +15,13 @@
 
 #cropperImage {
     max-width: 100%;
-    height: auto;
+    max-height: 60vh;
     display: block;
     margin: 0 auto;
+    object-fit: contain;
+  }  
+
+.cropper-crop-box,
+.cropper-view-box {
+  border-radius: 50% !important;
 }
