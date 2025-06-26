@@ -1,343 +1,293 @@
-/* === WARNA DASAR === */
+/* === RESET STRUKTUR FLEX DASAR === */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
 body {
-    background-color: #121212;
-    color: #FFFFFF;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  a {
-    color: #00BFFF;
-    text-decoration: none;
-  }
-  a:hover {
-    text-decoration: underline;
-    color: #009ACD;
-  }
-  
-  .navbar {
-    background-color: #000000;
-  }
-  .navbar-brand {
-    color: #FFFFFF;
-    margin-top: 2px;
-  }
-  .navbar-brand:hover {
-    color: #00BFFF;
-  }
-  
-  .container,
-  main.container,
-  .container.flex-grow-1 {
-    flex: 1 0 auto;
-  }
-  
-  /* === KOMPONEN CARD === */
-  .card,
-  .card-body,
-  .card-footer {
-    background-color: #1E1E1E;
-    border-radius: 8px;
-    border: 1px solid #333;
-  }
-  
-  .card-header,
-  .card-header-dark {
-    background-color: #1F1F1F;
-    border-bottom: 1px solid #333;
-    color: #FFFFFF;
-  }
-  
-  /* === INPUT / FORM === */
-  input.form-control,
-  textarea.form-control,
-  select,
-  button,
-  .btn {
-    background-color: #2A2A2A;
-    color: #FFFFFF;
-    border-color: #444;
-  }
-  
-  input.form-control:focus,
-  textarea:focus,
-  select:focus {
-    background-color: #2A2A2A;
-    color: #FFFFFF;
-    border-color: #00BFFF;
-    box-shadow: none;
-  }
-  
-  input::placeholder {
-    color: #AAAAAA;
-  }
-  
-  button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.4);
-  }
-  
-  .form-label {
-    color: #ffffff;
-  }
-  
-  /* === BUTTON STYLES === */
-  .btn-primary {
-    background-color: #00BFFF;
-    border-color: #00BFFF;
-    color: #000;
-  }
-  .btn-primary:hover {
-    background-color: #009ACD;
-    border-color: #009ACD;
-  }
-  
-  .btn-outline-primary {
-    border-color: #00BFFF;
-    color: #00BFFF;
-  }
-  .btn-outline-primary:hover {
-    background-color: #00BFFF;
-    color: #000;
-    box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
-  }
-  
-  .btn-secondary {
-    background-color: #343A40;
-    color: #FFF;
-  }
-  
-  .btn-outline-light {
-    border-color: #bbb;
-    color: #fff;
-  }
-  .btn-outline-light:hover {
-    background-color: #fff;
-    color: #000;
-  }
-  
-  /* === ALERT === */
-  .alert {
-    background-color: #222;
-    color: #fff;
-    border: 1px solid #444;
-  }
-  .alert-success {
-    background-color: #1E4620;
-    color: #28a745;
-  }
-  .alert-warning {
-    background-color: #4e3e10;
-    color: #ffc107;
-  }
-  .alert-danger {
-    background-color: #4a1d1d;
-    color: #dc3545;
-  }
-  
-  /* === BADGE === */
-  .badge-success {
-    background-color: #28A745;
-  }
-  .badge-warning {
-    background-color: #FD7E14;
-    color: #000;
-  }
-  .badge-danger {
-    background-color: #DC3545;
-  }
-  
-  /* === LIST GROUP === */
-  .list-group-item {
-    background-color: #1E1E1E;
-    color: #fff;
-    border-color: #333;
-  }
-  .list-group-item:hover,
-  .list-group-item:focus {
-    background-color: #292929;
-  }
-  .list-group-item.active {
-    background-color: #00BFFF;
-    border-color: #00BFFF;
-    color: #000;
-  }
-  
-  /* === TAB NAVIGATION === */
-  .nav-tabs .nav-link.active {
-    color: #fff !important;
-    background-color: #1f1f1f;
-    border-color: #444 #444 #222;
-  }
-  button.btn-dark.active,
-  button.btn-dark:active {
-    color: #fff;
-  }
-  
-  /* === CUSTOM KOMPONEN === */
-  .toast-container {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    z-index: 9999;
-  }
-  
-  .text-muted {
-    color: #bbbbbb !important;
-  }
-  
-  .logo-image {
-    max-height: 40px;
-    width: auto;
-    margin-right: 10px;
-    object-fit: contain;
-  }
-  
-  .lead,
-  .lead.text-white {
-    color: #ffffff !important;
-  }
-  
-  .hero-section {
-    padding: 4rem 0;
-    background-color: #1a1a1a;
-    text-align: center;
-    border-radius: 16px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.7),
-                -10px -10px 20px rgba(255, 255, 255, 0.05);
-    margin: 3rem auto;
-    width: 90%;
-    max-width: 960px;
-    transition: all 0.3s ease;
-  }
-  .hero-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.8),
-                0 2px 5px rgba(255, 255, 255, 0.07);
-  }
-  
-  /* === KHUSUS PESAN === */
-  .input-message-wrapper textarea {
-    resize: none;
-  }
-  .message-block:hover {
-    background-color: #2a2a2a;
-  }
-  
-  /* === ANIMASI === */
-  @keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 0.95; }
-  }
-  @keyframes fadeout {
-    from { opacity: 0.95; }
-    to   { opacity: 0; }
-  }
-  
-  /* === TAG MINAT === */
-  .interest-badge {
-    background-color: #0dcaf0;
-    color: #000;
-    transition: background-color 0.2s, color 0.2s;
-  }
-  .interest-badge:hover {
-    background-color: #000;
-    color: #fff;
-  }
+  background-color: #121212;
+  color: #FFFFFF;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
 
-  html, body {
-    height: 100%;
-  }
-  
-  body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
-  main {
-    flex: 1 0 auto;
-  }
-  
-  .list-group-item.active {
-    background-color: #00BFFF;
-    color: #000 !important;
-    border-left: 4px solid #ffffff;
-    font-weight: bold;
-  }
+main {
+  flex: 1 0 auto;
+  padding-bottom: 2rem; /* agar tidak tertutup footer saat konten tinggi */
+}
 
-  /* Efek hover dan transisi smooth */
+footer {
+  flex-shrink: 0;
+}
+
+/* === LINK === */
+a {
+  color: #00BFFF;
+  text-decoration: none;
+}
+a:hover {
+  color: #009ACD;
+  text-decoration: underline;
+}
+
+/* === NAVBAR === */
+.navbar {
+  background-color: #000;
+}
+.navbar-brand {
+  color: #FFF;
+  margin-top: 2px;
+}
+.navbar-brand:hover {
+  color: #00BFFF;
+}
+
+/* === CARD === */
+.card,
+.card-body,
+.card-footer {
+  background-color: #1E1E1E;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.card-header,
+.card-header-dark {
+  background-color: #1F1F1F;
+  border-bottom: 1px solid #333;
+  color: #FFFFFF;
+}
+
+/* === FORM / INPUT === */
+input.form-control,
+textarea.form-control,
+select,
+button,
+.btn {
+  background-color: #2A2A2A;
+  color: #FFFFFF;
+  border-color: #444;
+}
+
+input.form-control:focus,
+textarea:focus,
+select:focus {
+  border-color: #00BFFF;
+  box-shadow: none;
+}
+
+input::placeholder {
+  color: #AAAAAA;
+}
+
+.form-label {
+  color: #ffffff;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.4);
+}
+
+/* === BUTTON === */
+.btn-primary {
+  background-color: #00BFFF;
+  border-color: #00BFFF;
+  color: #000;
+}
+.btn-primary:hover {
+  background-color: #009ACD;
+  border-color: #009ACD;
+}
+
+.btn-outline-primary {
+  color: #00BFFF;
+  border-color: #00BFFF;
+}
+.btn-outline-primary:hover {
+  background-color: #00BFFF;
+  color: #000;
+  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
+}
+
+.btn-secondary {
+  background-color: #343A40;
+  color: #FFF;
+}
+
+.btn-outline-light {
+  color: #FFF;
+  border-color: #bbb;
+}
+.btn-outline-light:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* === ALERT === */
+.alert {
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #444;
+}
+.alert-success {
+  background-color: #1E4620;
+  color: #28a745;
+}
+.alert-warning {
+  background-color: #4e3e10;
+  color: #ffc107;
+}
+.alert-danger {
+  background-color: #4a1d1d;
+  color: #dc3545;
+}
+
+/* === BADGE === */
+.badge-success {
+  background-color: #28A745;
+}
+.badge-warning {
+  background-color: #FD7E14;
+  color: #000;
+}
+.badge-danger {
+  background-color: #DC3545;
+}
+
+/* === LIST GROUP === */
 .list-group-item {
-    transition: background-color 0.3s ease, color 0.3s ease, border-left 0.3s ease;
-    border-left: 4px solid transparent;
-    padding-left: 1rem;
-  }
-  
-  .list-group-item:hover {
-    background-color: #292929;
-    color: #a5a5a5;
-  }
-  
-  /* Saat aktif */
-  .list-group-item.active {
-    background-color: #00BFFF;
-    color: #000 !important;
-    border-left: 4px solid #ffffff;
-    font-weight: bold;
-  }
-  
-  /* Icon di dalam item aktif */
-  .list-group-item.active i {
-    color: #000 !important;
-  }
-  
-  /* Icon normal */
-  .list-group-item i {
-    transition: color 0.3s ease;
-    color: #bbb;
-  }
-  
-  /* Icon saat hover */
-  .list-group-item:hover i {
-    color: #fff;
-  }
-  
-  .sidebar-link.active {
-    background-color: #e5e5e5 !important;
-    color: #000 !important;
-    font-weight: bold;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .sidebar-link.active i {
-    color: #000 !important;
-  }
-  
-  /* Agar input dan list-item konsisten di dark mode */
-    input.form-control.bg-dark,
-    input.form-control.bg-dark:focus {
-    background-color: #1c1c1c !important;
-    color: white !important;
-    border-color: #444;
-    }
+  background-color: #1E1E1E;
+  color: #fff;
+  border-color: #333;
+  transition: background-color 0.3s, color 0.3s, border-left 0.3s;
+  border-left: 4px solid transparent;
+  padding-left: 1rem;
+}
+.list-group-item:hover {
+  background-color: #292929;
+  color: #a5a5a5;
+}
+.list-group-item.active {
+  background-color: #00BFFF;
+  color: #000 !important;
+  font-weight: bold;
+  border-left: 4px solid #ffffff;
+}
+.list-group-item i {
+  color: #bbb;
+  transition: color 0.3s;
+}
+.list-group-item:hover i {
+  color: #fff;
+}
+.list-group-item.active i {
+  color: #000 !important;
+}
 
-    .list-group-item.bg-dark {
-    transition: background 0.3s;
-    }
-    .list-group-item.bg-dark:hover {
-    background-color: #2a2a2a;
-    }
+/* === SIDEBAR === */
+.sidebar-link.active {
+  background-color: #e5e5e5 !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+.sidebar-link.active i {
+  color: #000 !important;
+}
 
-    /* Modal customization for dark theme (optional if not yet styled) */
+/* === TABS === */
+.nav-tabs .nav-link.active {
+  color: #fff !important;
+  background-color: #1f1f1f;
+  border-color: #444 #444 #222;
+}
+button.btn-dark.active,
+button.btn-dark:active {
+  color: #fff;
+}
+
+/* === MODAL === */
 .modal-content.bg-dark {
   background-color: #1e1e1e;
   color: #fff;
 }
-
 .modal-header.bg-secondary {
   background-color: #343a40;
   border-bottom: 1px solid #444;
 }
-
 .btn-close-white {
-  filter: invert(1); /* Membuat btn-close jadi putih */
+  filter: invert(1);
+}
+
+/* === CUSTOM === */
+.toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+}
+
+.text-muted {
+  color: #bbbbbb !important;
+}
+
+.logo-image {
+  max-height: 40px;
+  width: auto;
+  margin-right: 10px;
+  object-fit: contain;
+}
+
+.lead,
+.lead.text-white {
+  color: #ffffff !important;
+}
+
+.hero-section {
+  padding: 4rem 0;
+  background-color: #1a1a1a;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.7),
+              -10px -10px 20px rgba(255, 255, 255, 0.05);
+  margin: 3rem auto;
+  width: 90%;
+  max-width: 960px;
+  transition: all 0.3s ease;
+}
+.hero-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.8),
+              0 2px 5px rgba(255, 255, 255, 0.07);
+}
+
+/* === PESAN === */
+.input-message-wrapper textarea {
+  resize: none;
+}
+.message-block:hover {
+  background-color: #2a2a2a;
+}
+
+/* === MINAT (TAG) === */
+.interest-badge {
+  background-color: #0dcaf0;
+  color: #000;
+  transition: background-color 0.2s, color 0.2s;
+}
+.interest-badge:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+/* === ANIMASI === */
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.95; }
+}
+@keyframes fadeout {
+  from { opacity: 0.95; }
+  to   { opacity: 0; }
 }

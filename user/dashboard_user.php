@@ -26,7 +26,7 @@ $current = basename($_SERVER['PHP_SELF']);
             <i class="bi bi-collection me-2"></i> Lihat Circle Saya
           </a>
           <a href="../search/search.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'search.php' ? 'active' : '' ?>" data-page="../search/search.php">
-            <i class="bi bi-person-plus me-2"></i> Cari Teman Berdasarkan Minat
+            <i class="bi bi-person-plus me-2"></i> Teman Berdasar Minat
           </a>
           <a href="../friend/friend_request.php" class="list-group-item list-group-item-action bg-dark text-white sidebar-link <?= $current == 'friend_request.php' ? 'active' : '' ?>" data-page="../friend/friend_request.php">
             <i class="bi bi-person-check me-2"></i> Permintaan Pertemanan
