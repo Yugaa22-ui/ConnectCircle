@@ -1,4 +1,24 @@
-function initManageRoles() {
+function showNotification(message, type = "success") {
+    const container = document.getElementById("notification-container");
+    if (!container) return;
+  
+    const notif = document.createElement("div");
+    notif.className = `snackbar bg-${type === "success" ? "success" : "danger"} text-white`;
+    notif.textContent = message;
+  
+    container.appendChild(notif);
+  
+    setTimeout(() => {
+      notif.classList.add("show");
+    }, 10);
+  
+    setTimeout(() => {
+      notif.classList.remove("show");
+      setTimeout(() => container.removeChild(notif), 300);
+    }, 3000);
+  }
+  
+  function initManageRoles() {
     console.log("✅ initManageRoles dijalankan");
   
     const forms = document.querySelectorAll(".form-role");
@@ -22,16 +42,16 @@ function initManageRoles() {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            alert(data.success);
+            showNotification(data.success, "success");
             const activeLink = document.querySelector(".sidebar a[data-page='manage_roles.php']");
             if (activeLink) activeLink.click();
           } else if (data.error) {
-            alert("Gagal: " + data.error);
+            showNotification(data.error, "error");
           }
         })
         .catch(err => {
           console.error("❌ Error:", err);
-          alert("Gagal menyimpan: " + err);
+          showNotification("Gagal menyimpan: " + err, "error");
         });
       });
     });

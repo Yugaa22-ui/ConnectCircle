@@ -3,6 +3,8 @@ include '../backend/admin/dashboard_stats.php';
 include '../templates/header.php';
 ?>
 
+<div id="notification-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
+
 <main class="container-fluid mt-4">
   <div class="row">
     <!-- Sidebar Desktop -->
