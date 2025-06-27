@@ -1,60 +1,62 @@
-<?php include '../backend/admin/manage_users_process.php'; ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kelola Pengguna - ConnectCircle</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<?php
+include '../backend/admin/manage_users_process.php';
+?>
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Daftar Pengguna</h4>
-        </div>
-        <div class="card-body">
-            <?php if ($result->num_rows > 0): ?>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Kota</th>
-                                <th>Profesi</th>
-                                <th>Role</th>
-                                <th>Terdaftar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?= $row['id'] ?></td>
-                                    <td><?= htmlspecialchars($row['username']) ?></td>
-                                    <td><?= htmlspecialchars($row['email']) ?></td>
-                                    <td><?= htmlspecialchars($row['city']) ?></td>
-                                    <td><?= htmlspecialchars($row['profession']) ?></td>
-                                    <td><?= htmlspecialchars($row['role']) ?></td>
-                                    <td><?= $row['created_at'] ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
-                <div class="alert alert-info">Belum ada pengguna terdaftar.</div>
-            <?php endif; ?>
-        </div>
-        <div class="card-footer text-end">
-            <a href="dashboard_admin.php" class="btn btn-secondary">Kembali ke Dashboard</a>
-        </div>
+<div class="container-fluid py-3">
+  <div class="card bg-dark text-white shadow-sm">
+    <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">
+        <i class="bi bi-people-fill me-2"></i>Daftar Pengguna
+      </h4>
+      <button id="refreshUsers" class="btn btn-sm btn-outline-light">
+        <i class="bi bi-arrow-clockwise"></i> Muat Ulang
+      </button>
     </div>
+    <div class="card-body p-0">
+      <?php if ($result->num_rows > 0): ?>
+        <div class="table-responsive">
+          <table class="table table-dark table-striped table-hover mb-0 align-middle">
+            <thead class="table-secondary text-dark">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Kota</th>
+                <th scope="col">Profesi</th>
+                <th scope="col">Role</th>
+                <th scope="col">Terdaftar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                  <td><?= $row['id'] ?></td>
+                  <td><?= htmlspecialchars($row['username']) ?></td>
+                  <td><?= htmlspecialchars($row['email']) ?></td>
+                  <td><?= htmlspecialchars($row['city']) ?></td>
+                  <td><?= htmlspecialchars($row['profession']) ?></td>
+                  <td>
+                    <span class="badge bg-<?php
+                      switch($row['role']) {
+                        case 'admin': echo 'danger'; break;
+                        case 'moderator': echo 'warning text-dark'; break;
+                        default: echo 'secondary'; break;
+                      }
+                    ?>">
+                      <?= htmlspecialchars($row['role']) ?>
+                    </span>
+                  </td>
+                  <td><?= date('d M Y', strtotime($row['created_at'])) ?></td>
+                </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php else: ?>
+        <div class="alert alert-info mb-0">Belum ada pengguna terdaftar.</div>
+      <?php endif; ?>
+    </div>
+  </div>
 </div>
 
-</body>
-</html>
+<script src="js/admin_manage_users.js"></script>

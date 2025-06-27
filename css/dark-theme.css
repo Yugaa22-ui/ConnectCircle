@@ -322,3 +322,10 @@ button.btn-dark:active {
   opacity: 1;
   transform: translateY(0);
 }
+
+.table-dark.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #2b2b2b;
+}
+.table-dark.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #1f1f1f;
+}
