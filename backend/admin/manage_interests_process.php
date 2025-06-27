@@ -21,54 +21,54 @@ $error = '';
 
 // Tambah minat baru
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_interest'])) {
+    header('Content-Type: application/json');
+
     $new_interest = trim($_POST['new_interest']);
 
     if (empty($new_interest)) {
-        $error = "Nama minat tidak boleh kosong.";
-    } else {
-        $check = $conn->prepare("SELECT id FROM interests WHERE name = ?");
-        $check->bind_param("s", $new_interest);
-        $check->execute();
-        $check->store_result();
-
-        if ($check->num_rows > 0) {
-            $error = "Minat tersebut sudah ada.";
-        } else {
-            $insert = $conn->prepare("INSERT INTO interests (name) VALUES (?)");
-            $insert->bind_param("s", $new_interest);
-            if ($insert->execute()) {
-                $success = "Minat berhasil ditambahkan.";
-            } else {
-                $error = "Gagal menambahkan minat.";
-            }
-            $insert->close();
-        }
-
-        $check->close();
-    }
-
-    if ($isAjax) {
-        echo !empty($error) ? $error : $success;
+        echo json_encode(['error' => "Nama minat tidak boleh kosong."]);
         exit;
     }
+
+    $check = $conn->prepare("SELECT id FROM interests WHERE name = ?");
+    $check->bind_param("s", $new_interest);
+    $check->execute();
+    $check->store_result();
+
+    if ($check->num_rows > 0) {
+        echo json_encode(['error' => "Minat tersebut sudah ada."]);
+    } else {
+        $insert = $conn->prepare("INSERT INTO interests (name) VALUES (?)");
+        $insert->bind_param("s", $new_interest);
+        if ($insert->execute()) {
+            echo json_encode([
+                'success' => "Minat berhasil ditambahkan.",
+                'id' => $insert->insert_id,
+                'name' => $new_interest
+            ]);
+        } else {
+            echo json_encode(['error' => "Gagal menambahkan minat."]);
+        }
+        $insert->close();
+    }
+    $check->close();
+    exit;
 }
 
 // Hapus minat
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
+    header('Content-Type: application/json');
+
     $del_id = intval($_GET['delete']);
     $delete = $conn->prepare("DELETE FROM interests WHERE id = ?");
     $delete->bind_param("i", $del_id);
     if ($delete->execute()) {
-        $success = "Minat berhasil dihapus.";
+        echo json_encode(['success' => "Minat berhasil dihapus."]);
     } else {
-        $error = "Gagal menghapus minat.";
+        echo json_encode(['error' => "Gagal menghapus minat."]);
     }
     $delete->close();
-
-    if ($isAjax) {
-        echo !empty($error) ? $error : $success;
-        exit;
-    }
+    exit;
 }
 
 // Ambil semua data minat untuk tampilan

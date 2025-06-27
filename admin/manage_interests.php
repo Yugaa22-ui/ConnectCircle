@@ -2,6 +2,7 @@
 include '../backend/admin/manage_interests_process.php';
 ?>
 
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 <div class="container-fluid py-3">
   <?php if ($success): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -22,7 +23,7 @@ include '../backend/admin/manage_interests_process.php';
         <i class="bi bi-sliders me-2"></i>Kelola Minat Pengguna
       </h4>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="interest-container">
       <form id="interestForm" method="POST" class="mb-4">
         <label class="form-label">Tambah Minat Baru:</label>
         <div class="input-group">
