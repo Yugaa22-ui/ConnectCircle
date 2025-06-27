@@ -9,11 +9,11 @@
       Buat circle, berdiskusi, dan bangun komunitas yang produktif.
     </p>
 
-    <div class="mt-4">
-      <a href="auth/login.php" class="btn btn-outline-light btn-lg me-2">
+    <div class="mt-4 d-flex flex-wrap gap-2 justify-content-center">
+      <a href="auth/login.php" class="btn btn-outline-light btn-lg">
         <i class="bi bi-box-arrow-in-right"></i> Login
       </a>
-      <a href="auth/register.php" class="btn btn-outline-light btn-lg me-2">
+      <a href="auth/register.php" class="btn btn-outline-light btn-lg">
         <i class="bi bi-person-plus"></i> Daftar
       </a>
       <a href="user/dashboard_guest.php" class="btn btn-secondary btn-lg">
