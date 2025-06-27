@@ -1,21 +1,18 @@
 <?php
-include '../backend/admin/manage_roles_process.php';
+include '../backend/auth/auth_check.php';
+include '../includes/db.php';
+
+// Batasi akses admin
+if ($_SESSION['role'] !== 'admin') {
+    echo "<script>alert('Akses hanya untuk admin.'); window.location='../admin/dashboard_admin.php';</script>";
+    exit;
+}
+
+// Ambil semua pengguna
+$users = $conn->query("SELECT id, username, email, role FROM users ORDER BY username ASC");
 ?>
 
 <div class="container-fluid py-3">
-  <?php if ($success): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <?= htmlspecialchars($success) ?>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <?php endif; ?>
-  <?php if ($error): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <?= htmlspecialchars($error) ?>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <?php endif; ?>
-
   <div class="card bg-dark text-white shadow-sm">
     <div class="card-header border-secondary d-flex justify-content-between align-items-center">
       <h4 class="mb-0">
@@ -40,7 +37,7 @@ include '../backend/admin/manage_roles_process.php';
                 <td><?= htmlspecialchars($user['email']) ?></td>
                 <td><?= htmlspecialchars($user['role']) ?></td>
                 <td>
-                  <form class="d-flex flex-wrap gap-2 mb-0 role-form" data-id="<?= $user['id'] ?>">
+                  <form class="form-role d-flex flex-wrap gap-2 mb-0" data-id="<?= $user['id'] ?>">
                     <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
                     <select name="role" class="form-select form-select-sm bg-dark text-white border-secondary" required>
                       <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>User</option>

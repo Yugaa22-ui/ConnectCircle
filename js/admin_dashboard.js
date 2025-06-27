@@ -56,10 +56,12 @@ function loadScriptIfNotExists(src, callback) {
           }
   
           if (page.includes("manage_roles.php")) {
-            const s = document.createElement("script");
-            s.src = "/connectcircle/js/admin_manage_roles.js";
-            document.body.appendChild(s);
-          }          
+            loadScriptIfNotExists('/connectcircle/js/admin_manage_roles.js', () => {
+              if (typeof initManageRoles === 'function') {
+                initManageRoles();
+              }
+            });
+          }                   
   
           // Tutup sidebar mobile jika terbuka
           const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
