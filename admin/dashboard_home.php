@@ -19,7 +19,7 @@ include '../backend/admin/dashboard_stats.php';
     </div>
   </div>
   <div class="col-md-6 col-lg-3">
-    <div class="card bg-warning text-dark shadow-sm">
+    <div class="card bg-warning text-white shadow-sm">
       <div class="card-body">
         <h5><i class="bi bi-chat-dots me-2"></i>Total Circle</h5>
         <h2><?= $totalCircles ?></h2>

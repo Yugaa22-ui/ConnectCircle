@@ -23,7 +23,7 @@ include '../backend/admin/manage_interests_process.php';
       </h4>
     </div>
     <div class="card-body">
-      <form method="POST" class="mb-4">
+      <form id="interestForm" method="POST" class="mb-4">
         <label class="form-label">Tambah Minat Baru:</label>
         <div class="input-group">
           <input type="text" name="new_interest" class="form-control" placeholder="Contoh: Musik, Menulis, Desain" required>
@@ -39,9 +39,9 @@ include '../backend/admin/manage_interests_process.php';
           <?php while ($row = $all->fetch_assoc()): ?>
             <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
               <?= htmlspecialchars($row['name']) ?>
-              <a href="?delete=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin menghapus minat ini?')" class="btn btn-sm btn-danger">
+              <button class="btn btn-sm btn-danger btn-delete" data-id="<?= $row['id'] ?>">
                 <i class="bi bi-trash"></i> Hapus
-              </a>
+              </button>
             </li>
           <?php endwhile; ?>
         </ul>

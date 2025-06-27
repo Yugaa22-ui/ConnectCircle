@@ -3,9 +3,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 include_once '../backend/auth/auth_check.php';
 include_once '../includes/db.php';
 
-// Cek jika bukan admin / moderator
+// Cek hak akses
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator') {
-    echo "<script>alert('Hanya admin dan moderator yang dapat mengakses.'); window.location='../../admin/dashboard_admin.php';</script>";
+    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        http_response_code(403);
+        echo "Hanya admin dan moderator yang dapat mengakses.";
+    } else {
+        echo "<script>alert('Hanya admin dan moderator yang dapat mengakses.'); window.location='../../admin/dashboard_admin.php';</script>";
+    }
     exit;
 }
 
@@ -19,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_interest'])) {
     if (empty($new_interest)) {
         $error = "Nama minat tidak boleh kosong.";
     } else {
-        // Cek duplikat
         $check = $conn->prepare("SELECT id FROM interests WHERE name = ?");
         $check->bind_param("s", $new_interest);
         $check->execute();
@@ -40,6 +44,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_interest'])) {
 
         $check->close();
     }
+
+    // Jika request AJAX, langsung kirim respon dan hentikan
+    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        echo !empty($error) ? $error : $success;
+        exit;
+    }
 }
 
 // Hapus minat
@@ -47,10 +57,18 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $del_id = intval($_GET['delete']);
     $delete = $conn->prepare("DELETE FROM interests WHERE id = ?");
     $delete->bind_param("i", $del_id);
-    $delete->execute();
+    if ($delete->execute()) {
+        $success = "Minat berhasil dihapus.";
+    } else {
+        $error = "Gagal menghapus minat.";
+    }
     $delete->close();
-    $success = "Minat berhasil dihapus.";
+
+    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        echo !empty($error) ? $error : $success;
+        exit;
+    }
 }
 
-// Ambil semua data minat
+// Ambil semua data minat untuk tampilan
 $all = $conn->query("SELECT * FROM interests ORDER BY name ASC");
