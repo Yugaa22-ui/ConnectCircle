@@ -42,10 +42,10 @@ function loadScriptIfNotExists(src, callback) {
           if (page.includes('manage_interests.php')) {
             loadScriptIfNotExists('../js/admin_manage_interests.js', () => {
               if (typeof initManageInterests === 'function') {
-                initManageInterests();
+                initManageInterests(container);
               }
-            });
-          }
+            });            
+          }                  
   
           if (page.includes('manage_users.php')) {
             loadScriptIfNotExists('../js/admin_manage_users.js', () => {

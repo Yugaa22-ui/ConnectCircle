@@ -1,11 +1,13 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-include_once '../backend/auth/auth_check.php';
-include_once '../includes/db.php';
+include_once __DIR__ . "/../auth/auth_check.php";
+include_once __DIR__ . "/../../includes/db.php";
 
 // Cek hak akses
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator') {
-    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    if ($isAjax) {
         http_response_code(403);
         echo "Hanya admin dan moderator yang dapat mengakses.";
     } else {
@@ -45,8 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_interest'])) {
         $check->close();
     }
 
-    // Jika request AJAX, langsung kirim respon dan hentikan
-    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    if ($isAjax) {
         echo !empty($error) ? $error : $success;
         exit;
     }
@@ -64,7 +65,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     }
     $delete->close();
 
-    if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    if ($isAjax) {
         echo !empty($error) ? $error : $success;
         exit;
     }
