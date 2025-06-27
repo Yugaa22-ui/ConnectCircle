@@ -299,3 +299,10 @@ button.btn-dark:active {
 .sidebar .nav-link:hover {
   background-color: #495057;
 }
+
+.table-dark td, .table-dark th {
+  vertical-align: middle;
+}
+.table-dark select {
+  min-width: 120px;
+}

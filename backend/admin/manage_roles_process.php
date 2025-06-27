@@ -3,9 +3,10 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 include_once '../backend/auth/auth_check.php';
 include_once '../includes/db.php';
 
-// Batasi akses hanya untuk admin & moderator
+// Batasi akses hanya admin
 if ($_SESSION['role'] !== 'admin') {
-    echo "<script>alert('Akses hanya untuk admin.'); window.location='../admin/dashboard_admin.php';</script>";
+    http_response_code(403);
+    echo "Akses hanya untuk admin.";
     exit;
 }
 
