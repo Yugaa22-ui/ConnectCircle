@@ -291,3 +291,11 @@ button.btn-dark:active {
   from { opacity: 0.95; }
   to   { opacity: 0; }
 }
+
+.sidebar .nav-link.active {
+  background-color: #343a40;
+  font-weight: bold;
+}
+.sidebar .nav-link:hover {
+  background-color: #495057;
+}
