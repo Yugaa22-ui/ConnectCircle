@@ -329,3 +329,7 @@ button.btn-dark:active {
 .table-dark.table-striped > tbody > tr:nth-of-type(even) {
   background-color: #1f1f1f;
 }
+
+.text-danger {
+  color: #ff6b6b !important;
+}

@@ -27,27 +27,40 @@ function initManageInterests(container) {
   }
 
   // Handle form submit
-  if (form) {
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const formData = new FormData(form);
-
-      fetch("../backend/admin/manage_interests_process.php", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          showToast(data.success, "success");
-          form.reset();
-          addInterestItem(data.id, data.name);
-        } else if (data.error) {
-          showToast(data.error, "danger");
-        }
-      })
-      .catch(err => showToast("Gagal menyimpan: " + err, "danger"));
-    });
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+  
+    // Ambil elemen error
+    const newInterestValue = form.querySelector("input[name='new_interest']").value.trim();
+    const errorDiv = form.querySelector("#interestError");
+    errorDiv.style.display = "none";
+    errorDiv.textContent = "";
+    
+    if (!newInterestValue) {
+      errorDiv.textContent = "Nama minat tidak boleh kosong.";
+      errorDiv.style.display = "block";
+      return; // Stop submit
+    }    
+  
+    fetch("../backend/admin/manage_interests_process.php", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showToast(data.success, "success");
+        form.reset();
+        addInterestItem(data.id, data.name);
+      } else if (data.error) {
+        // Tampilkan error di bawah field
+        errorDiv.textContent = data.error;
+        errorDiv.style.display = "block";
+      }
+    })
+    .catch(err => showToast("Gagal menyimpan: " + err, "danger"));
+  });  
   }
 
   // Bind existing delete buttons
@@ -120,4 +133,3 @@ function initManageInterests(container) {
       document.getElementById("confirmModal").remove();
     });
   }
-}

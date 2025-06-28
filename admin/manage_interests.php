@@ -27,11 +27,13 @@ include '../backend/admin/manage_interests_process.php';
       <form id="interestForm" method="POST" class="mb-4">
         <label class="form-label">Tambah Minat Baru:</label>
         <div class="input-group">
-          <input type="text" name="new_interest" class="form-control" placeholder="Contoh: Musik, Menulis, Desain" required>
+        <input type="text" name="new_interest" class="form-control" placeholder="Contoh: Musik, Menulis, Desain">
           <button type="submit" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> Tambah
           </button>
         </div>
+        <!-- Tempat error muncul -->
+        <div id="interestError" class="text-danger mt-1" style="display:none;"></div>
       </form>
 
       <h5 class="border-bottom border-secondary pb-2">Daftar Minat Tersedia</h5>
