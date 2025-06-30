@@ -120,7 +120,13 @@ function initManageInterests(container) {
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
   
-    document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+    const confirmBtn = document.getElementById("confirmDeleteBtn");
+    confirmBtn.addEventListener("click", () => {
+      confirmBtn.blur();
+      setTimeout(() => {
+        modal.hide();
+      }, 0);
+      // Eksekusi penghapusan
       fetch(`../backend/admin/manage_interests_process.php?delete=${id}`)
         .then(res => res.json())
         .then(data => {
@@ -134,15 +140,12 @@ function initManageInterests(container) {
             showToast(data.error, "danger");
           }
         })
-        .catch(err => showToast("Gagal menghapus: " + err, "danger"))
-        .finally(() => {
-          modal.hide();
-        });
+        .catch(err => showToast("Gagal menghapus: " + err, "danger"));
     });
-  
+
     // Setelah modal tertutup, hapus element modal dari DOM
     modalEl.addEventListener("hidden.bs.modal", () => {
       modalEl.remove();
     });
-  }
+  }  
 }
