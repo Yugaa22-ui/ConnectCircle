@@ -3,6 +3,11 @@ $include_template = $_GET['embed'] ?? false;
 if (!$include_template) include '../templates/header.php';
 
 include '../backend/auth/auth_check.php';
+include '../includes/db.php';
+
+// Ambil minat
+$interest_query = $conn->query("SELECT id, name FROM interests");
+$interests = $interest_query->fetch_all(MYSQLI_ASSOC);
 ?>
 <main class="container py-5">
   <div class="row justify-content-center">
@@ -31,6 +36,19 @@ include '../backend/auth/auth_check.php';
               <div class="invalid-feedback" id="error_description"></div>
             </div>
 
+            <!-- Minat Circle -->
+            <div class="mb-3">
+              <label class="form-label text-white">Minat Circle <span class="text-danger">*</span></label>
+              <div id="interest-error" class="text-danger small mb-2"></div>
+              <div class="d-flex flex-wrap gap-2" id="interests-container">
+                <?php foreach ($interests as $index => $int): ?>
+                  <?php $checkboxId = 'interest_' . $index; ?>
+                  <input type="checkbox" class="btn-check interest-checkbox" name="interest_id" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
             <!-- Tombol -->
             <div class="d-flex justify-content-end gap-2">
               <button type="submit" class="btn btn-outline-success">
@@ -43,6 +61,7 @@ include '../backend/auth/auth_check.php';
     </div>
   </div>
 </main>
+
 <?php if (!$include_template): ?>
   <div class="text-center mt-4">
     <a href="../user/dashboard_user.php" class="btn btn-outline-light">
@@ -50,11 +69,10 @@ include '../backend/auth/auth_check.php';
     </a>
   </div>
 <?php endif; ?>
-<?php if (!$include_template) include '../templates/footer.php'; ?>
+
 <script src="../js/create_circle.js"></script>
 <?php if (!$include_template): ?>
 <script>
-  // Panggil langsung jika bukan embed
   document.addEventListener('DOMContentLoaded', function () {
     if (typeof initCreateCircleForm === 'function') {
       initCreateCircleForm();
@@ -62,3 +80,4 @@ include '../backend/auth/auth_check.php';
   });
 </script>
 <?php endif; ?>
+<?php if (!$include_template) include '../templates/footer.php'; ?>

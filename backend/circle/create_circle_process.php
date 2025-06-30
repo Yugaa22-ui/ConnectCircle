@@ -8,9 +8,9 @@ include_once '../../includes/db.php';
 $user_id = $_SESSION['user_id'] ?? null;
 $circle_name = trim($_POST['circle_name'] ?? '');
 $description = trim($_POST['description'] ?? '');
+$interest_id = $_POST['interest_id'] ?? '';
 
 $errors = [];
-$response = [];
 
 // Validasi
 if (empty($circle_name)) {
@@ -23,13 +23,17 @@ if (empty($description)) {
     $errors['description'] = "Deskripsi wajib diisi!";
 }
 
-// Jika ada error validasi
+if (empty($interest_id)) {
+    $errors['interest_id'] = "Wajib memilih 1 minat circle.";
+}
+
+// Jika ada error
 if (!empty($errors)) {
     echo json_encode(['errors' => $errors]);
     exit;
 }
 
-// Cek apakah nama sudah ada
+// Cek nama unik
 $check = $conn->prepare("SELECT id FROM circles WHERE name = ?");
 $check->bind_param("s", $circle_name);
 $check->execute();
@@ -42,9 +46,9 @@ if ($check->num_rows > 0) {
 }
 $check->close();
 
-// Simpan ke DB
-$stmt = $conn->prepare("INSERT INTO circles (name, description, creator_id) VALUES (?, ?, ?)");
-$stmt->bind_param("ssi", $circle_name, $description, $user_id);
+// Simpan circle
+$stmt = $conn->prepare("INSERT INTO circles (name, description, creator_id, interest_id) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("ssii", $circle_name, $description, $user_id, $interest_id);
 
 if ($stmt->execute()) {
     $circle_id = $stmt->insert_id;
