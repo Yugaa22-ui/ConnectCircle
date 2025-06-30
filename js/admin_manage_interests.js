@@ -30,19 +30,18 @@ function initManageInterests(container) {
   form.addEventListener("submit", e => {
     e.preventDefault();
     const formData = new FormData(form);
-  
-    // Ambil elemen error
+
     const newInterestValue = form.querySelector("input[name='new_interest']").value.trim();
     const errorDiv = form.querySelector("#interestError");
     errorDiv.style.display = "none";
     errorDiv.textContent = "";
-    
+
     if (!newInterestValue) {
       errorDiv.textContent = "Nama minat tidak boleh kosong.";
       errorDiv.style.display = "block";
-      return; // Stop submit
-    }    
-  
+      return;
+    }
+
     fetch("../backend/admin/manage_interests_process.php", {
       method: "POST",
       body: formData
@@ -54,20 +53,25 @@ function initManageInterests(container) {
         form.reset();
         addInterestItem(data.id, data.name);
       } else if (data.error) {
-        // Tampilkan error di bawah field
         errorDiv.textContent = data.error;
         errorDiv.style.display = "block";
       }
     })
     .catch(err => showToast("Gagal menyimpan: " + err, "danger"));
-  });  
+  });
+
+  // Bind delete buttons yang sudah ada
+  function bindDeleteButtons() {
+    container.querySelectorAll(".btn-delete").forEach(btn => {
+      if (btn.dataset.bound) return; // Hindari double binding
+      btn.dataset.bound = "1";
+      const li = btn.closest("li");
+      btn.addEventListener("click", () => confirmDelete(btn.dataset.id, li));
+    });
   }
 
-  // Bind existing delete buttons
-  container.querySelectorAll(".btn-delete").forEach(btn => {
-    const li = btn.closest("li");
-    btn.addEventListener("click", () => confirmDelete(btn.dataset.id, li));
-  });
+  // Panggil langsung setelah deklarasi
+  bindDeleteButtons();
 
   // Tambah elemen list baru
   function addInterestItem(id, name) {
@@ -84,7 +88,9 @@ function initManageInterests(container) {
     setTimeout(() => li.style.transition = "opacity 0.3s", 10);
     setTimeout(() => li.style.opacity = "1", 20);
 
+    // Bind delete button baru
     const btn = li.querySelector(".btn-delete");
+    btn.dataset.bound = "1";
     btn.addEventListener("click", () => confirmDelete(id, li));
   }
 
@@ -109,14 +115,17 @@ function initManageInterests(container) {
         </div>
       </div>`;
     document.body.insertAdjacentHTML("beforeend", modalHtml);
-    const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+  
+    const modalEl = document.getElementById("confirmModal");
+    const modal = new bootstrap.Modal(modalEl);
     modal.show();
-
+  
     document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
       fetch(`../backend/admin/manage_interests_process.php?delete=${id}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
+            // Animasi hilang
             li.style.transition = "opacity 0.3s";
             li.style.opacity = "0";
             setTimeout(() => li.remove(), 300);
@@ -126,10 +135,14 @@ function initManageInterests(container) {
           }
         })
         .catch(err => showToast("Gagal menghapus: " + err, "danger"))
-        .finally(() => modal.hide());
+        .finally(() => {
+          modal.hide();
+        });
     });
-
-    document.getElementById("confirmModal").addEventListener("hidden.bs.modal", () => {
-      document.getElementById("confirmModal").remove();
+  
+    // Setelah modal tertutup, hapus element modal dari DOM
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      modalEl.remove();
     });
   }
+}
