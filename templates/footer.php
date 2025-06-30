@@ -20,8 +20,8 @@
       <a href="https://www.instagram.com/alpredofx/" target="_blank" class="text-white-50 text-decoration-none me-3" title="Instagram">
         <i class="bi bi-instagram fs-5"></i>
       </a>
-      <a href="https://discord.gg/HGBFKXN3wE" target="_blank" class="text-white-50 text-decoration-none" title="Discord">
-        <i class="bi bi-discord fs-5"></i>
+      <a href="https://wa.me/6281237082141" target="_blank" class="text-white-50 text-decoration-none me-3" title="Instagram">
+        <i class="bi bi-whatsapp fs-5"></i>
       </a>
     </div>
 
