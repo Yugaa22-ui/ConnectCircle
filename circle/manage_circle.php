@@ -33,19 +33,19 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
       <form method="POST" class="mb-4 bg-dark p-4 rounded shadow border border-secondary">
         <div class="mb-3">
           <label class="form-label text-light">Nama Circle</label>
-          <input type="text" name="circle_name" class="form-control bg-dark text-light border-secondary" value="<?= htmlspecialchars($circle_name) ?>" required>
+          <input type="text" name="circle_name" class="form-control bg-dark text-light border-secondary" value="<?= htmlspecialchars($circle_name) ?>" required <?= $user_id !== $creator_id ? 'readonly' : '' ?>>
         </div>
         <div class="mb-3">
           <label class="form-label text-light">Deskripsi</label>
-          <textarea name="circle_description" class="form-control bg-dark text-light border-secondary" rows="3"><?= htmlspecialchars($circle_description) ?></textarea>
+          <textarea name="circle_description" class="form-control bg-dark text-light border-secondary" rows="3" <?= $user_id !== $creator_id ? 'readonly' : '' ?>><?= htmlspecialchars($circle_description) ?></textarea>
         </div>
         <div class="mb-3">
           <label class="form-label text-light">Syarat Bergabung</label>
-          <textarea name="rules" class="form-control bg-dark text-light border-secondary" rows="2"><?= htmlspecialchars($rules ?? '') ?></textarea>
+          <textarea name="rules" class="form-control bg-dark text-light border-secondary" rows="2" <?= $user_id !== $creator_id ? 'readonly' : '' ?>><?= htmlspecialchars($rules ?? '') ?></textarea>
         </div>
         <div class="mb-3">
           <label class="form-label text-light">Minat Circle</label>
-          <select name="interest_id" class="form-select bg-dark text-light border-secondary" required>
+          <select name="interest_id" class="form-select bg-dark text-light border-secondary" required <?= $user_id !== $creator_id ? 'disabled' : '' ?>>
             <option value="" disabled <?= $current_interest_id === null ? 'selected' : '' ?>>Pilih minat...</option>
             <?php foreach ($interests as $interest): ?>
               <option value="<?= $interest['id'] ?>" <?= ($interest['id'] == $current_interest_id ? 'selected' : '') ?>>
@@ -53,15 +53,17 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
               </option>
             <?php endforeach; ?>
           </select>
-          <small class="text-muted">Hanya satu minat yang dapat dipilih.</small>
+          <small class="text-muted">Hanya creator yang dapat mengubah pengaturan ini.</small>
         </div>
         <div class="form-check mb-3">
-          <input class="form-check-input" type="checkbox" name="is_private" id="is_private" <?= $is_private ? 'checked' : '' ?>>
+          <input class="form-check-input" type="checkbox" name="is_private" id="is_private" <?= $is_private ? 'checked' : '' ?> <?= $user_id !== $creator_id ? 'disabled' : '' ?>>
           <label class="form-check-label text-light" for="is_private">
             Circle ini <strong>Private</strong> (butuh persetujuan untuk bergabung)
           </label>
         </div>
-        <button type="submit" name="update_circle" value="1" class="btn btn-primary">Simpan Perubahan</button>
+        <?php if ($user_id === $creator_id): ?>
+          <button type="submit" name="update_circle" value="1" class="btn btn-primary">Simpan Perubahan</button>
+        <?php endif; ?>
       </form>
       <a href="discussion_page.php?circle_id=<?= $circle_id ?>" class="btn btn-outline-light mt-3">
         <i class="bi bi-arrow-left-circle"></i> Kembali ke Diskusi
@@ -83,47 +85,60 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
             </div>
 
             <?php if ($row['id'] != $user_id): ?>
-              <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
-                <!-- Kick -->
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-danger"
-                  onclick="showGlobalModal(<?= $row['id'] ?>, 'kick', 'Keluarkan Anggota', 'Yakin ingin mengeluarkan <strong><?= htmlspecialchars($row['username']) ?></strong> dari circle?', null, 'danger')">
-                  <i class="bi bi-person-x"></i>
-                </button>
+              <?php
+                // Tentukan apakah tombol tindakan boleh ditampilkan
+                $show_actions = false;
+                if ($user_id === $creator_id) {
+                    $show_actions = true;
+                } elseif ($role === 'moderator' && $row['role'] === 'member') {
+                    $show_actions = true;
+                }
+              ?>
+              <?php if ($show_actions): ?>
+                <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                  <!-- Kick -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="showGlobalModal(<?= $row['id'] ?>, 'kick', 'Keluarkan Anggota', 'Yakin ingin mengeluarkan <strong><?= htmlspecialchars($row['username']) ?></strong> dari circle?', null, 'danger')">
+                    <i class="bi bi-person-x"></i>
+                  </button>
 
-                <!-- Mute -->
-                <form class="d-flex align-items-center">
-                  <select name="mute_duration" class="form-select form-select-sm bg-dark text-light border-secondary me-2" style="width: auto;">
-                    <option value="1">1 jam</option>
-                    <option value="6">6 jam</option>
-                    <option value="24">1 hari</option>
-                  </select>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-warning"
-                    onclick="handleMuteClick(this, <?= $row['id'] ?>, '<?= htmlspecialchars($row['username']) ?>')">
-                    <i class="bi bi-volume-mute"></i>
-                  </button>
-                </form>
+                  <!-- Mute -->
+                  <form class="d-flex align-items-center">
+                    <select name="mute_duration" class="form-select form-select-sm bg-dark text-light border-secondary me-2" style="width: auto;">
+                      <option value="1">1 jam</option>
+                      <option value="6">6 jam</option>
+                      <option value="24">1 hari</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-warning"
+                      onclick="handleMuteClick(this, <?= $row['id'] ?>, '<?= htmlspecialchars($row['username']) ?>')">
+                      <i class="bi bi-volume-mute"></i>
+                    </button>
+                  </form>
 
-                <!-- Promote/Demote -->
-                <?php if ($row['role'] === 'moderator'): ?>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-secondary"
-                    onclick="showGlobalModal(<?= $row['id'] ?>, 'demote', 'Cabut Moderator', 'Yakin ingin mencabut moderator dari <strong><?= htmlspecialchars($row['username']) ?></strong>?', null, 'secondary')">
-                    <i class="bi bi-person-dash"></i>
-                  </button>
-                <?php else: ?>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-success"
-                    onclick="showGlobalModal(<?= $row['id'] ?>, 'promote', 'Promosikan Menjadi Moderator', 'Yakin ingin mempromosikan <strong><?= htmlspecialchars($row['username']) ?></strong> menjadi moderator?', null, 'success')">
-                    <i class="bi bi-person-plus"></i>
-                  </button>
-                <?php endif; ?>
-              </div>
+                  <?php if ($user_id === $creator_id): ?>
+                    <!-- Promote/Demote hanya Creator -->
+                    <?php if ($row['role'] === 'moderator'): ?>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        onclick="showGlobalModal(<?= $row['id'] ?>, 'demote', 'Cabut Moderator', 'Yakin ingin mencabut moderator dari <strong><?= htmlspecialchars($row['username']) ?></strong>?', null, 'secondary')">
+                        <i class="bi bi-person-dash"></i>
+                      </button>
+                    <?php else: ?>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-success"
+                        onclick="showGlobalModal(<?= $row['id'] ?>, 'promote', 'Promosikan Menjadi Moderator', 'Yakin ingin mempromosikan <strong><?= htmlspecialchars($row['username']) ?></strong> menjadi moderator?', null, 'success')">
+                        <i class="bi bi-person-plus"></i>
+                      </button>
+                    <?php endif; ?>
+                  <?php endif; ?>
+                </div>
+              <?php endif; ?>
             <?php endif; ?>
           </li>
         <?php endforeach; ?>
@@ -181,7 +196,6 @@ function handleMuteClick(btn, memberId, username) {
   const form = btn.closest("form");
   const select = form.querySelector("select[name='mute_duration']");
   const duration = select ? select.value : "1";
-
   let label = duration + " jam";
   if (duration === "24") label = "1 hari";
   else if (duration === "6") label = "6 jam";

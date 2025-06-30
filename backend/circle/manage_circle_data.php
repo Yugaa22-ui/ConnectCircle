@@ -26,10 +26,9 @@ $cek->bind_result($circle_name, $circle_description, $creator_id, $rules, $curre
 $cek->fetch();
 $cek->close();
 
-// is_private dipakai untuk checked checkbox
 $is_private = $current_private_status;
 
-// Ambil role user dari circle_members
+// Ambil role user
 $role_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
 $role_stmt->bind_param("ii", $user_id, $circle_id);
 $role_stmt->execute();
@@ -39,7 +38,7 @@ $role_stmt->close();
 
 // Validasi akses
 if ($creator_id !== $user_id && $role !== 'moderator') {
-    echo "<script>alert('Hanya pembuat circle atau moderator yang dapat mengelola.'); window.location='view_circle.php';</script>";
+    echo "<script>alert('Hanya creator atau moderator yang dapat mengelola.'); window.location='view_circle.php';</script>";
     exit;
 }
 
@@ -56,44 +55,47 @@ $interest_stmt->close();
 // === Update circle ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['circle_name'], $_POST['circle_description'], $_POST['rules'], $_POST['interest_id'])) {
-        $new_name        = trim($_POST['circle_name']);
-        $new_desc        = trim($_POST['circle_description']);
-        $new_rules       = trim($_POST['rules']);
-        $new_interest_id = intval($_POST['interest_id']);
-        $new_is_private  = isset($_POST['is_private']) ? 1 : 0;
-
-        // Cek apakah data ada yang berubah
-        $is_data_changed = (
-            $new_name !== $circle_name ||
-            $new_desc !== $circle_description ||
-            $new_rules !== $rules ||
-            $new_is_private != $current_private_status ||
-            $new_interest_id != $current_interest_id
-        );
-
-        if ($is_data_changed) {
-            $update = $conn->prepare("
-                UPDATE circles
-                SET name = ?, description = ?, rules = ?, is_private = ?, interest_id = ?
-                WHERE id = ?
-            ");
-            $update->bind_param("sssiii", $new_name, $new_desc, $new_rules, $new_is_private, $new_interest_id, $circle_id);
-            if ($update->execute()) {
-                // Perbarui variabel agar form menampilkan data terbaru
-                $circle_name = $new_name;
-                $circle_description = $new_desc;
-                $rules = $new_rules;
-                $current_private_status = $new_is_private;
-                $is_private = $new_is_private;
-                $current_interest_id = $new_interest_id;
-
-                $msg = "✅ Circle berhasil diperbarui.";
-            } else {
-                $msg = "❌ Gagal memperbarui circle.";
-            }
-            $update->close();
+        // Hanya creator yang boleh update circle
+        if ($user_id !== $creator_id) {
+            $msg = "❌ Hanya creator yang dapat mengedit pengaturan circle.";
         } else {
-            $msg = "ℹ️ Tidak ada data yang diubah.";
+            $new_name        = trim($_POST['circle_name']);
+            $new_desc        = trim($_POST['circle_description']);
+            $new_rules       = trim($_POST['rules']);
+            $new_interest_id = intval($_POST['interest_id']);
+            $new_is_private  = isset($_POST['is_private']) ? 1 : 0;
+
+            $is_data_changed = (
+                $new_name !== $circle_name ||
+                $new_desc !== $circle_description ||
+                $new_rules !== $rules ||
+                $new_is_private != $current_private_status ||
+                $new_interest_id != $current_interest_id
+            );
+
+            if ($is_data_changed) {
+                $update = $conn->prepare("
+                    UPDATE circles
+                    SET name = ?, description = ?, rules = ?, is_private = ?, interest_id = ?
+                    WHERE id = ?
+                ");
+                $update->bind_param("sssiii", $new_name, $new_desc, $new_rules, $new_is_private, $new_interest_id, $circle_id);
+                if ($update->execute()) {
+                    $circle_name = $new_name;
+                    $circle_description = $new_desc;
+                    $rules = $new_rules;
+                    $current_private_status = $new_is_private;
+                    $is_private = $new_is_private;
+                    $current_interest_id = $new_interest_id;
+
+                    $msg = "✅ Circle berhasil diperbarui.";
+                } else {
+                    $msg = "❌ Gagal memperbarui circle.";
+                }
+                $update->close();
+            } else {
+                $msg = "ℹ️ Tidak ada data yang diubah.";
+            }
         }
     }
 
@@ -102,35 +104,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $member_id = intval($_POST['member_id']);
         $action = $_POST['action'];
 
-        if ($action === 'kick') {
-            $del = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
-            $del->bind_param("ii", $member_id, $circle_id);
-            $del->execute();
-            $del->close();
-            $msg = "🚫 Anggota dikeluarkan.";
+        // Cek role target
+        $target_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
+        $target_stmt->bind_param("ii", $member_id, $circle_id);
+        $target_stmt->execute();
+        $target_stmt->bind_result($target_role);
+        $target_stmt->fetch();
+        $target_stmt->close();
 
-        } elseif ($action === 'mute' && isset($_POST['mute_duration'])) {
-            $duration = intval($_POST['mute_duration']);
-            $until = date('Y-m-d H:i:s', strtotime("+$duration hour"));
-            $mute = $conn->prepare("REPLACE INTO circle_mutes (user_id, circle_id, until_time) VALUES (?, ?, ?)");
-            $mute->bind_param("iis", $member_id, $circle_id, $until);
-            $mute->execute();
-            $mute->close();
-            $msg = "🔇 Anggota dimute selama $duration jam.";
+        // Creator boleh melakukan semua tindakan
+        if ($user_id === $creator_id) {
+            $allowed = true;
+        } else {
+            // Moderator hanya boleh kick/mute member
+            if ($target_role === 'member' && in_array($action, ['kick', 'mute'])) {
+                $allowed = true;
+            } else {
+                $allowed = false;
+            }
+        }
 
-        } elseif ($action === 'promote') {
-            $promote = $conn->prepare("UPDATE circle_members SET role = 'moderator' WHERE user_id = ? AND circle_id = ?");
-            $promote->bind_param("ii", $member_id, $circle_id);
-            $promote->execute();
-            $promote->close();
-            $msg = "⭐ Anggota dipromosikan menjadi moderator.";
+        if (!$allowed) {
+            $msg = "❌ Anda tidak memiliki izin melakukan aksi ini.";
+        } else {
+            if ($action === 'kick') {
+                $del = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
+                $del->bind_param("ii", $member_id, $circle_id);
+                $del->execute();
+                $del->close();
+                $msg = "🚫 Anggota dikeluarkan.";
 
-        } elseif ($action === 'demote') {
-            $demote = $conn->prepare("UPDATE circle_members SET role = 'member' WHERE user_id = ? AND circle_id = ?");
-            $demote->bind_param("ii", $member_id, $circle_id);
-            $demote->execute();
-            $demote->close();
-            $msg = "🔽 Jabatan moderator telah dicabut.";
+                // Jika yang keluar adalah creator, pindah kepemilikan ke moderator pertama
+                if ($member_id === $creator_id) {
+                    $next_stmt = $conn->prepare("
+                        SELECT user_id
+                        FROM circle_members
+                        WHERE circle_id = ? AND role = 'moderator'
+                        ORDER BY joined_at ASC
+                        LIMIT 1
+                    ");
+                    $next_stmt->bind_param("i", $circle_id);
+                    $next_stmt->execute();
+                    $next_stmt->bind_result($new_creator_id);
+                    if ($next_stmt->fetch()) {
+                        $update_creator = $conn->prepare("UPDATE circles SET creator_id = ? WHERE id = ?");
+                        $update_creator->bind_param("ii", $new_creator_id, $circle_id);
+                        $update_creator->execute();
+                        $update_creator->close();
+                        $msg .= " Creator diganti ke moderator pertama.";
+                    }
+                    $next_stmt->close();
+                }
+
+            } elseif ($action === 'mute' && isset($_POST['mute_duration'])) {
+                $duration = intval($_POST['mute_duration']);
+                $until = date('Y-m-d H:i:s', strtotime("+$duration hour"));
+                $mute = $conn->prepare("REPLACE INTO circle_mutes (user_id, circle_id, until_time) VALUES (?, ?, ?)");
+                $mute->bind_param("iis", $member_id, $circle_id, $until);
+                $mute->execute();
+                $mute->close();
+                $msg = "🔇 Anggota dimute selama $duration jam.";
+
+            } elseif ($action === 'promote') {
+                $promote = $conn->prepare("UPDATE circle_members SET role = 'moderator' WHERE user_id = ? AND circle_id = ?");
+                $promote->bind_param("ii", $member_id, $circle_id);
+                $promote->execute();
+                $promote->close();
+                $msg = "⭐ Anggota dipromosikan menjadi moderator.";
+
+            } elseif ($action === 'demote') {
+                $demote = $conn->prepare("UPDATE circle_members SET role = 'member' WHERE user_id = ? AND circle_id = ?");
+                $demote->bind_param("ii", $member_id, $circle_id);
+                $demote->execute();
+                $demote->close();
+                $msg = "🔽 Jabatan moderator telah dicabut.";
+            }
         }
     }
 }
