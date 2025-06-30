@@ -43,6 +43,18 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
           <label class="form-label text-light">Syarat Bergabung</label>
           <textarea name="rules" class="form-control bg-dark text-light border-secondary" rows="2"><?= htmlspecialchars($rules ?? '') ?></textarea>
         </div>
+        <div class="mb-3">
+          <label class="form-label text-light">Minat Circle</label>
+          <select name="interest_id" class="form-select bg-dark text-light border-secondary" required>
+            <option value="" disabled <?= $current_interest_id === null ? 'selected' : '' ?>>Pilih minat...</option>
+            <?php foreach ($interests as $interest): ?>
+              <option value="<?= $interest['id'] ?>" <?= ($interest['id'] == $current_interest_id ? 'selected' : '') ?>>
+                <?= htmlspecialchars($interest['name']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <small class="text-muted">Hanya satu minat yang dapat dipilih.</small>
+        </div>
         <div class="form-check mb-3">
           <input class="form-check-input" type="checkbox" name="is_private" id="is_private" <?= $is_private ? 'checked' : '' ?>>
           <label class="form-check-label text-light" for="is_private">

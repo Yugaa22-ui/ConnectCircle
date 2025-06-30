@@ -11,8 +11,8 @@ $circle_detail = [];
 $members = [];
 $top_active = $newest = null;
 
-// Validasi circle dan ambil creator_id
-$cek = $conn->prepare("SELECT name, description, creator_id, rules FROM circles WHERE id = ?");
+// Validasi circle dan ambil data awal
+$cek = $conn->prepare("SELECT name, description, creator_id, rules, is_private, interest_id FROM circles WHERE id = ?");
 $cek->bind_param("i", $circle_id);
 $cek->execute();
 $cek->store_result();
@@ -22,9 +22,12 @@ if ($cek->num_rows === 0) {
     exit;
 }
 
-$cek->bind_result($circle_name, $circle_description, $creator_id, $rules);
+$cek->bind_result($circle_name, $circle_description, $creator_id, $rules, $current_private_status, $current_interest_id);
 $cek->fetch();
 $cek->close();
+
+// is_private dipakai untuk checked checkbox
+$is_private = $current_private_status;
 
 // Ambil role user dari circle_members
 $role_stmt = $conn->prepare("SELECT role FROM circle_members WHERE user_id = ? AND circle_id = ?");
@@ -34,64 +37,64 @@ $role_stmt->bind_result($role);
 $role_stmt->fetch();
 $role_stmt->close();
 
-// Validasi akses: hanya creator atau moderator
+// Validasi akses
 if ($creator_id !== $user_id && $role !== 'moderator') {
     echo "<script>alert('Hanya pembuat circle atau moderator yang dapat mengelola.'); window.location='view_circle.php';</script>";
     exit;
 }
 
-// Ambil status is_private
-$get_visibility = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
-$get_visibility->bind_param("i", $circle_id);
-$get_visibility->execute();
-$get_visibility->bind_result($is_private);
-$get_visibility->fetch();
-$get_visibility->close();
+// Ambil semua minat
+$interests = [];
+$interest_stmt = $conn->prepare("SELECT id, name FROM interests ORDER BY name ASC");
+$interest_stmt->execute();
+$res = $interest_stmt->get_result();
+while ($row = $res->fetch_assoc()) {
+    $interests[] = $row;
+}
+$interest_stmt->close();
 
 // === Update circle ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['circle_name'], $_POST['circle_description'], $_POST['rules'])) {
-        $new_name  = trim($_POST['circle_name']);
-        $new_desc  = trim($_POST['circle_description']);
-        $new_rules = trim($_POST['rules']);
-        $is_private = isset($_POST['is_private']) ? 1 : 0;
+    if (isset($_POST['circle_name'], $_POST['circle_description'], $_POST['rules'], $_POST['interest_id'])) {
+        $new_name        = trim($_POST['circle_name']);
+        $new_desc        = trim($_POST['circle_description']);
+        $new_rules       = trim($_POST['rules']);
+        $new_interest_id = intval($_POST['interest_id']);
+        $new_is_private  = isset($_POST['is_private']) ? 1 : 0;
 
+        // Cek apakah data ada yang berubah
         $is_data_changed = (
             $new_name !== $circle_name ||
             $new_desc !== $circle_description ||
             $new_rules !== $rules ||
-            $is_private != $is_private  // perbandingan sebelumnya tidak masuk akal
+            $new_is_private != $current_private_status ||
+            $new_interest_id != $current_interest_id
         );
-        
-        // Perlu mengambil ulang nilai is_private asli dari DB
-        $get_visibility = $conn->prepare("SELECT is_private FROM circles WHERE id = ?");
-        $get_visibility->bind_param("i", $circle_id);
-        $get_visibility->execute();
-        $get_visibility->bind_result($current_private_status);
-        $get_visibility->fetch();
-        $get_visibility->close();
-        
-        // Periksa apakah ada perubahan
-        $is_data_changed = (
-            $new_name !== $circle_name ||
-            $new_desc !== $circle_description ||
-            $new_rules !== $rules ||
-            $is_private != $current_private_status
-        );
-        
+
         if ($is_data_changed) {
-            $update = $conn->prepare("UPDATE circles SET name = ?, description = ?, rules = ?, is_private = ? WHERE id = ?");
-            $update->bind_param("sssii", $new_name, $new_desc, $new_rules, $is_private, $circle_id);
+            $update = $conn->prepare("
+                UPDATE circles
+                SET name = ?, description = ?, rules = ?, is_private = ?, interest_id = ?
+                WHERE id = ?
+            ");
+            $update->bind_param("sssiii", $new_name, $new_desc, $new_rules, $new_is_private, $new_interest_id, $circle_id);
             if ($update->execute()) {
+                // Perbarui variabel agar form menampilkan data terbaru
                 $circle_name = $new_name;
                 $circle_description = $new_desc;
                 $rules = $new_rules;
+                $current_private_status = $new_is_private;
+                $is_private = $new_is_private;
+                $current_interest_id = $new_interest_id;
+
                 $msg = "✅ Circle berhasil diperbarui.";
+            } else {
+                $msg = "❌ Gagal memperbarui circle.";
             }
             $update->close();
         } else {
             $msg = "ℹ️ Tidak ada data yang diubah.";
-        }        
+        }
     }
 
     // Aksi terhadap anggota
@@ -109,7 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'mute' && isset($_POST['mute_duration'])) {
             $duration = intval($_POST['mute_duration']);
             $until = date('Y-m-d H:i:s', strtotime("+$duration hour"));
-
             $mute = $conn->prepare("REPLACE INTO circle_mutes (user_id, circle_id, until_time) VALUES (?, ?, ?)");
             $mute->bind_param("iis", $member_id, $circle_id, $until);
             $mute->execute();
@@ -121,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $promote->bind_param("ii", $member_id, $circle_id);
             $promote->execute();
             $promote->close();
-            $msg = "⭐ Anggota dipromosikan sebagai moderator.";
+            $msg = "⭐ Anggota dipromosikan menjadi moderator.";
 
         } elseif ($action === 'demote') {
             $demote = $conn->prepare("UPDATE circle_members SET role = 'member' WHERE user_id = ? AND circle_id = ?");
@@ -151,29 +153,33 @@ $get_members->close();
 
 // Anggota paling aktif
 $top_stmt = $conn->prepare("
-    SELECT u.username FROM posts p
+    SELECT u.username
+    FROM posts p
     JOIN users u ON u.id = p.user_id
     WHERE p.circle_id = ?
     GROUP BY p.user_id
-    ORDER BY COUNT(*) DESC LIMIT 1
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
 ");
 $top_stmt->bind_param("i", $circle_id);
 $top_stmt->execute();
 $top_stmt->bind_result($top_active_user);
 $top_stmt->fetch();
-$top_active = $top_active_user;
+$top_active = $top_active_user ?: null;
 $top_stmt->close();
 
 // Anggota terbaru
 $new_stmt = $conn->prepare("
-    SELECT u.username FROM circle_members cm
+    SELECT u.username
+    FROM circle_members cm
     JOIN users u ON cm.user_id = u.id
     WHERE cm.circle_id = ?
-    ORDER BY cm.joined_at DESC LIMIT 1
+    ORDER BY cm.joined_at DESC
+    LIMIT 1
 ");
 $new_stmt->bind_param("i", $circle_id);
 $new_stmt->execute();
 $new_stmt->bind_result($newest_user);
 $new_stmt->fetch();
-$newest = $newest_user;
+$newest = $newest_user ?: null;
 $new_stmt->close();
