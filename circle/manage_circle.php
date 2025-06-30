@@ -85,97 +85,47 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
             <?php if ($row['id'] != $user_id): ?>
               <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
                 <!-- Kick -->
-                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmKickModal<?= $row['id'] ?>">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  onclick="showGlobalModal(<?= $row['id'] ?>, 'kick', 'Keluarkan Anggota', 'Yakin ingin mengeluarkan <strong><?= htmlspecialchars($row['username']) ?></strong> dari circle?', null, 'danger')">
                   <i class="bi bi-person-x"></i>
                 </button>
-                <form method="POST" class="d-flex align-items-center">
-                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
+
+                <!-- Mute -->
+                <form class="d-flex align-items-center">
                   <select name="mute_duration" class="form-select form-select-sm bg-dark text-light border-secondary me-2" style="width: auto;">
                     <option value="1">1 jam</option>
                     <option value="6">6 jam</option>
                     <option value="24">1 hari</option>
                   </select>
-                  <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#confirmMuteModal<?= $row['id'] ?>">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-warning"
+                    onclick="handleMuteClick(this, <?= $row['id'] ?>, '<?= htmlspecialchars($row['username']) ?>')">
                     <i class="bi bi-volume-mute"></i>
                   </button>
                 </form>
 
-                <form method="POST">
-                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-                  <?php if ($row['role'] === 'moderator'): ?>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#confirmDemoteModal<?= $row['id'] ?>">
-                      <i class="bi bi-person-dash"></i>
-                    </button>
-                  <?php else: ?>
-                    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#confirmPromoteModal<?= $row['id'] ?>">
-                      <i class="bi bi-person-plus"></i>
-                    </button>
-                  <?php endif; ?>
-                </form>
+                <!-- Promote/Demote -->
+                <?php if ($row['role'] === 'moderator'): ?>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="showGlobalModal(<?= $row['id'] ?>, 'demote', 'Cabut Moderator', 'Yakin ingin mencabut moderator dari <strong><?= htmlspecialchars($row['username']) ?></strong>?', null, 'secondary')">
+                    <i class="bi bi-person-dash"></i>
+                  </button>
+                <?php else: ?>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    onclick="showGlobalModal(<?= $row['id'] ?>, 'promote', 'Promosikan Menjadi Moderator', 'Yakin ingin mempromosikan <strong><?= htmlspecialchars($row['username']) ?></strong> menjadi moderator?', null, 'success')">
+                    <i class="bi bi-person-plus"></i>
+                  </button>
+                <?php endif; ?>
               </div>
             <?php endif; ?>
           </li>
-
-          <!-- Modal Kick -->
-          <div class="modal fade" id="confirmKickModal<?= $row['id'] ?>" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content bg-dark text-light border border-secondary">
-                <form method="POST">
-                  <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-                  <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title">Keluarkan Anggota</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                  </div>
-                  <div class="modal-body">Yakin ingin mengeluarkan <strong><?= htmlspecialchars($row['username']) ?></strong> dari circle?</div>
-                  <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" name="action" value="kick" class="btn btn-danger">Ya</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-      <!-- Modal Demote -->
-      <div class="modal fade" id="confirmDemoteModal<?= $row['id'] ?>" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content bg-dark text-light border border-secondary">
-            <form method="POST">
-              <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-              <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title">Cabut Moderator</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">Yakin ingin mencabut moderator dari <strong><?= htmlspecialchars($row['username']) ?></strong>?</div>
-              <div class="modal-footer border-top border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" name="action" value="demote" class="btn btn-danger">Ya</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal Mute -->
-      <div class="modal fade" id="confirmMuteModal<?= $row['id'] ?>" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content bg-dark text-light border border-secondary">
-            <form method="POST">
-              <input type="hidden" name="member_id" value="<?= $row['id'] ?>">
-              <input type="hidden" name="mute_duration" value="1">
-              <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title">Mute Anggota</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">Yakin ingin mute <strong><?= htmlspecialchars($row['username']) ?></strong> selama 1 jam?</div>
-              <div class="modal-footer border-top border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" name="action" value="mute" class="btn btn-warning">Ya</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
         <?php endforeach; ?>
       </ul>
 
@@ -190,13 +140,70 @@ require __DIR__ . '/../backend/circle/manage_circle_data.php';
     </div>
   </div>
 </div>
+
+<!-- Modal Konfirmasi Global -->
+<div class="modal fade" id="globalConfirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light border border-secondary">
+      <form id="globalActionForm" method="POST">
+        <input type="hidden" name="member_id" id="globalMemberId">
+        <input type="hidden" name="action" id="globalAction">
+        <input type="hidden" name="mute_duration" id="globalMuteDuration">
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title" id="globalModalTitle">Konfirmasi</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="globalModalBody">
+          Apakah Anda yakin?
+        </div>
+        <div class="modal-footer border-top border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Ya</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const toastEl = document.querySelector('.toast');
-    if (toastEl) {
-      const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
-      bsToast.show();
-    }
-  });
+function showGlobalModal(memberId, action, title, body, duration, color) {
+  document.getElementById("globalModalTitle").textContent = title;
+  document.getElementById("globalModalBody").innerHTML = body;
+  document.getElementById("globalMemberId").value = memberId;
+  document.getElementById("globalAction").value = action;
+  document.getElementById("globalMuteDuration").value = duration || "";
+  const submitBtn = document.querySelector("#globalActionForm button[type=submit]");
+  submitBtn.className = `btn btn-${color}`;
+  new bootstrap.Modal(document.getElementById("globalConfirmModal")).show();
+}
+
+function handleMuteClick(btn, memberId, username) {
+  const form = btn.closest("form");
+  const select = form.querySelector("select[name='mute_duration']");
+  const duration = select ? select.value : "1";
+
+  let label = duration + " jam";
+  if (duration === "24") label = "1 hari";
+  else if (duration === "6") label = "6 jam";
+  else if (duration === "1") label = "1 jam";
+
+  showGlobalModal(
+    memberId,
+    'mute',
+    'Mute Anggota',
+    `Yakin ingin mute <strong>${username}</strong> selama ${label}?`,
+    duration,
+    'warning'
+  );
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const toastEl = document.querySelector('.toast');
+  if (toastEl) {
+    const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    bsToast.show();
+  }
+});
 </script>
+
 <?php require __DIR__ . '/../templates/footer.php'; ?>
