@@ -1,22 +1,10 @@
 function initCreateCircleForm() {
   const form = document.getElementById('createCircleForm');
   const alertDiv = document.getElementById('formAlert');
-  const interestCheckboxes = document.querySelectorAll('.interest-checkbox');
+  const interestRadios = document.querySelectorAll('.interest-radio');
   const interestError = document.getElementById('interest-error');
 
   if (!form) return;
-
-  // Handle toggling hanya 1 checkbox aktif
-  interestCheckboxes.forEach(cb => {
-    cb.addEventListener('change', function() {
-      if (this.checked) {
-        interestCheckboxes.forEach(other => {
-          if (other !== this) other.checked = false;
-        });
-        interestError.textContent = "";
-      }
-    });
-  });
 
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -28,7 +16,7 @@ function initCreateCircleForm() {
     interestError.textContent = '';
 
     // Cek minat terpilih
-    const selectedInterest = Array.from(interestCheckboxes).find(cb => cb.checked);
+    const selectedInterest = Array.from(interestRadios).find(r => r.checked);
     if (!selectedInterest) {
       interestError.textContent = "Wajib memilih 1 minat circle.";
       return;
@@ -38,10 +26,10 @@ function initCreateCircleForm() {
     formData.set('interest_id', selectedInterest.value);
 
     try {
-      const res = await fetch('../backend/circle/create_circle_process.php', {
+      const res = await fetch('/connectcircle/backend/circle/create_circle_process.php', {
         method: 'POST',
         body: formData
-      });
+      });      
 
       const data = await res.json();
 

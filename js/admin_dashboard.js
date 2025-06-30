@@ -39,6 +39,14 @@ function loadScriptIfNotExists(src, callback) {
           setActiveLink(this);
   
           // Load script khusus halaman
+          if (page.includes('create_circle.php')) {
+            loadScriptIfNotExists('../js/create_circle.js', () => {
+              if (typeof initCreateCircleForm === 'function') {
+                initCreateCircleForm();
+              }
+            });
+          }
+
           if (page.includes('manage_interests.php')) {
             loadScriptIfNotExists('../js/admin_manage_interests.js', () => {
               if (typeof initManageInterests === 'function') {

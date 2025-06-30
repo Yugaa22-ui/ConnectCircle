@@ -42,9 +42,9 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
               <div id="interest-error" class="text-danger small mb-2"></div>
               <div class="d-flex flex-wrap gap-2" id="interests-container">
                 <?php foreach ($interests as $index => $int): ?>
-                  <?php $checkboxId = 'interest_' . $index; ?>
-                  <input type="checkbox" class="btn-check interest-checkbox" name="interest_id" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off">
-                  <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
+                  <?php $radioId = 'interest_' . $index; ?>
+                  <input type="radio" class="btn-check" name="interest_id" id="<?= $radioId ?>" value="<?= $int['id'] ?>" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="<?= $radioId ?>"><?= htmlspecialchars($int['name']) ?></label>
                 <?php endforeach; ?>
               </div>
             </div>
