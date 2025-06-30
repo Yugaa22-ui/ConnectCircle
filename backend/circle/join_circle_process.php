@@ -91,15 +91,21 @@ if ($is_ajax) {
 
 // --- GET: Ambil daftar circle yang belum diikuti DAN belum diajukan ---
 $stmt = $conn->prepare("
-    SELECT c.id, c.name, c.description, c.is_private,
+    SELECT 
+        c.id,
+        c.name,
+        c.description,
+        c.is_private,
+        i.name AS interest_name,
         (SELECT COUNT(*) FROM circle_members cm WHERE cm.circle_id = c.id) AS member_count
     FROM circles c
+    LEFT JOIN interests i ON c.interest_id = i.id
     WHERE c.id NOT IN (
         SELECT circle_id FROM circle_members WHERE user_id = ?
         UNION
         SELECT circle_id FROM circle_requests WHERE user_id = ?
     )
-");
+"); 
 $stmt->bind_param("ii", $user_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();

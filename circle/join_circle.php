@@ -32,7 +32,16 @@ include '../backend/circle/join_circle_process.php';
                         <?php endif; ?>
                       </h5>
                       <p class="mb-1"><?= nl2br(htmlspecialchars($circle['description'])) ?></p>
-                      <small class="text-muted">👥 <?= $circle['member_count'] ?> anggota</small>
+                      
+                      <?php if (!empty($circle['interest_name'])): ?>
+                        <span class="badge bg-info text-dark mb-1">
+                          <i class="bi bi-tag-fill me-1"></i><?= htmlspecialchars($circle['interest_name']) ?>
+                        </span>
+                      <?php endif; ?>
+                      
+                      <small class="text-muted d-block mt-1">
+                        <i class="bi bi-people-fill me-1"></i><?= $circle['member_count'] ?> anggota
+                      </small>
                     </div>
                     <div class="d-flex align-items-center">
                       <button class="btn btn-sm join-btn <?= $circle['is_private'] ? 'btn-outline-warning' : 'btn-outline-primary' ?>"
@@ -52,25 +61,27 @@ include '../backend/circle/join_circle_process.php';
       </div>
     </div>
   </div>
+
   <!-- Modal Konfirmasi Gabung -->
-<div class="modal fade" id="confirmJoinModal" tabindex="-1" aria-labelledby="confirmJoinLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-white border-secondary">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="confirmJoinLabel">Konfirmasi</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
-      </div>
-      <div class="modal-body">
-        <p id="confirmJoinMessage" class="mb-0"></p>
-      </div>
-      <div class="modal-footer border-top">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-outline-light" id="confirmJoinBtn">Ya, Lanjutkan</button>
+  <div class="modal fade" id="confirmJoinModal" tabindex="-1" aria-labelledby="confirmJoinLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title" id="confirmJoinLabel">Konfirmasi</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p id="confirmJoinMessage" class="mb-0"></p>
+        </div>
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-outline-light" id="confirmJoinBtn">Ya, Lanjutkan</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </main>
+
 <?php if (!$include_template): ?>
   <div class="text-center mt-4">
     <a href="../user/dashboard_user.php" class="btn btn-outline-light">
@@ -88,4 +99,5 @@ include '../backend/circle/join_circle_process.php';
     });
   </script>
 <?php endif; ?>
+
 <?php if (!$include_template) include '../templates/footer.php'; ?>
