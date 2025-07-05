@@ -43,7 +43,7 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
               <div class="d-flex flex-wrap gap-2" id="interests-container">
                 <?php foreach ($interests as $index => $int): ?>
                   <?php $radioId = 'interest_' . $index; ?>
-                  <input type="radio" class="btn-check" name="interest_id" id="<?= $radioId ?>" value="<?= $int['id'] ?>" autocomplete="off">
+                  <input type="radio" class="btn-check interest-radio" name="interest_id" id="<?= $radioId ?>" value="<?= $int['id'] ?>" autocomplete="off">
                   <label class="btn btn-outline-primary" for="<?= $radioId ?>"><?= htmlspecialchars($int['name']) ?></label>
                 <?php endforeach; ?>
               </div>

@@ -1,7 +1,6 @@
 function initCreateCircleForm() {
   const form = document.getElementById('createCircleForm');
   const alertDiv = document.getElementById('formAlert');
-  const interestRadios = document.querySelectorAll('.interest-radio');
   const interestError = document.getElementById('interest-error');
 
   if (!form) return;
@@ -16,7 +15,7 @@ function initCreateCircleForm() {
     interestError.textContent = '';
 
     // Cek minat terpilih
-    const selectedInterest = Array.from(interestRadios).find(r => r.checked);
+    const selectedInterest = form.querySelector('input[name="interest_id"]:checked');
     if (!selectedInterest) {
       interestError.textContent = "Wajib memilih 1 minat circle.";
       return;
