@@ -333,3 +333,7 @@ button.btn-dark:active {
 .text-danger {
   color: #ff6b6b !important;
 }
+
+#search-result {
+  transition: opacity 0.3s ease-in-out;
+}
