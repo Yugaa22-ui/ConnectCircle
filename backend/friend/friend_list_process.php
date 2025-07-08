@@ -10,9 +10,9 @@ if (!isset($_SESSION['user_id'])) {
 $current_user = $_SESSION['user_id'];
 $friends = [];
 
-// Ambil daftar teman dari tabel `friends`
+// Ambil daftar teman dari tabel `friends` dan foto profil dari tabel `users`
 $stmt = $conn->prepare("
-    SELECT u.id, u.username, u.city, u.profession
+    SELECT u.id, u.username, u.city, u.profession, u.profile_picture
     FROM friends f
     JOIN users u ON u.id = f.friend_id
     WHERE f.user_id = ?
