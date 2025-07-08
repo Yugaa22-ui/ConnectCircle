@@ -4,6 +4,10 @@ include '../backend/search/search_process.php';
 
 $embed = isset($_GET['embed']) && $_GET['embed'] == '1';
 if (!$embed) include '../templates/header.php';
+
+// Ambil daftar minat
+$interest_query = $conn->query("SELECT name FROM interests");
+$interests = $interest_query->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <div class="container-fluid mt-3">
@@ -12,7 +16,7 @@ if (!$embed) include '../templates/header.php';
       <h4 class="mb-0"><i class="bi bi-search me-2"></i> Cari Teman Berdasarkan Minat</h4>
     </div>
     <div class="card-body">
-    <form method="GET" action="<?= $embed ? 'javascript:void(0)' : '' ?>" id="search-form">
+      <form method="GET" action="<?= $embed ? 'javascript:void(0)' : '' ?>" id="search-form">
         <?php if ($embed): ?>
           <input type="hidden" name="embed" value="1">
         <?php endif; ?>
@@ -21,13 +25,25 @@ if (!$embed) include '../templates/header.php';
           <input type="text" name="minat"
                  class="form-control bg-dark text-white border-secondary <?= !empty($search_error) ? 'is-invalid' : '' ?>"
                  value="<?= htmlspecialchars($search_term) ?>"
-                 placeholder="Contoh: Pemrograman, Musik, Desain">
+                 placeholder="Contoh: Coding, Musik, Hiking">
           <?php if (!empty($search_error)): ?>
             <div class="invalid-feedback"><?= htmlspecialchars($search_error) ?></div>
           <?php endif; ?>
         </div>
+
+        <div class="mb-3">
+          <label class="form-label">Atau pilih dari daftar minat berikut:</label>
+          <div class="d-flex flex-wrap gap-2" id="interest-tags">
+            <?php foreach ($interests as $int): ?>
+              <span class="badge bg-secondary tag-interest" style="cursor:pointer;">
+                <?= htmlspecialchars($int['name']) ?>
+              </span>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-success">
-            <i class="bi bi-search"></i> Cari
+          <i class="bi bi-search"></i> Cari
         </button>
       </form>
 
