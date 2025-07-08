@@ -40,29 +40,28 @@ window.initSearchFriendForm = function () {
 
   const form = document.querySelector('#search-form');
   const resultContainer = document.querySelector('#search-result');
-  const tags = document.querySelectorAll('#interest-tags .tag-interest');
   const input = form.querySelector('[name="minat"]');
+  const radios = form.querySelectorAll('.interest-radio');
+  const labels = form.querySelectorAll('#interest-tags label');
 
   if (!form || !resultContainer) {
     console.warn('⛔ Form atau hasil tidak ditemukan');
     return;
   }
 
-  // Klik tag
-  tags.forEach(tag => {
-    tag.addEventListener('click', function() {
-      tags.forEach(t => t.classList.remove('bg-primary'));
-      this.classList.add('bg-primary');
-      input.value = this.textContent.trim();
+  // Klik label radio agar mengisi input minat
+  radios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      input.value = this.value;
     });
   });
 
-  // Saat input manual, hilangkan highlight
+  // Saat input manual, hilangkan selection radio
   input.addEventListener('input', function() {
-    tags.forEach(t => t.classList.remove('bg-primary'));
+    radios.forEach(radio => radio.checked = false);
   });
 
-  // Submit
+  // Submit form
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const keyword = input.value.trim();

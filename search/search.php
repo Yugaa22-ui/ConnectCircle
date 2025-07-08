@@ -6,7 +6,7 @@ $embed = isset($_GET['embed']) && $_GET['embed'] == '1';
 if (!$embed) include '../templates/header.php';
 
 // Ambil daftar minat
-$interest_query = $conn->query("SELECT name FROM interests");
+$interest_query = $conn->query("SELECT name FROM interests ORDER BY name ASC");
 $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -25,7 +25,7 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
           <input type="text" name="minat"
                  class="form-control bg-dark text-white border-secondary <?= !empty($search_error) ? 'is-invalid' : '' ?>"
                  value="<?= htmlspecialchars($search_term) ?>"
-                 placeholder="Contoh: Coding, Musik, Hiking">
+                 placeholder="Contoh: Sepak bola, Coding">
           <?php if (!empty($search_error)): ?>
             <div class="invalid-feedback"><?= htmlspecialchars($search_error) ?></div>
           <?php endif; ?>
@@ -34,10 +34,10 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
         <div class="mb-3">
           <label class="form-label">Atau pilih dari daftar minat berikut:</label>
           <div class="d-flex flex-wrap gap-2" id="interest-tags">
-            <?php foreach ($interests as $int): ?>
-              <span class="badge bg-secondary tag-interest" style="cursor:pointer;">
-                <?= htmlspecialchars($int['name']) ?>
-              </span>
+            <?php foreach ($interests as $index => $int): ?>
+              <?php $id = 'interest_' . $index; ?>
+              <input type="radio" class="btn-check interest-radio" name="interest_tag" id="<?= $id ?>" value="<?= htmlspecialchars($int['name']) ?>">
+              <label class="btn btn-outline-info text-white" for="<?= $id ?>"><?= htmlspecialchars($int['name']) ?></label>
             <?php endforeach; ?>
           </div>
         </div>
