@@ -16,7 +16,6 @@ document.querySelectorAll('[data-page]').forEach(link => {
   link.addEventListener('click', function (e) {
     e.preventDefault();
 
-    // Ambil href dan tambahkan ?embed=1 jika perlu
     let page = this.getAttribute('href');
     if (!page.includes('?')) {
       page += '?embed=1';
@@ -32,64 +31,64 @@ document.querySelectorAll('[data-page]').forEach(link => {
         // Set active menu
         setActiveLink(this);
 
-        // Jika memuat halaman tertentu, muat JS terkait
+        // Tambahkan loader script sesuai halaman
         if (page.includes('create_circle.php')) {
           const script = document.createElement('script');
           script.src = '../js/create_circle.js';
           script.onload = () => {
-          if (typeof initCreateCircleForm === 'function') {
+            if (typeof initCreateCircleForm === 'function') {
               initCreateCircleForm();
-          }
+            }
           };
           document.body.appendChild(script);
-      }
+        }
 
-      if (page.includes('join_circle.php')) {
-        loadScriptIfNotExists('../js/join_circle.js', () => {
-          if (typeof initJoinCircleButtons === 'function') {
-            initJoinCircleButtons();
-          }
-        });
-      }
-
-      if (page.includes('view_circle.php')) {
-        loadScriptIfNotExists('../js/view_circle.js', () => {
-          if (typeof initViewCircleSearch === 'function') initViewCircleSearch();
-          if (typeof initCancelJoinRequest === 'function') initCancelJoinRequest();
-        });
-      }      
-      
-      if (page.includes('search.php')) {
-        loadScriptIfNotExists('../js/search_friend.js', () => {
-          
-          // Polling untuk menunggu fungsi tersedia
-          let tries = 0;
-          const interval = setInterval(() => {
-            if (typeof window.initSearchFriendForm === 'function') {
-              window.initSearchFriendForm();
-              clearInterval(interval);
-            } else if (tries++ > 10) {
-              clearInterval(interval);
+        if (page.includes('join_circle.php')) {
+          loadScriptIfNotExists('../js/join_circle.js', () => {
+            if (typeof initJoinCircleButtons === 'function') {
+              initJoinCircleButtons();
             }
-          }, 100);
-        });
-      }
+          });
+        }
 
-      if (page.includes('friend_request.php')) {
-        loadScriptIfNotExists('../js/friend_request.js', () => {
-          console.log("✅ friend_request.js dimuat");
-      
-          setTimeout(() => {
-            console.log("📌 window keys:", Object.keys(window));
-            if (typeof window.initFriendRequestHandler === 'function') {
-              console.log("✅ initFriendRequestHandler tersedia dan dipanggil");
-              window.initFriendRequestHandler();
-            } else {
-              console.warn("❌ initFriendRequestHandler tidak ditemukan meskipun script dimuat.");
+        if (page.includes('view_circle.php')) {
+          loadScriptIfNotExists('../js/view_circle.js', () => {
+            if (typeof initViewCircleSearch === 'function') initViewCircleSearch();
+            if (typeof initCancelJoinRequest === 'function') initCancelJoinRequest();
+          });
+        }
+
+        if (page.includes('search.php')) {
+          loadScriptIfNotExists('../js/search_friend.js', () => {
+            let tries = 0;
+            const interval = setInterval(() => {
+              if (typeof window.initSearchFriendForm === 'function') {
+                window.initSearchFriendForm();
+                clearInterval(interval);
+              } else if (tries++ > 10) {
+                clearInterval(interval);
+              }
+            }, 100);
+          });
+        }
+
+        if (page.includes('friend_request.php')) {
+          loadScriptIfNotExists('../js/friend_request.js', () => {
+            setTimeout(() => {
+              if (typeof window.initFriendRequestHandler === 'function') {
+                window.initFriendRequestHandler();
+              }
+            }, 100);
+          });
+        }
+
+        if (page.includes('friend_list.php')) {
+          loadScriptIfNotExists('../js/friend_list.js', () => {
+            if (typeof window.initFriendListHandler === 'function') {
+              window.initFriendListHandler();
             }
-          }, 100);
-        });
-      }      
+          });
+        }        
 
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
@@ -100,7 +99,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
 
 function setActiveLink(clickedLink) {
   const allLinks = document.querySelectorAll('.sidebar-link');
-  const clickedHref = clickedLink.getAttribute('href').split('?')[0]; // Tanpa query
+  const clickedHref = clickedLink.getAttribute('href').split('?')[0];
 
   allLinks.forEach(link => {
     const href = link.getAttribute('href').split('?')[0];

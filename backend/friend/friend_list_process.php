@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $current_user = $_SESSION['user_id'];
 $friends = [];
 
-// Ambil daftar teman dari tabel `friends` dan foto profil dari tabel `users`
+// Ambil daftar teman + foto profil
 $stmt = $conn->prepare("
     SELECT u.id, u.username, u.city, u.profession, u.profile_picture
     FROM friends f
