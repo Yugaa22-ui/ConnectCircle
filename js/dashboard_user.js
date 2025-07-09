@@ -1,13 +1,23 @@
-// Fungsi bantu: muat skrip JS jika belum ada
 function loadScriptIfNotExists(src, callback) {
-  if (document.querySelector(`script[src="${src}"]`)) {
-    if (callback) callback();
-    return;
+  console.log("🔍 Memeriksa apakah script sudah dimuat:", src);
+
+  // Cari elemen script lama dan hapus
+  const oldScript = document.querySelector(`script[src="${src}"]`);
+  if (oldScript) {
+    console.log("♻️ Script sudah ada, akan dihapus dan dimuat ulang:", src);
+    oldScript.remove();
   }
 
+  // Tambah script baru
   const script = document.createElement('script');
-  script.src = src;
-  script.onload = () => callback && callback();
+  script.src = src + '?v=' + Date.now(); // Tambahkan timestamp biar tidak cache
+  script.onload = () => {
+    console.log("✅ Script berhasil dimuat:", src);
+    if (callback) callback();
+  };
+  script.onerror = () => {
+    console.error("❌ Gagal memuat script:", src);
+  };
   document.body.appendChild(script);
 }
 
@@ -84,11 +94,22 @@ document.querySelectorAll('[data-page]').forEach(link => {
 
         if (page.includes('friend_list.php')) {
           loadScriptIfNotExists('../js/friend_list.js', () => {
-            if (typeof window.initFriendListHandler === 'function') {
-              window.initFriendListHandler();
-            }
+            console.log("✅ friend_list.js sudah dimuat, memulai polling...");
+        
+            // Polling hingga fungsi tersedia
+            let tries = 0;
+            const interval = setInterval(() => {
+              if (typeof window.initFriendListHandler === 'function') {
+                console.log("✅ initFriendListHandler ditemukan dan dipanggil");
+                window.initFriendListHandler();
+                clearInterval(interval);
+              } else if (tries++ > 10) {
+                console.warn("❌ initFriendListHandler tidak ditemukan setelah 1 detik.");
+                clearInterval(interval);
+              }
+            }, 100);
           });
-        }        
+        }                        
 
         // Tutup sidebar mobile jika terbuka
         const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));

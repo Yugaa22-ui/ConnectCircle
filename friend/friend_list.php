@@ -45,8 +45,7 @@ if (!$embed) include '../templates/header.php';
                 <span class="badge bg-success d-flex align-items-center justify-content-center">
                   <i class="bi bi-check-circle-fill me-1"></i> Berteman
                 </span>
-                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
-                  data-bs-target="#confirmRemoveModal"
+                <button class="btn btn-outline-danger btn-sm btn-remove-friend"
                   data-user-id="<?= $friend['id'] ?>"
                   data-user-name="<?= htmlspecialchars($friend['username']) ?>">
                   <i class="bi bi-person-x"></i> Hapus Pertemanan
@@ -61,25 +60,6 @@ if (!$embed) include '../templates/header.php';
           Belum ada teman yang terhubung.
         </div>
       <?php endif; ?>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Konfirmasi Hapus -->
-<div class="modal fade" id="confirmRemoveModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header border-secondary">
-        <h5 class="modal-title">Konfirmasi Hapus Pertemanan</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>Anda yakin ingin menghapus <strong id="friend-name"></strong> dari daftar teman?</p>
-      </div>
-      <div class="modal-footer border-secondary">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-danger" id="confirmRemoveBtn">Konfirmasi</button>
-      </div>
     </div>
   </div>
 </div>

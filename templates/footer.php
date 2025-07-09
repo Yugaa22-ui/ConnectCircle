@@ -29,6 +29,25 @@
   </div>
 </footer>
 
+<!-- Modal Konfirmasi Hapus (Global) -->
+<div class="modal fade" id="confirmRemoveModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Konfirmasi Hapus Pertemanan</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Anda yakin ingin menghapus <strong id="friend-name"></strong> dari daftar teman?</p>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-danger" id="confirmRemoveBtn">Konfirmasi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

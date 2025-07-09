@@ -1,55 +1,56 @@
+console.log("✅ friend_list.js DIMUAT");
+
 window.initFriendListHandler = function () {
     console.log("✅ initFriendListHandler() dipanggil");
   
+    const confirmModalEl = document.getElementById('confirmRemoveModal');
+    const confirmBtn = document.getElementById('confirmRemoveBtn');
+    const friendNameEl = document.getElementById('friend-name');
     let selectedUserId = null;
-    let selectedUserName = null;
   
-    const confirmModal = new bootstrap.Modal(document.getElementById('confirmUnfriendModal'));
-    const confirmBtn = document.getElementById('confirmUnfriendBtn');
-    const modalBody = document.getElementById('confirmUnfriendBody');
+    // Tombol hapus
+    document.querySelectorAll('.btn-remove-friend').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedUserId = btn.dataset.userId;
+        friendNameEl.textContent = btn.dataset.userName;
   
-    document.querySelectorAll('.unfriend-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        selectedUserId = this.getAttribute('data-user-id');
-        selectedUserName = this.getAttribute('data-username');
-  
-        modalBody.textContent = `Anda yakin ingin menghapus ${selectedUserName} dari daftar teman?`;
-        confirmModal.show();
+        // Munculkan modal secara manual
+        const modalInstance = new bootstrap.Modal(confirmModalEl);
+        modalInstance.show();
       });
     });
   
-    confirmBtn.addEventListener('click', function() {
+    // Tombol konfirmasi
+    confirmBtn.addEventListener('click', () => {
       if (!selectedUserId) return;
   
       confirmBtn.disabled = true;
       confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menghapus...';
   
-      fetch('../backend/friend/delete_friend.php', {
+      fetch('../backend/friend/remove_friend.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'friend_id=' + encodeURIComponent(selectedUserId)
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'ok') {
-          // Hapus item dari DOM
-          const item = document.querySelector(`.list-group-item[data-user-id="${selectedUserId}"]`);
-          if (item) item.remove();
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok') {
+            const item = document.getElementById('friend-item-' + selectedUserId);
+            if (item) item.remove();
   
-          confirmModal.hide();
-        } else {
-          alert('Gagal menghapus teman.');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Terjadi kesalahan.');
-      })
-      .finally(() => {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = 'Konfirmasi';
-        selectedUserId = null;
-      });
+            // Tutup modal
+            const modalInstance = bootstrap.Modal.getInstance(confirmModalEl);
+            modalInstance.hide();
+          } else {
+            alert('Gagal menghapus teman.');
+          }
+        })
+        .catch(() => alert('Terjadi kesalahan.'))
+        .finally(() => {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Konfirmasi';
+          selectedUserId = null;
+        });
     });
   };
   
