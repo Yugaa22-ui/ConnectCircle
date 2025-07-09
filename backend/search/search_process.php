@@ -11,9 +11,13 @@ $results = [];
 $total_matches = 0;
 
 function getFriendStatus($conn, $current_user_id, $target_user_id) {
-    // Cek apakah sudah berteman di tabel friends
-    $checkFriend = $conn->prepare("SELECT 1 FROM friends WHERE user_id = ? AND friend_id = ?");
-    $checkFriend->bind_param("ii", $current_user_id, $target_user_id);
+    // Cek apakah sudah berteman (dua arah)
+    $checkFriend = $conn->prepare("
+        SELECT 1 FROM friends
+        WHERE (user_id = ? AND friend_id = ?)
+           OR (user_id = ? AND friend_id = ?)
+    ");
+    $checkFriend->bind_param("iiii", $current_user_id, $target_user_id, $target_user_id, $current_user_id);
     $checkFriend->execute();
     $checkFriend->store_result();
 
@@ -23,7 +27,7 @@ function getFriendStatus($conn, $current_user_id, $target_user_id) {
     }
     $checkFriend->close();
 
-// Jika belum, cek status permintaan
+    // Jika belum, cek status permintaan
     $stmt = $conn->prepare("
         SELECT status FROM friend_requests
         WHERE (sender_id = ? AND receiver_id = ?)
@@ -38,7 +42,14 @@ function getFriendStatus($conn, $current_user_id, $target_user_id) {
     if ($stmt->num_rows > 0) {
         $stmt->bind_result($f_status);
         $stmt->fetch();
-        $status = $f_status;
+        if ($f_status === 'pending') {
+            $status = 'pending';
+        } elseif ($f_status === 'rejected') {
+            $status = 'rejected';
+        } else {
+            // accepted tapi tidak ada relasi friends => tidak berteman
+            $status = 'none';
+        }
     }
     $stmt->close();
     return $status;
