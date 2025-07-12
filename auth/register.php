@@ -40,11 +40,11 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
             <!-- Email -->
             <div class="mb-3">
               <label class="form-label">Email *</label>
-              <input type="email" name="email"
+              <input type="text" name="email"
                      class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
                      value="<?= htmlspecialchars($old['email'] ?? '') ?>">
               <?php if (isset($errors['email'])): ?>
-                <div class="invalid-feedback"><?= $errors['email'] ?></div>
+                <div class="invalid-feedback d-block"><?= $errors['email'] ?></div>
               <?php endif; ?>
             </div>
 
@@ -97,26 +97,26 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
               <textarea name="bio" class="form-control" rows="3"><?= htmlspecialchars($old['bio'] ?? '') ?></textarea>
             </div>
 
-            <<!-- Minat -->
-          <div class="mb-3 position-relative">
-            <div class="d-flex justify-content-between align-items-start">
-              <label class="form-label">Minat (maksimal 3)</label>
-              <div id="interests-limit-error" class="text-danger small ms-2" style="white-space: nowrap; display: none;"></div>
-            </div>
-              <div class="d-flex flex-wrap gap-2" id="interests-container">
-                <?php foreach ($interests as $index => $int): ?>
-                  <?php
-                    $selected = in_array($int['id'], $old['interests'] ?? []);
-                    $checkboxId = 'interest_' . $index;
-                  ?>
-                  <input type="checkbox" class="btn-check interest-checkbox" name="interests[]" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off" <?= $selected ? 'checked' : '' ?>>
-                  <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
-                <?php endforeach; ?>
+            <!-- Minat -->
+            <div class="mb-3 position-relative">
+              <div class="d-flex justify-content-between align-items-start">
+                <label class="form-label">Minat (maksimal 3)</label>
+                <div id="interests-limit-error" class="text-danger small ms-2" style="white-space: nowrap; display: none;"></div>
               </div>
-              <?php if (isset($errors['interests'])): ?>
-                <div class="text-danger mt-1"><?= $errors['interests'] ?></div>
-              <?php endif; ?>
-            </div>
+                <div class="d-flex flex-wrap gap-2" id="interests-container">
+                  <?php foreach ($interests as $index => $int): ?>
+                    <?php
+                      $selected = in_array($int['id'], $old['interests'] ?? []);
+                      $checkboxId = 'interest_' . $index;
+                    ?>
+                    <input type="checkbox" class="btn-check interest-checkbox" name="interests[]" id="<?= $checkboxId ?>" value="<?= $int['id'] ?>" autocomplete="off" <?= $selected ? 'checked' : '' ?>>
+                    <label class="btn btn-outline-primary" for="<?= $checkboxId ?>"><?= htmlspecialchars($int['name']) ?></label>
+                  <?php endforeach; ?>
+                </div>
+                <?php if (isset($errors['interests'])): ?>
+                  <div class="text-danger mt-1"><?= $errors['interests'] ?></div>
+                <?php endif; ?>
+              </div>
 
             <div class="d-grid gap-2">
               <button type="submit" class="btn btn-outline-light">Daftar</button>
@@ -140,12 +140,8 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
 
       if (checked.length > 3) {
         this.checked = false;
-
-        // Tampilkan pesan di samping label
         errorEl.textContent = 'Maksimal hanya bisa memilih 3 minat.';
         errorEl.style.display = 'inline';
-
-        // Sembunyikan otomatis setelah 3 detik
         clearTimeout(errorEl._timeout);
         errorEl._timeout = setTimeout(() => {
           errorEl.style.display = 'none';
@@ -154,6 +150,5 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
     });
   });
 </script>
-
 
 <?php include '../templates/footer.php'; ?>

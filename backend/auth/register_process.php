@@ -5,17 +5,17 @@ include '../../includes/db.php';
 $errors = [];
 $old = [];
 
-// Validasi format email
+// Validasi format email (standar internasional RFC dengan filter_var)
 function is_valid_email_format($email) {
-    // Cek format email valid dan TLD minimal 2 huruf
-    return preg_match('/^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/', $email);
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
-// Validasi domain email aktif
+// Di XAMPP/Windows, checkdnsrr biasanya tidak berfungsi, jadi abaikan/matikan validasi domain MX saat di localhost
 function is_valid_email_domain($email) {
-    // Cek domain MX aktif
-    $domain = substr(strrchr($email, "@"), 1);
-    return checkdnsrr($domain, "MX");
+    // Jika ingin aktifkan di server production (Linux), gunakan checkdnsrr
+    // $domain = substr(strrchr($email, "@"), 1);
+    // return checkdnsrr($domain, "MX");
+    return true; // Di XAMPP/localhost, selalu true
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
