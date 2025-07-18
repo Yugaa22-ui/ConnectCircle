@@ -8,9 +8,9 @@ include '../backend/admin/manage_users_process.php';
       <h4 class="mb-0">
         <i class="bi bi-people-fill me-2"></i>Daftar Pengguna
       </h4>
-      <button id="refreshUsers" class="btn btn-sm btn-outline-light">
+      <!-- <button id="refreshUsers" class="btn btn-sm btn-outline-light">
         <i class="bi bi-arrow-clockwise"></i> Muat Ulang
-      </button>
+      </button> -->
     </div>
     <div class="card-body p-0">
       <?php if ($result->num_rows > 0): ?>
