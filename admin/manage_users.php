@@ -7,10 +7,7 @@ include '../backend/admin/manage_users_process.php';
     <div class="card-header border-secondary d-flex justify-content-between align-items-center">
       <h4 class="mb-0">
         <i class="bi bi-people-fill me-2"></i>Daftar Pengguna
-      </h4>
-      <!-- <button id="refreshUsers" class="btn btn-sm btn-outline-light">
-        <i class="bi bi-arrow-clockwise"></i> Muat Ulang
-      </button> -->
+      </h4>->
     </div>
     <div class="card-body p-0">
       <?php if ($result->num_rows > 0): ?>
