@@ -127,3 +127,4 @@ include '../templates/header.php';
 <script src="../js/admin_dashboard.js"></script>
 
 <?php include '../templates/footer.php'; ?>
+
