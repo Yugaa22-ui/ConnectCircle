@@ -56,4 +56,21 @@ textarea[name="message"] {
   .modal-footer .btn-outline-light {
     border-color: #666;
   }
-  
+
+.dropdown-menu {
+  display: block !important; /* DEBUG: paksa muncul */
+  position: absolute !important;
+  z-index: 9999 !important;
+  background-color: #222 !important;
+}
+
+.dropdown-menu.show {
+    display: block !important;
+}
+
+.card-footer,
+.input-message-wrapper {
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}

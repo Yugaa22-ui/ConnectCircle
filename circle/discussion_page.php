@@ -135,16 +135,22 @@ if (!isset($results)) {
           <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
           <input type="hidden" name="voice_blob" id="voiceBlobInput">
           <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-              <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMedia" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="position-relative">
+              <button type="button" class="btn btn-outline-light" id="toggleMediaDropdown">
                 <i class="bi bi-plus-lg"></i>
               </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMedia">
-                <li><label class="dropdown-item" for="imageInput"><i class="bi bi-image me-2"></i> Gambar</label></li>
-                <li><label class="dropdown-item" for="mediaInput"><i class="bi bi-camera-video me-2"></i> Video</label></li>
-                <li><label class="dropdown-item" for="mediaInput"><i class="bi bi-mic me-2"></i> Audio</label></li>
-              </ul>
+                <ul id="mediaDropdownMenu" class="dropdown-menu dropdown-menu-dark" style="display: none; position: absolute; bottom: 100%; left: 0;">
+                  <li><label class="dropdown-item" for="imageInput"><i class="bi bi-image me-2"></i> Gambar</label></li>
+                  <li><button class="dropdown-item" id="selectVideo"><i class="bi bi-camera-video me-2"></i> Video</button></li>
+                  <li><button class="dropdown-item" id="selectAudio"><i class="bi bi-mic me-2"></i> Audio</button></li>
+                </ul>
             </div>
+            <script>
+              document.getElementById('toggleMediaDropdown').addEventListener('click', function () {
+                const dropdown = document.getElementById('mediaDropdownMenu');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+              });
+            </script>
             <textarea name="message" class="form-control" rows="1" placeholder="Tulis pesan..."></textarea>
             <button type="submit" name="submit_message" class="btn btn-success align-self-stretch d-none d-md-block">
               <i class="bi bi-send"></i>

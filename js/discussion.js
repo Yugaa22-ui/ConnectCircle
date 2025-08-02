@@ -1,4 +1,3 @@
-// Final versi discussion.js (diperbarui dengan tombol STOP dan logika submit voice note)
 document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
     const imageInput = document.getElementById('imageInput');
@@ -58,28 +57,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (mediaInput) {
-        mediaInput.addEventListener('change', function () {
-            const file = this.files[0];
-            previewMediaWrapper.innerHTML = '';
-            if (!file) {
-                previewMediaContainer.style.display = 'none';
-                return;
-            }
-            const url = URL.createObjectURL(file);
-            const isVideo = file.type.startsWith('video');
-            const isAudio = file.type.startsWith('audio');
+if (mediaInput) {
+    mediaInput.addEventListener('change', function () {
+        document.getElementById('mediaDropdownMenu').style.display = 'none';
+        const file = this.files[0];
+        previewMediaWrapper.innerHTML = '';
+        if (!file) {
+            previewMediaContainer.style.display = 'none';
+            return;
+        }
+        const url = URL.createObjectURL(file);
+        const isVideo = file.type.startsWith('video');
+        const isAudio = file.type.startsWith('audio');
 
-            if (isVideo) {
-                previewMediaWrapper.innerHTML = `<video controls width="200" src="${url}" class="rounded border"></video>`;
-            } else if (isAudio) {
-                previewMediaWrapper.innerHTML = `<audio controls src="${url}" class="w-100 mt-2"></audio>`;
-            } else {
-                previewMediaWrapper.innerHTML = `<small class="text-muted">Format tidak didukung untuk preview.</small>`;
-            }
-            previewMediaContainer.style.display = 'block';
-        });
-    }
+        let previewEl;
+        if (isVideo) {
+            previewEl = document.createElement('video');
+            previewEl.src = url;
+            previewEl.controls = true;
+            previewEl.width = 200;
+            previewEl.className = 'rounded border';
+        } else if (isAudio) {
+            previewEl = document.createElement('audio');
+            previewEl.src = url;
+            previewEl.controls = true;
+            previewEl.className = 'w-100 mt-2';
+        } else {
+            previewEl = document.createElement('small');
+            previewEl.className = 'text-muted';
+            previewEl.textContent = 'Format tidak didukung untuk preview.';
+        }
+
+        previewMediaWrapper.appendChild(previewEl);
+
+        // Tombol batal
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-sm btn-outline-danger ms-2 mt-2';
+        cancelBtn.textContent = 'Batalkan Media';
+        cancelBtn.onclick = () => {
+            mediaInput.value = '';
+            previewMediaWrapper.innerHTML = '';
+            previewMediaContainer.style.display = 'none';
+        };
+        previewMediaWrapper.appendChild(cancelBtn);
+
+        previewMediaContainer.style.display = 'block';
+    });
+}
 
     // === VOICE NOTE ===
     let mediaRecorder, audioChunks = [], recordingInterval;
@@ -171,15 +195,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Modal Info
+    // Fix modal aria-hidden cleanup
+    const infoModal = document.getElementById('messageInfoModal');
+    if (infoModal) {
+        infoModal.addEventListener('hidden.bs.modal', () => {
+            infoModal.removeAttribute('aria-hidden');
+            infoModal.blur();
+        });
+    }
+
     function loadInfoModal(postId) {
         const modalBody = document.getElementById('messageInfoContent');
+        const modalEl = document.getElementById('messageInfoModal');
         modalBody.innerHTML = '<div class="text-center text-muted">Memuat...</div>';
+
+        const existing = bootstrap.Modal.getInstance(modalEl);
+        if (existing) existing.hide();
+
         fetch(`info_post.php?post_id=${postId}`)
             .then(res => res.text())
             .then(html => {
                 modalBody.innerHTML = html;
-                new bootstrap.Modal(document.getElementById('messageInfoModal')).show();
+                new bootstrap.Modal(modalEl).show();
             })
             .catch(() => {
                 modalBody.innerHTML = '<div class="text-danger">Gagal memuat info.</div>';
@@ -208,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Edit pesan
     document.querySelectorAll('.btn-edit-post').forEach(btn => {
         btn.addEventListener('click', function () {
             document.getElementById('editPostId').value = this.dataset.id;
@@ -262,4 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('deletePostId').value = this.getAttribute('data-post-id');
         });
     });
+});
+
+document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+  new bootstrap.Dropdown(btn);
 });
