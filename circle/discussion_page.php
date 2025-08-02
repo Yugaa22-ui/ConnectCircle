@@ -67,8 +67,14 @@ if (!isset($results)) {
                   <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-secondary btn-info-post" data-post-id="<?= $row['id'] ?>" title="Info"><i class="bi bi-info-circle"></i></button>
                     <?php if ($row['user_id'] == $_SESSION['user_id']): ?>
-                      <button class="btn btn-outline-secondary btn-edit-post" data-id="<?= $row['id'] ?>" data-content="<?= htmlspecialchars($row['content']) ?>" title="Edit"><i class="bi bi-pencil"></i></button>
-                      <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-post-id="<?= $row['id'] ?>"><i class="bi bi-trash"></i></button>
+                      <?php if (!in_array($row['media_type'], ['audio', 'voice', 'video'])): ?>
+                        <button class="btn btn-outline-secondary btn-edit-post" data-id="<?= $row['id'] ?>" data-content="<?= htmlspecialchars($row['content']) ?>" title="Edit">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                      <?php endif; ?>
+                      <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-post-id="<?= $row['id'] ?>">
+                        <i class="bi bi-trash"></i>
+                      </button>
                     <?php endif; ?>
                   </div>
                 </div>
@@ -93,10 +99,10 @@ if (!isset($results)) {
                         Browser tidak mendukung tag video.
                       </video>
                     <?php elseif ($row['media_type'] === 'audio' || $row['media_type'] === 'voice'): ?>
-                      <audio controls class="w-100 mt-2">
-                        <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/webm">
-                        Browser tidak mendukung tag audio.
-                      </audio>
+                    <audio controls class="mt-2" style="max-width: 250px; width: 100%;">
+                      <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/webm">
+                      Browser tidak mendukung tag audio.
+                    </audio>
                     <?php endif; ?>
                   </div>
                 <?php endif; ?>
