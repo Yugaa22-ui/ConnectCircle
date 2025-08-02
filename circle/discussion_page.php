@@ -4,6 +4,9 @@ if (!$include_template) include '../templates/header.php';
 
 include '../backend/auth/auth_check.php';
 include '../backend/circle/discussion_controller.php';
+if (!isset($results)) {
+  die("Variabel \$results tidak didefinisikan.");
+}
 ?>
 
 <main class="container-fluid py-4 px-2 px-md-4">
@@ -45,9 +48,9 @@ include '../backend/circle/discussion_controller.php';
         <?php while ($row = $results->fetch_assoc()): ?>
           <?php if (!$row['deleted']): ?>
             <?php
-            $avatar = $row['profile_picture']
-              ? '../assets/uploads/img/' . htmlspecialchars($row['profile_picture'])
-              : '../assets/img/default.png';
+              $avatar = $row['profile_picture']
+                ? '../assets/uploads/img/' . htmlspecialchars($row['profile_picture'])
+                : '../assets/img/default.png';
             ?>
             <div class="d-flex align-items-start mb-3 message-item message-block"
               data-id="<?= $row['id'] ?>"
@@ -69,12 +72,35 @@ include '../backend/circle/discussion_controller.php';
                     <?php endif; ?>
                   </div>
                 </div>
-                <div><?= nl2br(htmlspecialchars($row['content'])) ?></div>
+
+                <?php if (!empty($row['content'])): ?>
+                  <div><?= nl2br(htmlspecialchars($row['content'])) ?></div>
+                <?php elseif ($row['media_type'] === 'voice'): ?>
+                  <div class="fst-italic text-muted">Pesan suara</div>
+                <?php endif; ?>
+
                 <?php if (!empty($row['image_path'])): ?>
                   <div class="mt-2">
                     <img src="../assets/uploads/img/<?= htmlspecialchars($row['image_path']) ?>" width="150" class="img-thumbnail">
                   </div>
                 <?php endif; ?>
+
+                <?php if (!empty($row['media_path'])): ?>
+                  <div class="mt-2">
+                    <?php if ($row['media_type'] === 'video'): ?>
+                      <video controls width="200" class="rounded border">
+                        <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="video/mp4">
+                        Browser tidak mendukung tag video.
+                      </video>
+                    <?php elseif ($row['media_type'] === 'audio' || $row['media_type'] === 'voice'): ?>
+                      <audio controls class="w-100 mt-2">
+                        <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/webm">
+                        Browser tidak mendukung tag audio.
+                      </audio>
+                    <?php endif; ?>
+                  </div>
+                <?php endif; ?>
+
                 <div><small class="text-muted"><?= $row['created_at'] ?></small></div>
               </div>
             </div>
@@ -94,25 +120,54 @@ include '../backend/circle/discussion_controller.php';
           <img id="preview-image" src="#" class="img-thumbnail" style="max-width: 150px;">
           <div id="cancel-image-wrapper" class="mt-2"></div>
         </div>
-        <form method="POST" enctype="multipart/form-data" class="input-message-wrapper">
+
+        <div id="preview-media-container" class="mb-2" style="display: none;">
+          <div id="preview-media-wrapper"></div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" action="discussion_page.php?circle_id=<?= $circle_id ?>" class="input-message-wrapper">
           <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
-          <div class="d-flex flex-column flex-md-row align-items-start gap-2">
-            <label for="imageInput" class="btn btn-outline-secondary" id="uploadBtn" title="Unggah Gambar">
-              <i class="bi bi-image"></i>
-            </label>
+          <input type="hidden" name="voice_blob" id="voiceBlobInput">
+          <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+              <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMedia" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMedia">
+                <li><label class="dropdown-item" for="imageInput"><i class="bi bi-image me-2"></i> Gambar</label></li>
+                <li><label class="dropdown-item" for="mediaInput"><i class="bi bi-camera-video me-2"></i> Video</label></li>
+                <li><label class="dropdown-item" for="mediaInput"><i class="bi bi-mic me-2"></i> Audio</label></li>
+              </ul>
+            </div>
             <textarea name="message" class="form-control" rows="1" placeholder="Tulis pesan..."></textarea>
-            <button type="submit" name="submit_message" class="btn btn-success align-self-stretch">
+            <button type="submit" name="submit_message" class="btn btn-success align-self-stretch d-none d-md-block">
               <i class="bi bi-send"></i>
             </button>
+            <button type="button" id="micBtn" class="btn btn-outline-light align-self-stretch">
+              <i class="bi bi-mic-fill"></i>
+            </button>
           </div>
+
+          <div id="voiceRecordingWrapper" class="mt-2" style="display:none;">
+            <div class="d-flex align-items-center gap-2">
+              <span id="recordingStatus" class="text-danger fw-bold">●</span>
+              <span id="recordingTime">0:00</span>
+              <audio id="recordingPreview" class="mx-2" controls style="display: none;"></audio>
+              <button type="button" id="stopRecordingBtn" class="btn btn-sm btn-warning">Stop</button>
+              <button type="button" id="cancelRecordingBtn" class="btn btn-sm btn-danger">Batal</button>
+              <button type="submit" name="submit_voice" id="sendRecordingBtn" class="btn btn-success">Kirim</button>
+            </div>
+          </div>
+
           <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;">
+          <input type="file" name="media" id="mediaInput" accept="audio/*,video/*" style="display: none;">
         </form>
       <?php endif; ?>
     </div>
   </div>
 </main>
 
-// Modal pada halaman diskusi
+<!-- Modal pada halaman diskusi -->
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_circle.php')) include 'modal_discussion_page/modal_info_circle.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_keluar_circle.php')) include 'modal_discussion_page/modal_keluar_circle.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_edit.php')) include 'modal_discussion_page/modal_edit.php'; ?>
@@ -121,6 +176,5 @@ include '../backend/circle/discussion_controller.php';
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
-
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>

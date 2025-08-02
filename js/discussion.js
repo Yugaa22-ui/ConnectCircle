@@ -1,25 +1,33 @@
+// Final versi discussion.js (diperbarui dengan tombol STOP dan logika submit voice note)
 document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('message-container');
     const imageInput = document.getElementById('imageInput');
+    const mediaInput = document.getElementById('mediaInput');
     const previewImage = document.getElementById('preview-image');
     const previewContainer = document.getElementById('preview-image-container');
     const cancelWrapper = document.getElementById('cancel-image-wrapper');
-    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const uploadMediaBtn = document.getElementById('uploadMediaBtn');
+    const previewMediaContainer = document.getElementById('preview-media-container');
+    const previewMediaWrapper = document.getElementById('preview-media-wrapper');
 
-    // Auto scroll ke bawah saat load
     if (messageContainer) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 
-    // Klik icon upload gambar
-    if (uploadBtn && imageInput) {
-        uploadBtn.addEventListener('click', function (e) {
+    if (uploadImageBtn && imageInput) {
+        uploadImageBtn.addEventListener('click', e => {
             e.preventDefault();
             imageInput.click();
         });
     }
+    if (uploadMediaBtn && mediaInput) {
+        uploadMediaBtn.addEventListener('click', e => {
+            e.preventDefault();
+            mediaInput.click();
+        });
+    }
 
-    // Preview gambar & tombol batal
     if (imageInput) {
         imageInput.addEventListener('change', function () {
             const file = this.files[0];
@@ -28,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.onload = function (e) {
                     previewImage.src = e.target.result;
                     previewContainer.style.display = 'block';
-
-                    // Hapus tombol lama dulu
                     const oldBtn = document.getElementById('cancelImageBtn');
                     if (oldBtn) oldBtn.remove();
 
@@ -52,11 +58,123 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Load modal info pesan
+    if (mediaInput) {
+        mediaInput.addEventListener('change', function () {
+            const file = this.files[0];
+            previewMediaWrapper.innerHTML = '';
+            if (!file) {
+                previewMediaContainer.style.display = 'none';
+                return;
+            }
+            const url = URL.createObjectURL(file);
+            const isVideo = file.type.startsWith('video');
+            const isAudio = file.type.startsWith('audio');
+
+            if (isVideo) {
+                previewMediaWrapper.innerHTML = `<video controls width="200" src="${url}" class="rounded border"></video>`;
+            } else if (isAudio) {
+                previewMediaWrapper.innerHTML = `<audio controls src="${url}" class="w-100 mt-2"></audio>`;
+            } else {
+                previewMediaWrapper.innerHTML = `<small class="text-muted">Format tidak didukung untuk preview.</small>`;
+            }
+            previewMediaContainer.style.display = 'block';
+        });
+    }
+
+    // === VOICE NOTE ===
+    let mediaRecorder, audioChunks = [], recordingInterval;
+    const voiceWrapper = document.getElementById('voiceRecordingWrapper');
+    const recordingStatus = document.getElementById('recordingStatus');
+    const recordingTime = document.getElementById('recordingTime');
+    const cancelBtn = document.getElementById('cancelRecordingBtn');
+    const sendBtn = document.getElementById('sendRecordingBtn');
+    const previewAudio = document.getElementById('recordingPreview');
+    const voiceBlobInput = document.getElementById('voiceBlobInput');
+    const stopBtn = document.getElementById('stopRecordingBtn');
+
+    function startTimer() {
+        let seconds = 0;
+        recordingInterval = setInterval(() => {
+            seconds++;
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            recordingTime.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }, 1000);
+    }
+    function stopTimer() {
+        clearInterval(recordingInterval);
+        recordingTime.textContent = '0:00';
+    }
+
+    function startVoiceRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const url = URL.createObjectURL(blob);
+                    previewAudio.src = url;
+                    previewAudio.style.display = 'block';
+                    blobToBase64(blob, base64 => voiceBlobInput.value = base64);
+                    stopBtn.style.display = 'none';
+                    sendBtn.style.display = 'inline-block';
+                    cancelBtn.style.display = 'inline-block';
+                };
+                mediaRecorder.start();
+                voiceWrapper.style.display = 'block';
+                stopBtn.style.display = 'inline-block';
+                sendBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                startTimer();
+            })
+            .catch(err => alert("Tidak bisa mengakses mikrofon: " + err.message));
+    }
+
+    stopBtn?.addEventListener('click', () => {
+        if (mediaRecorder?.state === 'recording') {
+            mediaRecorder.stop();
+            stopTimer();
+        }
+    });
+
+    cancelBtn?.addEventListener('click', () => {
+        if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
+        stopTimer();
+        voiceWrapper.style.display = 'none';
+        previewAudio.src = '';
+        voiceBlobInput.value = '';
+    });
+
+    function blobToBase64(blob, callback) {
+        const reader = new FileReader();
+        reader.onloadend = () => callback(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
+    }
+
+    const micBtn = document.getElementById('micBtn');
+    if (micBtn) {
+        const isMobile = window.innerWidth <= 768;
+        let micTimeout;
+        if (isMobile) {
+            micBtn.addEventListener('touchstart', () => {
+                micTimeout = setTimeout(() => startVoiceRecording(), 1000);
+            });
+            micBtn.addEventListener('touchend', () => {
+                if (micTimeout) clearTimeout(micTimeout);
+            });
+        } else {
+            micBtn.addEventListener('click', () => startVoiceRecording());
+        }
+    }
+
+    // Modal Info
     function loadInfoModal(postId) {
         const modalBody = document.getElementById('messageInfoContent');
         modalBody.innerHTML = '<div class="text-center text-muted">Memuat...</div>';
-
         fetch(`info_post.php?post_id=${postId}`)
             .then(res => res.text())
             .then(html => {
@@ -139,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Konfirmasi hapus
     document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
         button.addEventListener('click', function () {
             document.getElementById('deletePostId').value = this.getAttribute('data-post-id');

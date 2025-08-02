@@ -43,11 +43,39 @@ if ($mute->num_rows > 0 && $mute->fetch()) {
 }
 $mute->close();
 
+// Kirim Voice Note
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_voice']) && !$is_muted) {
+    $base64 = $_POST['voice_blob'] ?? '';
+    if ($base64 !== '') {
+        $voiceData = base64_decode($base64);
+        $filename = 'voice_' . time() . '_' . rand(1000, 9999) . '.webm';
+        $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/media/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        $target = $upload_dir . $filename;
+
+        if (file_put_contents($target, $voiceData)) {
+            $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path, media_type, media_path, media_duration) VALUES (?, ?, '', NULL, 'voice', ?, NULL)");
+            $stmt->bind_param("iss", $circle_id, $user_id, $filename);
+            $stmt->execute();
+            $stmt->close();
+            header("Location: discussion_page.php?circle_id=$circle_id&msg=Voice Note terkirim");
+            exit;
+        } else {
+            header("Location: discussion_page.php?circle_id=$circle_id&msg=Gagal menyimpan Voice Note");
+            exit;
+        }
+    }
+}
+
 // Kirim Pesan Baru
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && !$is_muted) {
     $message = trim($_POST['message'] ?? '');
     $image = '';
+    $media_type = null;
+    $media_path = null;
+    $media_duration = null;
 
+    // Proses gambar (lama)
     if (!empty($_FILES['image']['name'])) {
         $img = $_FILES['image'];
         $ext = pathinfo($img['name'], PATHINFO_EXTENSION);
@@ -64,9 +92,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && 
         }
     }
 
-    if (!empty($message) || $image) {
-        $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiss", $circle_id, $user_id, $message, $image);
+    // Proses media (video/audio/voice)
+    if (!empty($_FILES['media']['name'])) {
+        $media = $_FILES['media'];
+        $mime = mime_content_type($media['tmp_name']);
+        $ext = pathinfo($media['name'], PATHINFO_EXTENSION);
+
+        $allowed = [
+            'video/mp4' => 'video',
+            'video/webm' => 'video',
+            'audio/mpeg' => 'audio',
+            'audio/mp3' => 'audio',
+            'audio/ogg' => 'audio',
+            'audio/webm' => 'voice'
+        ];
+
+        if (array_key_exists($mime, $allowed)) {
+            $media_type = $allowed[$mime];
+            $filename = 'media_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/media/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+            $target = $upload_dir . $filename;
+            if (move_uploaded_file($media['tmp_name'], $target)) {
+                $media_path = $filename;
+            }
+        }
+    }
+
+    if (!empty($message) || $image || $media_path) {
+        $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path, media_type, media_path, media_duration) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iissssi", $circle_id, $user_id, $message, $image, $media_type, $media_path, $media_duration);
         $stmt->execute();
         $stmt->close();
         header("Location: discussion_page.php?circle_id=$circle_id&msg=Pesan dikirim");
@@ -143,7 +198,14 @@ $conn->query("SET time_zone = '+08:00'");
 $conn->query("INSERT IGNORE INTO post_views (post_id, user_id) SELECT id, $user_id FROM posts WHERE circle_id = $circle_id");
 
 // Ambil semua pesan
-$posts = $conn->prepare("SELECT p.id, u.username, u.profile_picture, p.content, p.created_at, p.updated_at, p.image_path, p.user_id, p.deleted FROM posts p JOIN users u ON p.user_id = u.id WHERE p.circle_id = ? ORDER BY p.created_at ASC");
+$posts = $conn->prepare("
+  SELECT p.id, u.username, u.profile_picture, p.content, p.created_at, p.updated_at, 
+         p.image_path, p.user_id, p.deleted, p.media_type, p.media_path 
+  FROM posts p 
+  JOIN users u ON p.user_id = u.id 
+  WHERE p.circle_id = ? 
+  ORDER BY p.created_at ASC
+");
 $posts->bind_param("i", $circle_id);
 $posts->execute();
 $results = $posts->get_result();
