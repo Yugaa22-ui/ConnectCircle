@@ -43,7 +43,7 @@ if (!isset($results)) {
       </div>
     </div>
 
-    <div class="card-body p-3" id="message-container" style="max-height: 500px; overflow-y: auto;">
+    <div class="card-body p-3" id="message-container" style="max-height: 600px; overflow-y: auto;">
       <?php if ($results->num_rows > 0): ?>
         <?php while ($row = $results->fetch_assoc()): ?>
           <?php if (!$row['deleted']): ?>
@@ -133,6 +133,7 @@ if (!isset($results)) {
 
         <form method="POST" enctype="multipart/form-data" action="discussion_page.php?circle_id=<?= $circle_id ?>" class="input-message-wrapper">
           <input type="hidden" name="circle_id" value="<?= $circle_id ?>">
+          <input type="hidden" name="media_type" id="mediaType">
           <input type="hidden" name="voice_blob" id="voiceBlobInput">
           <div class="d-flex align-items-center gap-2">
             <div class="position-relative">
@@ -140,9 +141,22 @@ if (!isset($results)) {
                 <i class="bi bi-plus-lg"></i>
               </button>
                 <ul id="mediaDropdownMenu" class="dropdown-menu dropdown-menu-dark" style="display: none; position: absolute; bottom: 100%; left: 0;">
-                  <li><label class="dropdown-item" for="imageInput"><i class="bi bi-image me-2"></i> Gambar</label></li>
-                  <li><button class="dropdown-item" id="selectVideo"><i class="bi bi-camera-video me-2"></i> Video</button></li>
-                  <li><button class="dropdown-item" id="selectAudio"><i class="bi bi-mic me-2"></i> Audio</button></li>
+                  <li>
+                    <label class="dropdown-item" for="imageInput">
+                      <i class="bi bi-image me-2"></i> Gambar
+                    </label>
+                  </li>
+                  <li>
+                    <label class="dropdown-item" for="mediaInput" data-type="video" id="selectVideo">
+                      <i class="bi bi-camera-video me-2"></i> Video
+                    </label>
+                  </li>
+                  <li>
+                    <label class="dropdown-item" for="mediaInput" data-type="audio" id="selectAudio">
+                      <i class="bi bi-mic me-2"></i> Audio
+                    </label>
+                  </li>
+                  <input type="hidden" id="mediaType" name="media_type" value="">
                 </ul>
             </div>
             <script>
@@ -179,7 +193,6 @@ if (!isset($results)) {
   </div>
 </main>
 
-<!-- Modal pada halaman diskusi -->
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_circle.php')) include 'modal_discussion_page/modal_info_circle.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_keluar_circle.php')) include 'modal_discussion_page/modal_keluar_circle.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_edit.php')) include 'modal_discussion_page/modal_edit.php'; ?>

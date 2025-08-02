@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadMediaBtn = document.getElementById('uploadMediaBtn');
     const previewMediaContainer = document.getElementById('preview-media-container');
     const previewMediaWrapper = document.getElementById('preview-media-wrapper');
+    const mediaType = document.getElementById('mediaType'); // <input type="hidden" id="mediaType">
 
     if (messageContainer) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -20,9 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
             imageInput.click();
         });
     }
+
     if (uploadMediaBtn && mediaInput) {
         uploadMediaBtn.addEventListener('click', e => {
             e.preventDefault();
+            const type = e.target.dataset.type || 'video'; // Default video
+            mediaType.value = type;
+
+            if (type === 'audio') {
+                mediaInput.accept = 'audio/*';
+            } else {
+                mediaInput.accept = 'video/*';
+            }
             mediaInput.click();
         });
     }
@@ -57,53 +67,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-if (mediaInput) {
-    mediaInput.addEventListener('change', function () {
-        document.getElementById('mediaDropdownMenu').style.display = 'none';
-        const file = this.files[0];
-        previewMediaWrapper.innerHTML = '';
-        if (!file) {
-            previewMediaContainer.style.display = 'none';
-            return;
-        }
-        const url = URL.createObjectURL(file);
-        const isVideo = file.type.startsWith('video');
-        const isAudio = file.type.startsWith('audio');
-
-        let previewEl;
-        if (isVideo) {
-            previewEl = document.createElement('video');
-            previewEl.src = url;
-            previewEl.controls = true;
-            previewEl.width = 200;
-            previewEl.className = 'rounded border';
-        } else if (isAudio) {
-            previewEl = document.createElement('audio');
-            previewEl.src = url;
-            previewEl.controls = true;
-            previewEl.className = 'w-100 mt-2';
-        } else {
-            previewEl = document.createElement('small');
-            previewEl.className = 'text-muted';
-            previewEl.textContent = 'Format tidak didukung untuk preview.';
-        }
-
-        previewMediaWrapper.appendChild(previewEl);
-
-        // Tombol batal
-        const cancelBtn = document.createElement('button');
-        cancelBtn.className = 'btn btn-sm btn-outline-danger ms-2 mt-2';
-        cancelBtn.textContent = 'Batalkan Media';
-        cancelBtn.onclick = () => {
-            mediaInput.value = '';
+    if (mediaInput) {
+        mediaInput.addEventListener('change', function (e) {
+            e.preventDefault(); // Cegah reload form
+            const file = this.files[0];
             previewMediaWrapper.innerHTML = '';
-            previewMediaContainer.style.display = 'none';
-        };
-        previewMediaWrapper.appendChild(cancelBtn);
+            if (!file) {
+                previewMediaContainer.style.display = 'none';
+                return;
+            }
 
-        previewMediaContainer.style.display = 'block';
-    });
-}
+            const type = mediaType.value; // "audio" atau "video"
+            const url = URL.createObjectURL(file);
+            let previewEl;
+
+            if (type === 'audio') {
+                if (!file.type.startsWith('audio/')) {
+                    alert('File bukan audio.');
+                    mediaInput.value = '';
+                    return;
+                }
+                previewEl = document.createElement('audio');
+                previewEl.src = url;
+                previewEl.controls = true;
+                previewEl.className = 'w-100 mt-2';
+            } else {
+                if (!file.type.startsWith('video/')) {
+                    alert('File bukan video.');
+                    mediaInput.value = '';
+                    return;
+                }
+                previewEl = document.createElement('video');
+                previewEl.src = url;
+                previewEl.controls = true;
+                previewEl.width = 200;
+                previewEl.className = 'rounded border';
+            }
+
+            previewMediaWrapper.appendChild(previewEl);
+
+            // Tombol batal
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn btn-sm btn-outline-danger ms-2 mt-2';
+            cancelBtn.textContent = 'Batalkan Media';
+            cancelBtn.onclick = () => {
+                mediaInput.value = '';
+                previewMediaWrapper.innerHTML = '';
+                previewMediaContainer.style.display = 'none';
+            };
+            previewMediaWrapper.appendChild(cancelBtn);
+
+            previewMediaContainer.style.display = 'block';
+        });
+    }
 
     // === VOICE NOTE ===
     let mediaRecorder, audioChunks = [], recordingInterval;
@@ -300,6 +316,24 @@ if (mediaInput) {
     });
 });
 
-document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-  new bootstrap.Dropdown(btn);
+// Tangani klik label Video / Audio
+document.querySelectorAll('label[for="mediaInput"]').forEach(label => {
+    label.addEventListener('click', function () {
+        const type = this.dataset.type;
+        const mediaTypeInput = document.getElementById('mediaType');
+        const mediaInput = document.getElementById('mediaInput');
+
+        if (type === 'audio') {
+            mediaInput.accept = 'audio/*';
+            mediaTypeInput.value = 'audio';
+        } else {
+            mediaInput.accept = 'video/*';
+            mediaTypeInput.value = 'video';
+        }
+    });
+});
+
+
+    document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+        new bootstrap.Dropdown(btn);
 });
