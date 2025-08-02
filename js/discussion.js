@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadMediaBtn = document.getElementById('uploadMediaBtn');
     const previewMediaContainer = document.getElementById('preview-media-container');
     const previewMediaWrapper = document.getElementById('preview-media-wrapper');
-    const mediaType = document.getElementById('mediaType'); // <input type="hidden" id="mediaType">
+    const mediaType = document.getElementById('mediaType');
 
     if (messageContainer) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 
-    if (uploadImageBtn && imageInput) {
+        if (uploadImageBtn && imageInput) {
         uploadImageBtn.addEventListener('click', e => {
             e.preventDefault();
             imageInput.click();
@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageInput.addEventListener('change', function () {
             const file = this.files[0];
             if (file) {
+                document.getElementById('mediaDropdownMenu').style.display = 'none'; // 🔒 Tutup dropdown
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     previewImage.src = e.target.result;
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (mediaInput) {
         mediaInput.addEventListener('change', function (e) {
-            e.preventDefault(); // Cegah reload form
+            e.preventDefault();
             const file = this.files[0];
             previewMediaWrapper.innerHTML = '';
             if (!file) {
@@ -77,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const type = mediaType.value; // "audio" atau "video"
+            document.getElementById('mediaDropdownMenu').style.display = 'none'; // 🔒 Tutup dropdown
+
+            const type = mediaType.value;
             const url = URL.createObjectURL(file);
             let previewEl;
 
@@ -141,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recordingTime.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
         }, 1000);
     }
+
     function stopTimer() {
         clearInterval(recordingInterval);
         recordingTime.textContent = '0:00';
@@ -211,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fix modal aria-hidden cleanup
     const infoModal = document.getElementById('messageInfoModal');
     if (infoModal) {
         infoModal.addEventListener('hidden.bs.modal', () => {
