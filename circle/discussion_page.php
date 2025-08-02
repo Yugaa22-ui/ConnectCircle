@@ -112,75 +112,12 @@ include '../backend/circle/discussion_controller.php';
   </div>
 </main>
 
-<!-- Modal Info Circle -->
-<?php if (file_exists(__DIR__ . '/modal_info_circle.php')) include 'modal_info_circle.php'; ?>
-<?php if (file_exists(__DIR__ . '/modal_keluar_circle.php')) include 'modal_keluar_circle.php'; ?>
-
-<!-- Modal Konfirmasi Hapus -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-white border border-secondary">
-      <form method="POST" id="deletePostForm">
-        <div class="modal-header border-0 border-bottom border-secondary">
-          <h5 class="modal-title text-danger">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            Konfirmasi Hapus Pesan
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          Apakah Anda yakin ingin menghapus pesan ini?
-          <input type="hidden" name="delete_post_id" id="deletePostId">
-        </div>
-        <div class="modal-footer border-0 border-top border-secondary">
-          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
-            <i class="bi bi-x-circle me-1"></i> Batal
-          </button>
-          <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash me-1"></i> Hapus
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Edit -->
-<div class="modal fade" id="editModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form id="editPostForm">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Pesan</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <textarea name="new_content" id="editContent" class="form-control" rows="4"></textarea>
-          <input type="hidden" name="post_id" id="editPostId">
-        </div>
-        <div class="modal-footer d-flex justify-content-between">
-          <div id="editSnackbar" class="text-danger small me-auto"></div>
-          <button type="submit" class="btn btn-success">Simpan Perubahan</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Info Pesan -->
-<div class="modal fade" id="messageInfoModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
-    <div class="modal-content bg-dark text-white border border-secondary rounded-4">
-      <div class="modal-header bg-secondary text-white rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Info Pesan</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" id="messageInfoContent">
-        <div class="text-center text-muted">Memuat...</div>
-      </div>
-    </div>
-  </div>
-</div>
+// Modal pada halaman diskusi
+<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_circle.php')) include 'modal_discussion_page/modal_info_circle.php'; ?>
+<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_keluar_circle.php')) include 'modal_discussion_page/modal_keluar_circle.php'; ?>
+<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_edit.php')) include 'modal_discussion_page/modal_edit.php'; ?>
+<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_konfirmasi_hapus.php')) include 'modal_discussion_page/modal_konfirmasi_hapus.php'; ?>
+<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_pesan.php')) include 'modal_discussion_page/modal_info_pesan.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/discussion.js"></script>
