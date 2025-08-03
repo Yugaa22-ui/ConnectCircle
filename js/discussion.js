@@ -370,3 +370,60 @@ document.addEventListener('DOMContentLoaded', () => {
         new bootstrap.Dropdown(btn);
     });
 });
+
+// === Toggle tombol kirim dan mic (khusus mobile) ===
+const messageTextarea = document.querySelector('textarea[name="message"]');
+const micButton = document.getElementById('micBtn');
+const sendTextButton = document.querySelector('button[name="submit_message"]');
+const imageInput = document.getElementById('imageInput');
+const mediaInput = document.getElementById('mediaInput');
+const cancelImageWrapper = document.getElementById('cancel-image-wrapper');
+const previewMediaWrapper = document.getElementById('preview-media-wrapper');
+const previewMediaContainer = document.getElementById('preview-media-container');
+
+function toggleMessageButton() {
+    const hasText = messageTextarea.value.trim().length > 0;
+    if (window.innerWidth <= 768) {
+        if (hasText) {
+            micButton?.classList.add('d-none');
+            sendTextButton?.classList.remove('d-none');
+        } else {
+            micButton?.classList.remove('d-none');
+            sendTextButton?.classList.add('d-none');
+        }
+    }
+}
+
+messageTextarea?.addEventListener('input', toggleMessageButton);
+toggleMessageButton();
+
+// === Tampilkan tombol kirim jika media dipilih (mobile) ===
+function showSendButtonForMediaMobile() {
+    if (window.innerWidth <= 768) {
+        micButton?.classList.add('d-none');
+        sendTextButton?.classList.remove('d-none');
+    }
+}
+
+imageInput?.addEventListener('change', function () {
+    if (this.files?.length > 0) showSendButtonForMediaMobile();
+});
+
+mediaInput?.addEventListener('change', function () {
+    if (this.files?.length > 0) showSendButtonForMediaMobile();
+});
+
+// === Sembunyikan tombol kirim jika media dibatalkan (mobile) ===
+cancelImageWrapper?.addEventListener('click', function (e) {
+    if (e.target.id === 'cancelImageBtn' && window.innerWidth <= 768) {
+        micButton?.classList.remove('d-none');
+        sendTextButton?.classList.add('d-none');
+    }
+});
+
+previewMediaWrapper?.addEventListener('click', function (e) {
+    if (e.target.textContent?.trim() === 'Batalkan Media' && window.innerWidth <= 768) {
+        micButton?.classList.remove('d-none');
+        sendTextButton?.classList.add('d-none');
+    }
+});
