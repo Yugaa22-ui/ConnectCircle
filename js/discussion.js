@@ -340,3 +340,15 @@ document.querySelectorAll('label[for="mediaInput"]').forEach(label => {
     document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
         new bootstrap.Dropdown(btn);
 });
+
+// Cegah memutar lebih dari satu audio/video bersamaan
+document.addEventListener('play', function (e) {
+    if (e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO') {
+        const allMedia = document.querySelectorAll('audio, video');
+        allMedia.forEach(media => {
+            if (media !== e.target) {
+                media.pause();
+            }
+        });
+    }
+}, true); // gunakan event capture phase
