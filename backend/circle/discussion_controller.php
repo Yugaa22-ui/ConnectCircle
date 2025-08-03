@@ -43,7 +43,7 @@ if ($mute->num_rows > 0 && $mute->fetch()) {
 }
 $mute->close();
 
-// Kirim Voice Note
+// Kirim Voice Note (khusus POST voice)
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_voice']) && !$is_muted) {
     $base64 = $_POST['voice_blob'] ?? '';
     if ($base64 !== '') {
@@ -75,12 +75,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && 
     $media_path = null;
     $media_duration = null;
 
-    // Proses gambar (lama)
+    // Proses gambar
     if (!empty($_FILES['image']['name'])) {
         $img = $_FILES['image'];
         $ext = pathinfo($img['name'], PATHINFO_EXTENSION);
         $valid = ['jpg', 'jpeg', 'png', 'gif'];
-
         if (in_array(strtolower($ext), $valid)) {
             $filename = 'img_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
             $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/connectcircle/assets/uploads/img/';
@@ -92,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && 
         }
     }
 
-    // Proses media (video/audio/voice)
+    // Proses media (video/audio)
     if (!empty($_FILES['media']['name'])) {
         $media = $_FILES['media'];
         $mime = mime_content_type($media['tmp_name']);
@@ -104,7 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && 
             'audio/mpeg' => 'audio',
             'audio/mp3' => 'audio',
             'audio/ogg' => 'audio',
-            'audio/webm' => 'voice'
+            'audio/webm' => 'voice',
+            'audio/wav' => 'audio',
+            'audio/x-wav' => 'audio',
+            'audio/mp4' => 'audio',
+            'audio/x-m4a' => 'audio',
         ];
 
         if (array_key_exists($mime, $allowed)) {
@@ -119,7 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_message']) && 
         }
     }
 
-    if (!empty($message) || $image || $media_path) {
+    // Validasi: Kirim jika setidaknya ada satu isi
+    $isMessageValid = !empty($message);
+    $hasImage = !empty($image);
+    $hasMedia = !empty($media_path);
+
+    if ($isMessageValid || $hasImage || $hasMedia) {
         $stmt = $conn->prepare("INSERT INTO posts (circle_id, user_id, content, image_path, media_type, media_path, media_duration) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("iissssi", $circle_id, $user_id, $message, $image, $media_type, $media_path, $media_duration);
         $stmt->execute();
@@ -159,7 +167,7 @@ $circle_priv_stmt->bind_result($is_private);
 $circle_priv_stmt->fetch();
 $circle_priv_stmt->close();
 
-// Keluar circle
+// Keluar Circle
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_confirm']) && $_POST['leave_confirm'] === 'yes') {
     $out = $conn->prepare("DELETE FROM circle_members WHERE user_id = ? AND circle_id = ?");
     $out->bind_param("ii", $user_id, $circle_id);
