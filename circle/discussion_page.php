@@ -191,6 +191,13 @@ if (!isset($results)) {
       <?php endif; ?>
     </div>
   </div>
+<!-- Modal Preview Media -->
+<div id="mediaPreviewModal" class="media-modal d-none">
+  <div class="media-modal-content">
+    <span class="media-modal-close">&times;</span>
+    <img id="mediaPreviewImage" class="media-preview" />
+  </div>
+</div>
 </main>
 
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_circle.php')) include 'modal_discussion_page/modal_info_circle.php'; ?>

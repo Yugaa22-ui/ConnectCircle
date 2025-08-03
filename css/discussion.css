@@ -1,76 +1,109 @@
+/* Konteks Menu Klik Kanan */
 .context-menu {
-    position: absolute;
-    z-index: 10000;
-    display: none;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  position: absolute;
+  z-index: 10000;
+  display: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
-
 .context-menu li {
-    padding: 6px 12px;
-    list-style: none;
-    cursor: pointer;
+  padding: 6px 12px;
+  list-style: none;
+  cursor: pointer;
 }
-
 .context-menu li:hover {
-    background-color: #eee;
+  background-color: #eee;
 }
 
+/* Scroll pesan */
 #message-container {
-    scroll-behavior:  auto !important;
+  scroll-behavior: auto !important;
 }
 
+/* Form input pesan */
 .input-message-wrapper {
-    position: sticky;
-    bottom: 0;
-    background-color: white;
-    padding-top: 10px;
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  padding-top: 10px;
+  overflow: visible !important;
+  z-index: 1;
 }
-
 textarea[name="message"] {
-    resize: none;
-    height: 40px;
+  resize: none;
+  height: 40px;
 }
 
-/* Untuk modal info circle */
+/* Modal info circle & hover anggota */
 .modal-content.bg-dark {
-    transition: background-color 0.3s ease;
-  }
-  
-  .modal-body .col {
-    transition: background-color 0.2s ease;
-  }
-  
-  .modal-body .col:hover {
-    background-color: #2c2c2c;
-  }
-  
-/* Efek hover anggota */
+  transition: background-color 0.3s ease;
+}
+.modal-body .col {
+  transition: background-color 0.2s ease;
+}
+.modal-body .col:hover,
 .modal-body .col .d-flex:hover {
-    background-color: #2c2c2c;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* Gaya tombol lebih lembut */
-  .modal-footer .btn-outline-light {
-    border-color: #666;
-  }
+  background-color: #2c2c2c;
+  transition: background-color 0.3s ease;
+}
 
+/* Gaya tombol pada modal */
+.modal-footer .btn-outline-light {
+  border-color: #666;
+}
+
+/* Dropdown menu media */
 .dropdown-menu {
-  display: block !important; /* DEBUG: paksa muncul */
   position: absolute !important;
   z-index: 9999 !important;
   background-color: #222 !important;
 }
-
 .dropdown-menu.show {
-    display: block !important;
+  display: block !important;
 }
 
-.card-footer,
-.input-message-wrapper {
-  overflow: visible !important;
+.media-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-modal-content {
   position: relative;
-  z-index: 1;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgba(20, 20, 20, 0.9);
+  max-width: 60vw;
+  max-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-preview {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+  object-fit: contain;
+}
+
+.media-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10000;
 }

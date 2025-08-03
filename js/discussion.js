@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 
-        if (uploadImageBtn && imageInput) {
+    if (uploadImageBtn && imageInput) {
         uploadImageBtn.addEventListener('click', e => {
             e.preventDefault();
             imageInput.click();
@@ -25,14 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadMediaBtn && mediaInput) {
         uploadMediaBtn.addEventListener('click', e => {
             e.preventDefault();
-            const type = e.target.dataset.type || 'video'; // Default video
+            const type = e.target.dataset.type || 'video';
             mediaType.value = type;
 
-            if (type === 'audio') {
-                mediaInput.accept = 'audio/*';
-            } else {
-                mediaInput.accept = 'video/*';
-            }
+            mediaInput.accept = type === 'audio' ? 'audio/*' : 'video/*';
             mediaInput.click();
         });
     }
@@ -41,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageInput.addEventListener('change', function () {
             const file = this.files[0];
             if (file) {
-                document.getElementById('mediaDropdownMenu').style.display = 'none'; // 🔒 Tutup dropdown
+                document.getElementById('mediaDropdownMenu').style.display = 'none';
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     previewImage.src = e.target.result;
@@ -78,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            document.getElementById('mediaDropdownMenu').style.display = 'none'; // 🔒 Tutup dropdown
+            document.getElementById('mediaDropdownMenu').style.display = 'none';
 
             const type = mediaType.value;
             const url = URL.createObjectURL(file);
@@ -109,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             previewMediaWrapper.appendChild(previewEl);
 
-            // Tombol batal
             const cancelBtn = document.createElement('button');
             cancelBtn.className = 'btn btn-sm btn-outline-danger ms-2 mt-2';
             cancelBtn.textContent = 'Batalkan Media';
@@ -124,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // === VOICE NOTE ===
+    // === Voice Note ===
     let mediaRecorder, audioChunks = [], recordingInterval;
     const voiceWrapper = document.getElementById('voiceRecordingWrapper');
     const recordingStatus = document.getElementById('recordingStatus');
@@ -215,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Modal info pesan
     const infoModal = document.getElementById('messageInfoModal');
     if (infoModal) {
         infoModal.addEventListener('hidden.bs.modal', () => {
@@ -264,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Modal Edit Post
     document.querySelectorAll('.btn-edit-post').forEach(btn => {
         btn.addEventListener('click', function () {
             document.getElementById('editPostId').value = this.dataset.id;
@@ -317,38 +314,59 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('deletePostId').value = this.getAttribute('data-post-id');
         });
     });
-});
 
-// Tangani klik label Video / Audio
-document.querySelectorAll('label[for="mediaInput"]').forEach(label => {
-    label.addEventListener('click', function () {
-        const type = this.dataset.type;
-        const mediaTypeInput = document.getElementById('mediaType');
-        const mediaInput = document.getElementById('mediaInput');
+    // Media Modal Preview (Image/Video)
+    const mediaModal = document.getElementById('mediaPreviewModal');
+    const mediaImg = document.getElementById('mediaPreviewImage');
+    const closeBtn = document.querySelector('.media-modal-close');
 
-        if (type === 'audio') {
-            mediaInput.accept = 'audio/*';
-            mediaTypeInput.value = 'audio';
-        } else {
-            mediaInput.accept = 'video/*';
-            mediaTypeInput.value = 'video';
+    function openImageModal(src) {
+        mediaImg.src = src;
+        mediaImg.classList.remove('d-none');
+        mediaModal.classList.remove('d-none');
+    }
+
+    document.querySelector('.media-modal-close').addEventListener('click', () => {
+    const modal = document.getElementById('mediaPreviewModal');
+    const image = document.getElementById('mediaPreviewImage');
+    image.src = '';
+    modal.classList.add('d-none');
+    });
+
+    mediaModal.addEventListener('click', (e) => {
+        if (e.target === mediaModal) closeBtn.click();
+    });
+
+    // Delegasi klik gambar/video
+    document.body.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG' && e.target.classList.contains('img-thumbnail')) {
+            openImageModal(e.target.src);
         }
     });
-});
 
+    // Media dropdown (set media type)
+    document.querySelectorAll('label[for="mediaInput"]').forEach(label => {
+        label.addEventListener('click', function () {
+            const type = this.dataset.type;
+            const mediaTypeInput = document.getElementById('mediaType');
+            const mediaInput = document.getElementById('mediaInput');
 
+            mediaInput.accept = type === 'audio' ? 'audio/*' : 'video/*';
+            mediaTypeInput.value = type;
+        });
+    });
+
+    // Cegah media bersamaan
+    document.addEventListener('play', function (e) {
+        if (e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO') {
+            document.querySelectorAll('audio, video').forEach(media => {
+                if (media !== e.target) media.pause();
+            });
+        }
+    }, true);
+
+    // Inisialisasi dropdown boostrap (opsional)
     document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
         new bootstrap.Dropdown(btn);
+    });
 });
-
-// Cegah memutar lebih dari satu audio/video bersamaan
-document.addEventListener('play', function (e) {
-    if (e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO') {
-        const allMedia = document.querySelectorAll('audio, video');
-        allMedia.forEach(media => {
-            if (media !== e.target) {
-                media.pause();
-            }
-        });
-    }
-}, true); // gunakan event capture phase
