@@ -98,11 +98,22 @@ if (!isset($results)) {
                         <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="video/mp4">
                         Browser tidak mendukung tag video.
                       </video>
-                    <?php elseif ($row['media_type'] === 'audio' || $row['media_type'] === 'voice'): ?>
-                    <audio controls class="mt-2" style="max-width: 250px; width: 100%;">
-                      <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/webm">
-                      Browser tidak mendukung tag audio.
-                    </audio>
+                    <?php elseif ($row['media_type'] === 'voice'): ?>
+                      <div class="d-flex align-items-center bg-secondary bg-opacity-10 rounded p-2 gap-2" style="max-width: 300px;">
+                        <img src="<?= $avatar ?>" width="30" height="30" class="rounded-circle" alt="user">
+                        <audio controls style="flex-grow: 1;">
+                          <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/webm">
+                          Browser tidak mendukung audio.
+                        </audio>
+                      </div>
+                    <?php elseif ($row['media_type'] === 'audio'): ?>
+                      <div class="d-flex align-items-center bg-dark bg-opacity-25 rounded p-2 gap-2" style="max-width: 300px;">
+                        <i class="bi bi-music-note-beamed fs-3 text-primary"></i>
+                        <audio controls style="flex-grow: 1;">
+                          <source src="../assets/uploads/media/<?= htmlspecialchars($row['media_path']) ?>" type="audio/mpeg">
+                          Browser tidak mendukung audio.
+                        </audio>
+                      </div>
                     <?php endif; ?>
                   </div>
                 <?php endif; ?>
@@ -118,7 +129,7 @@ if (!isset($results)) {
       <?php endif; ?>
     </div>
 
-    <div class="card-footer bg-dark border-top border-secondary">
+   <div class="card-footer bg-dark border-top border-secondary">
       <?php if ($is_muted): ?>
         <div class="alert alert-warning"><?= $mute_message ?></div>
       <?php else: ?>
@@ -210,3 +221,4 @@ if (!isset($results)) {
 <script src="../js/discussion.js"></script>
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>
+
