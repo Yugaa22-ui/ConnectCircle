@@ -3,8 +3,8 @@ session_start();
 include '../../includes/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email    = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $email    = trim($_POST['login_email'] ?? '');
+    $password = $_POST['login_password'] ?? '';
 
     $errors = [];
 
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role;
 
-            // Redirect berdasarkan role
+            // Redirect berdasarkan role 
             if ($role === 'admin' || $role === 'moderator') {
                 header("Location: ../../admin/dashboard_admin.php");
             } else {
