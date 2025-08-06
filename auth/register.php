@@ -131,7 +131,7 @@ $interests = $interest_query->fetch_all(MYSQLI_ASSOC);
 </main>
 
 <!-- Script: Toggle password + minat -->
-<script src="../js/toggle_password.js"></script>
+<script src="../js/components/toggle_password.js"></script>
 <script>
   document.querySelectorAll('.interest-checkbox').forEach(cb => {
     cb.addEventListener('change', function () {

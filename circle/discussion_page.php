@@ -218,7 +218,7 @@ if (!isset($results)) {
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_pesan.php')) include 'modal_discussion_page/modal_info_pesan.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/discussion.js"></script>
+<script src="../js/circle/discussion.js"></script>
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>
 

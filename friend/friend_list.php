@@ -64,6 +64,6 @@ if (!$embed) include '../templates/header.php';
   </div>
 </div>
 
-<script src="../js/friend_list.js"></script>
+<script src="../js/friend/friend_list.js"></script>
 
 <?php if (!$embed) include '../templates/footer.php'; ?>

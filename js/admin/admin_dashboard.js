@@ -40,7 +40,7 @@ function loadScriptIfNotExists(src, callback) {
   
           // Load script khusus halaman
           if (page.includes('create_circle.php')) {
-            loadScriptIfNotExists('../js/create_circle.js', () => {
+            loadScriptIfNotExists('../js/circle/create_circle.js', () => {
               if (typeof initCreateCircleForm === 'function') {
                 initCreateCircleForm();
               }
@@ -48,7 +48,7 @@ function loadScriptIfNotExists(src, callback) {
           }
 
           if (page.includes('manage_interests.php')) {
-            loadScriptIfNotExists('../js/admin_manage_interests.js', () => {
+            loadScriptIfNotExists('../js/admin/admin_manage_interests.js', () => {
               if (typeof initManageInterests === 'function') {
                 initManageInterests(container);
               }
@@ -56,7 +56,7 @@ function loadScriptIfNotExists(src, callback) {
           }                  
   
           if (page.includes('manage_users.php')) {
-            loadScriptIfNotExists('../js/admin_manage_users.js', () => {
+            loadScriptIfNotExists('../js/admin/admin_manage_users.js', () => {
               if (typeof initManageUsers === 'function') {
                 initManageUsers();
               }
@@ -64,7 +64,7 @@ function loadScriptIfNotExists(src, callback) {
           }
   
           if (page.includes("manage_roles.php")) {
-            loadScriptIfNotExists('/connectcircle/js/admin_manage_roles.js', () => {
+            loadScriptIfNotExists('/connectcircle/js/admin/admin_manage_roles.js', () => {
               if (typeof initManageRoles === 'function') {
                 initManageRoles();
               }

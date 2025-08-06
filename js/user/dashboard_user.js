@@ -44,7 +44,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
         // Tambahkan loader script sesuai halaman
         if (page.includes('create_circle.php')) {
           const script = document.createElement('script');
-          script.src = '../js/create_circle.js';
+          script.src = '../js/circle/create_circle.js';
           script.onload = () => {
             if (typeof initCreateCircleForm === 'function') {
               initCreateCircleForm();
@@ -54,7 +54,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
         }
 
         if (page.includes('join_circle.php')) {
-          loadScriptIfNotExists('../js/join_circle.js', () => {
+          loadScriptIfNotExists('../js/circle/join_circle.js', () => {
             if (typeof initJoinCircleButtons === 'function') {
               initJoinCircleButtons();
             }
@@ -62,14 +62,14 @@ document.querySelectorAll('[data-page]').forEach(link => {
         }
 
         if (page.includes('view_circle.php')) {
-          loadScriptIfNotExists('../js/view_circle.js', () => {
+          loadScriptIfNotExists('../js/circle/view_circle.js', () => {
             if (typeof initViewCircleSearch === 'function') initViewCircleSearch();
             if (typeof initCancelJoinRequest === 'function') initCancelJoinRequest();
           });
         }
 
         if (page.includes('search.php')) {
-          loadScriptIfNotExists('../js/search_friend.js', () => {
+          loadScriptIfNotExists('../js/friend/search_friend.js', () => {
             let tries = 0;
             const interval = setInterval(() => {
               if (typeof window.initSearchFriendForm === 'function') {
@@ -83,7 +83,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
         }
 
         if (page.includes('friend_request.php')) {
-          loadScriptIfNotExists('../js/friend_request.js', () => {
+          loadScriptIfNotExists('../js/friend/friend_request.js', () => {
             setTimeout(() => {
               if (typeof window.initFriendRequestHandler === 'function') {
                 window.initFriendRequestHandler();
@@ -93,7 +93,7 @@ document.querySelectorAll('[data-page]').forEach(link => {
         }
 
         if (page.includes('friend_list.php')) {
-          loadScriptIfNotExists('../js/friend_list.js', () => {
+          loadScriptIfNotExists('../js/friend/friend_list.js', () => {
             console.log("✅ friend_list.js sudah dimuat, memulai polling...");
         
             // Polling hingga fungsi tersedia

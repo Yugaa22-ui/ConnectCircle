@@ -82,6 +82,6 @@ include '../backend/user/change_password_process.php';
 </main>
 
 <!-- Link toggle password -->
-<script src="../js/toggle_password.js"></script>
+<script src="../js/components/toggle_password.js"></script>
 
 <?php if (!$include_template) include '../templates/footer.php'; ?>

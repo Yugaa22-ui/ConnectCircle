@@ -88,6 +88,6 @@ include '../backend/circle/view_circle_data.php';
   </div>
 <?php endif; ?>
 <?php if (!$include_template): ?>
-  <script src="../js/view_circle.js"></script>
+  <script src="../js/circle/view_circle.js"></script>
 <?php endif; ?>
 <?php if (!$include_template) include '../templates/footer.php'; ?>

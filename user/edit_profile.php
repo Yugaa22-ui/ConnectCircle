@@ -105,6 +105,6 @@ include '../templates/header.php';
 <!-- Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-<script src="../js/cropper-handler.js"></script>
-<script src="../js/limit_interest.js"></script>
+<script src="../js/components/cropper-handler.js"></script>
+<script src="../js/user/limit_interest.js"></script>
 <?php include '../templates/footer.php'; ?>

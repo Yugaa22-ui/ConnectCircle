@@ -90,7 +90,7 @@ include '../backend/circle/join_circle_process.php';
   </div>
 
   <!-- Hanya load JS & init saat bukan embed -->
-  <script src="../js/join_circle.js"></script>
+  <script src="../js/circle/join_circle.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof initJoinCircleButtons === 'function') {

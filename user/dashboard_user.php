@@ -113,5 +113,5 @@ $current = basename($_SERVER['PHP_SELF']);
   </div>
 </div>
 
-<script src="../js/dashboard_user.js"></script>
+<script src="../js/user/dashboard_user.js"></script>
 <?php include '../templates/footer.php'; ?>

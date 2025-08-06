@@ -63,6 +63,6 @@ unset($_SESSION['login_errors'], $_SESSION['old_email']);
 </main>
 
 <!-- Script toggle password -->
-<script src="../js/toggle_password.js"></script>
+<script src="../js/components/toggle_password.js"></script>
 
 <?php include '../templates/footer.php'; ?>
