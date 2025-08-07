@@ -19,9 +19,9 @@ ConnectCircle adalah platform media sosial yang dirancang untuk memfasilitasi in
 * Fitur `mute` untuk anggota Circle.
 
 ### Interaksi Sosial
-* Buat dan kelola postingan di dalam Circle.
-* Posting dapat mencakup teks dan gambar.
-* Pelacakan jumlah tampilan postingan.
+* Buat dan kelola pesan di dalam Circle.
+* Posting dapat mencakup teks, gambar, video, audio, dan voice note.
+* Menampilkan jumlah pengguna yang melihat pesan.
 * Sistem pertemanan dengan permintaan pertemanan.
 
 ### Minat Pengguna
