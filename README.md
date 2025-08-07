@@ -6,7 +6,7 @@ ConnectCircle adalah platform media sosial yang dirancang untuk memfasilitasi in
 
 ### Manajemen Pengguna
 * Registrasi dan otentikasi pengguna.
-* Profil pengguna dengan informasi seperti nama pengguna, email, kota, profesi, dan bio.
+* Profil pengguna dengan informasi seperti nama pengguna, email, kota, profesi, bio, dan minat.
 * Unggah gambar profil.
 * Peran pengguna (misalnya, `user`, `admin`).
 
@@ -20,7 +20,7 @@ ConnectCircle adalah platform media sosial yang dirancang untuk memfasilitasi in
 
 ### Interaksi Sosial
 * Buat dan kelola pesan di dalam Circle.
-* Posting dapat mencakup teks, gambar, video, audio, dan voice note.
+* Pesan dapat mencakup teks, gambar, video, audio, dan voice note.
 * Menampilkan jumlah pengguna yang melihat pesan.
 * Sistem pertemanan dengan permintaan pertemanan.
 
