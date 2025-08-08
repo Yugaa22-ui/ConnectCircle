@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // === Voice Note ===
+        // === Voice Note ===
     let mediaRecorder, audioChunks = [], recordingInterval;
     const voiceWrapper = document.getElementById('voiceRecordingWrapper');
     const recordingStatus = document.getElementById('recordingStatus');
@@ -296,7 +296,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             saveBtn.addEventListener('click', () => {
                 const newContent = textarea.value.trim();
-                if (newContent === '') return alert('Pesan tidak boleh kosong.');
+
+                // Hapus pesan error lama
+                const oldError = textContainer.querySelector('.edit-error');
+                if (oldError) oldError.remove();
+
+                if (newContent === '') {
+                    const errorMsg = document.createElement('small');
+                    errorMsg.className = 'text-danger edit-error';
+                    errorMsg.textContent = 'Pesan tidak boleh kosong.';
+                    textContainer.appendChild(errorMsg);
+                    return;
+                }
 
                 fetch('../backend/circle/edit_post.php', {
                     method: 'POST',
@@ -309,15 +320,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         textContainer.innerHTML = newContent.replace(/\n/g, '<br>');
                         btn.dataset.content = newContent;
                     } else {
-                        alert('Gagal memperbarui pesan.');
+                        const errorMsg = document.createElement('small');
+                        errorMsg.className = 'text-danger edit-error';
+                        errorMsg.textContent = 'Gagal memperbarui pesan.';
+                        textContainer.appendChild(errorMsg);
                     }
                 })
-                .catch(() => alert('Terjadi kesalahan.'));
+                .catch(() => {
+                    const errorMsg = document.createElement('small');
+                    errorMsg.className = 'text-danger edit-error';
+                    errorMsg.textContent = 'Terjadi kesalahan.';
+                    textContainer.appendChild(errorMsg);
+                });
             });
         });
     });
 
-    // Media modal
+    // === Delete Post ===
+    document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('deletePostId').value = this.getAttribute('data-post-id');
+        });
+    });
+
+    // === Media Modal ===
     const mediaModal = document.getElementById('mediaPreviewModal');
     const mediaImg = document.getElementById('mediaPreviewImage');
     const closeBtn = document.querySelector('.media-modal-close');
