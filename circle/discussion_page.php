@@ -80,7 +80,7 @@ if (!isset($results)) {
                 </div>
 
                 <?php if (!empty($row['content'])): ?>
-                  <div><?= nl2br(htmlspecialchars($row['content'])) ?></div>
+                  <div class="message-text"><?= nl2br(htmlspecialchars($row['content'])) ?></div>
                 <?php elseif ($row['media_type'] === 'voice'): ?>
                   <div class="fst-italic text-muted">Pesan suara</div>
                 <?php endif; ?>
@@ -213,7 +213,6 @@ if (!isset($results)) {
 
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_circle.php')) include 'modal_discussion_page/modal_info_circle.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_keluar_circle.php')) include 'modal_discussion_page/modal_keluar_circle.php'; ?>
-<?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_edit.php')) include 'modal_discussion_page/modal_edit.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_konfirmasi_hapus.php')) include 'modal_discussion_page/modal_konfirmasi_hapus.php'; ?>
 <?php if (file_exists(__DIR__ . '/modal_discussion_page/modal_info_pesan.php')) include 'modal_discussion_page/modal_info_pesan.php'; ?>
 

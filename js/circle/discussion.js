@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const type = e.target.dataset.type || 'video';
             mediaType.value = type;
-
             mediaInput.accept = type === 'audio' ? 'audio/*' : 'video/*';
             mediaInput.click();
         });
@@ -260,62 +259,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Modal Edit Post
+    // === Inline Edit ===
     document.querySelectorAll('.btn-edit-post').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.getElementById('editPostId').value = this.dataset.id;
-            document.getElementById('editContent').value = this.dataset.content;
-            document.getElementById('editSnackbar').textContent = '';
-            new bootstrap.Modal(document.getElementById('editModal')).show();
-        });
-    });
+            const postId = this.dataset.id;
+            const messageBlock = document.querySelector(`.message-block[data-id="${postId}"]`);
+            const textContainer = messageBlock.querySelector('.message-text');
+            const originalContent = this.dataset.content;
 
-    const editForm = document.getElementById('editPostForm');
-    if (editForm) {
-        editForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const postId = document.getElementById('editPostId').value;
-            const content = document.getElementById('editContent').value.trim();
-            const snackbar = document.getElementById('editSnackbar');
+            const textarea = document.createElement('textarea');
+            textarea.className = 'form-control form-control-sm';
+            textarea.value = originalContent;
+            textarea.rows = 1;
 
-            if (content === '') {
-                snackbar.classList.remove('text-success');
-                snackbar.classList.add('text-danger');
-                snackbar.textContent = 'Isi pesan tidak boleh kosong.';
-                return;
-            }
+            const actionWrapper = document.createElement('div');
+            actionWrapper.className = 'mt-1 d-flex gap-2';
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'btn btn-success btn-sm';
+            saveBtn.textContent = '✔ Simpan';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn btn-secondary btn-sm';
+            cancelBtn.textContent = '❌ Batal';
 
-            fetch('../backend/circle/edit_post.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `post_id=${encodeURIComponent(postId)}&new_content=${encodeURIComponent(content)}`
-            })
-            .then(res => res.json())
-            .then(data => {
-                snackbar.classList.remove('text-danger', 'text-success');
-                if (data.status === 'success') {
-                    snackbar.classList.add('text-success');
-                    snackbar.textContent = 'Pesan berhasil diperbarui. Memuat ulang...';
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    snackbar.classList.add('text-danger');
-                    snackbar.textContent = 'Gagal memperbarui pesan.';
-                }
-            })
-            .catch(() => {
-                snackbar.classList.add('text-danger');
-                snackbar.textContent = 'Terjadi kesalahan.';
+            actionWrapper.appendChild(saveBtn);
+            actionWrapper.appendChild(cancelBtn);
+
+            textContainer.innerHTML = '';
+            textContainer.appendChild(textarea);
+            textContainer.appendChild(actionWrapper);
+
+            textarea.focus();
+
+            cancelBtn.addEventListener('click', () => {
+                textContainer.innerHTML = originalContent.replace(/\n/g, '<br>');
+            });
+
+            saveBtn.addEventListener('click', () => {
+                const newContent = textarea.value.trim();
+                if (newContent === '') return alert('Pesan tidak boleh kosong.');
+
+                fetch('../backend/circle/edit_post.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `post_id=${encodeURIComponent(postId)}&new_content=${encodeURIComponent(newContent)}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        textContainer.innerHTML = newContent.replace(/\n/g, '<br>');
+                        btn.dataset.content = newContent;
+                    } else {
+                        alert('Gagal memperbarui pesan.');
+                    }
+                })
+                .catch(() => alert('Terjadi kesalahan.'));
             });
         });
-    }
-
-    document.querySelectorAll('[data-bs-target="#confirmDeleteModal"]').forEach(button => {
-        button.addEventListener('click', function () {
-            document.getElementById('deletePostId').value = this.getAttribute('data-post-id');
-        });
     });
 
-    // Media Modal Preview (Image/Video)
+    // Media modal
     const mediaModal = document.getElementById('mediaPreviewModal');
     const mediaImg = document.getElementById('mediaPreviewImage');
     const closeBtn = document.querySelector('.media-modal-close');
@@ -326,23 +328,21 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaModal.classList.remove('d-none');
     }
 
-    document.querySelector('.media-modal-close').addEventListener('click', () => {
-    const modal = document.getElementById('mediaPreviewModal');
-    const image = document.getElementById('mediaPreviewImage');
-    image.src = '';
-    modal.classList.add('d-none');
+    closeBtn.addEventListener('click', () => {
+        mediaImg.src = '';
+        mediaModal.classList.add('d-none');
     });
 
     mediaModal.addEventListener('click', (e) => {
         if (e.target === mediaModal) closeBtn.click();
     });
 
-    // Delegasi klik gambar/video
     document.body.addEventListener('click', function (e) {
         if (e.target.tagName === 'IMG' && e.target.classList.contains('img-thumbnail')) {
             openImageModal(e.target.src);
         }
     });
+});
 
     // Media dropdown (set media type)
     document.querySelectorAll('label[for="mediaInput"]').forEach(label => {
@@ -369,9 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
         new bootstrap.Dropdown(btn);
     });
-});
 
-// === Toggle tombol kirim dan mic (khusus mobile) ===
+// === Toggle tombol kirim dan mic (mobile) ===
 const messageTextarea = document.querySelector('textarea[name="message"]');
 const micButton = document.getElementById('micBtn');
 const sendTextButton = document.querySelector('button[name="submit_message"]');
@@ -379,7 +378,6 @@ const imageInput = document.getElementById('imageInput');
 const mediaInput = document.getElementById('mediaInput');
 const cancelImageWrapper = document.getElementById('cancel-image-wrapper');
 const previewMediaWrapper = document.getElementById('preview-media-wrapper');
-const previewMediaContainer = document.getElementById('preview-media-container');
 
 function toggleMessageButton() {
     const hasText = messageTextarea.value.trim().length > 0;
